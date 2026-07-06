@@ -73,7 +73,14 @@ export function Sidebar() {
           <span className="font-medium">Feedback geben</span>
         </button>
 
-        <div className="flex items-center gap-3 px-3 py-2.5 rounded-[22px] bg-white border border-line shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+        <Link
+          href="/profil"
+          className={`flex items-center gap-3 px-3 py-2.5 rounded-[22px] border shadow-[0_1px_3px_rgba(0,0,0,0.04)] transition-colors ${
+            pathname === "/profil"
+              ? "bg-white border-line"
+              : "bg-white border-line hover:bg-panel"
+          }`}
+        >
           <span className="w-10 h-10 rounded-full bg-panel flex items-center justify-center text-[13px] font-medium">
             SE
           </span>
@@ -81,10 +88,10 @@ export function Sidebar() {
             <div className="text-[15px] font-medium">Sebastian</div>
             <div className="text-[11px] tracking-[1px] text-muted">PROFIL</div>
           </div>
-          <button className="w-9 h-9 rounded-full bg-panel flex items-center justify-center text-muted">
+          <span className="w-9 h-9 rounded-full bg-panel flex items-center justify-center text-muted">
             <Settings size={15} />
-          </button>
-        </div>
+          </span>
+        </Link>
       </div>
     </aside>
   );
