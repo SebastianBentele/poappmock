@@ -43,7 +43,7 @@ const commTopics = [
 export default function Operativ() {
   return (
     <div className="relative min-h-screen px-8 py-6 pb-32">
-      <h1 className="text-[22px]">Operativ</h1>
+      <h1 className="text-[22px]">Operations</h1>
       <p className="text-[15px] text-muted mt-1">
         Bewertungen, Tickets und Gästekommunikation im Überblick
       </p>

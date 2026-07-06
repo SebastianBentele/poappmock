@@ -15,9 +15,9 @@ import {
 
 const navItems = [
   { href: "/", label: "Frag Arbio", icon: MessageCircle },
-  { href: "/portfolio", label: "Dein Portfolio", icon: BarChart3 },
+  { href: "/portfolio", label: "Umsatz", icon: BarChart3 },
   { href: "/finanzen", label: "Finanzen", icon: Wallet },
-  { href: "/operativ", label: "Operativ", icon: ClipboardList },
+  { href: "/operativ", label: "Operations", icon: ClipboardList },
 ];
 
 export function Sidebar() {
