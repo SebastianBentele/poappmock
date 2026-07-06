@@ -11,6 +11,7 @@ import {
   YAxis,
   ReferenceLine,
   CartesianGrid,
+  Cell,
 } from "recharts";
 
 const GREEN = "#7db86c";
@@ -99,6 +100,51 @@ export function DailyRevenueChart() {
           />
           <Bar dataKey="dj" fill={GREEN} radius={[2, 2, 0, 0]} />
           <Bar dataKey="vj" fill={GREEN_LIGHT} radius={[2, 2, 0, 0]} />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+const payouts = [
+  { m: "Aug '25", v: 31200, current: false },
+  { m: "Sep", v: 27400, current: false },
+  { m: "Okt", v: 19800, current: false },
+  { m: "Nov", v: 8200, current: false },
+  { m: "Dez", v: 9400, current: false },
+  { m: "Jan '26", v: 8100, current: false },
+  { m: "Feb", v: 11600, current: false },
+  { m: "Mar", v: 21500, current: false },
+  { m: "Apr", v: 26800, current: false },
+  { m: "Mai", v: 30400, current: false },
+  { m: "Jun", v: 34900, current: false },
+  { m: "Jul", v: 18450, current: true },
+];
+
+export function PayoutChart() {
+  return (
+    <div className="h-[300px]">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={payouts} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+          <XAxis
+            dataKey="m"
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "#717171", fontSize: 13 }}
+            dy={8}
+          />
+          <YAxis
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "#717171", fontSize: 13 }}
+            tickFormatter={(v: number) => (v === 0 ? "€0" : `€${Math.round(v / 1000)}k`)}
+            ticks={[0, 12000, 24000, 36000]}
+          />
+          <Bar dataKey="v" radius={[10, 10, 10, 10]}>
+            {payouts.map((p) => (
+              <Cell key={p.m} fill={p.current ? GREEN : GREEN_LIGHT} />
+            ))}
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>
