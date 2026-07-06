@@ -8,12 +8,57 @@ import {
   Zap,
   Download,
   FileText,
+  Check,
+  MessageCircle,
 } from "lucide-react";
 import { KpiCard } from "@/components/kpi-card";
 import { AiCard } from "@/components/ai-card";
 import { ChatInput } from "@/components/chat-input";
 import { ProfitChart, PayoutChart } from "@/components/charts";
 import { PnlTable } from "@/components/pnl-table";
+import { useArbioChat, costExplainSeed, type Msg } from "@/components/arbio-chat";
+
+const payoutTrackers: {
+  title: string;
+  amount: string;
+  steps: { label: string; meta?: string; state: "done" | "current" | "pending" }[];
+  seed: Msg[];
+}[] = [
+  {
+    title: "Auszahlung Juni 2026",
+    amount: "€34.900",
+    steps: [
+      { label: "Abrechnung erstellt", meta: "01.07.", state: "done" },
+      { label: "Freigegeben", meta: "03.07.", state: "done" },
+      { label: "Überwiesen", meta: "05.07.", state: "done" },
+      { label: "Eingang", meta: "vsl. 07.07.", state: "current" },
+    ],
+    seed: [
+      { kind: "user", text: "Wo steht meine Juni-Auszahlung gerade?" },
+      {
+        kind: "bot",
+        text: "Deine Juni-Auszahlung über €34.900 ist unterwegs: Abrechnung erstellt am 01.07., freigegeben am 03.07., überwiesen am 05.07. per SEPA. Der Eingang auf deinem Konto ist voraussichtlich am 07.07. (1–2 Bankarbeitstage). Sag Bescheid, falls sie bis 08.07. nicht angekommen ist — dann prüfe ich die Überweisung direkt.",
+      },
+    ],
+  },
+  {
+    title: "Auszahlung Juli 2026",
+    amount: "€18.450 aufgelaufen",
+    steps: [
+      { label: "Läuft auf", meta: "bis 31.07.", state: "current" },
+      { label: "Abrechnung", meta: "01.08.", state: "pending" },
+      { label: "Freigabe", meta: "03.08.", state: "pending" },
+      { label: "Auszahlung", meta: "05.08.", state: "pending" },
+    ],
+    seed: [
+      { kind: "user", text: "Wann kommt meine Juli-Auszahlung?" },
+      {
+        kind: "bot",
+        text: "Für Juli sind bisher €18.450 aufgelaufen — der Monat läuft noch bis 31.07. Danach: Abrechnung am 01.08., Freigabe am 03.08., Auszahlung am 05.08. (kostenlos). Wenn du nicht warten willst: Über „Sofort auszahlen“ bekommst du den aktuellen Stand gegen 2% Gebühr (€369) sofort.",
+      },
+    ],
+  },
+];
 
 const costs = [
   { label: "OTA-Provision", pct: "13,0%", width: "72%" },
@@ -36,6 +81,7 @@ type Tab = (typeof tabs)[number];
 
 export default function Finanzen() {
   const [tab, setTab] = useState<Tab>("Profitabilität");
+  const { openChat } = useArbioChat();
 
   return (
     <div className="relative min-h-screen px-8 py-6 pb-32">
@@ -119,17 +165,26 @@ export default function Finanzen() {
             <div className="bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
               <div className="flex items-start justify-between">
                 <h3 className="text-[16px]">Kostenstruktur</h3>
-                <span className="text-[13px] text-muted">% vom GBV</span>
+                <span className="flex items-center gap-1.5 text-[13px] text-muted">
+                  <MessageCircle size={13} />
+                  % vom GBV
+                </span>
               </div>
-              <div className="flex flex-col gap-5 mt-7">
+              <div className="flex flex-col gap-2 mt-5">
                 {costs.map(({ label, pct, width }) => (
-                  <div key={label} className="flex items-center gap-4">
+                  <button
+                    key={label}
+                    onClick={() =>
+                      openChat(costExplainSeed(label === "Reinigung" ? "Reinigung · Test" : label))
+                    }
+                    className="flex items-center gap-4 px-2 py-2.5 -mx-2 rounded-[12px] hover:bg-panel transition-colors text-left"
+                  >
                     <span className="w-[130px] shrink-0 text-[15px]">{label}</span>
                     <div className="flex-1 h-[6px] bg-panel rounded-full overflow-hidden">
                       <div className="h-full bg-[#c9c9c9] rounded-full" style={{ width }} />
                     </div>
                     <span className="w-[52px] text-right text-[15px]">{pct}</span>
-                  </div>
+                  </button>
                 ))}
                 <div className="border-t border-line pt-4 flex items-center justify-between">
                   <span className="text-[15px]">Gesamt</span>
@@ -185,6 +240,73 @@ export default function Finanzen() {
               ]}
               chatHint="Details im Chat fragen"
             />
+          </div>
+
+          {/* Payout status tracker */}
+          <div className="bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+            <div className="flex items-start justify-between">
+              <h3 className="text-[16px]">Auszahlungs-Status</h3>
+              <span className="flex items-center gap-1.5 text-[13px] text-muted">
+                <MessageCircle size={13} />
+                Klick öffnet Details im Chat
+              </span>
+            </div>
+            <div className="flex flex-col mt-2">
+              {payoutTrackers.map(({ title, amount, steps, seed }, ti) => (
+                <button
+                  key={title}
+                  onClick={() => openChat(seed)}
+                  className={`text-left px-3 py-5 -mx-3 rounded-[16px] hover:bg-panel transition-colors ${
+                    ti > 0 ? "border-t border-line" : ""
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-[15px]">{title}</span>
+                    <span className="text-[15px]">{amount}</span>
+                  </div>
+                  <div className="flex items-center mt-4">
+                    {steps.map((s, si) => (
+                      <div key={si} className="flex items-center flex-1 last:flex-none">
+                        <div className="flex flex-col items-start">
+                          <span
+                            className={`w-7 h-7 rounded-full flex items-center justify-center ${
+                              s.state === "done"
+                                ? "bg-[#dcebd4] text-[#3c5f33]"
+                                : s.state === "current"
+                                  ? "border-2 border-accent text-accent-text"
+                                  : "border border-line text-muted"
+                            }`}
+                          >
+                            {s.state === "done" ? (
+                              <Check size={14} />
+                            ) : (
+                              <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                            )}
+                          </span>
+                          <span
+                            className={`text-[13px] mt-2 whitespace-nowrap ${
+                              s.state === "pending" ? "text-muted" : ""
+                            }`}
+                          >
+                            {s.label}
+                          </span>
+                          {s.meta && (
+                            <span className="text-[12px] text-muted mt-0.5">{s.meta}</span>
+                          )}
+                        </div>
+                        {si < steps.length - 1 && (
+                          <span
+                            className={`flex-1 h-[2px] mx-3 -mt-9 ${
+                              s.state === "done" ? "bg-[#dcebd4]" : "bg-line"
+                            }`}
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Payout history chart */}

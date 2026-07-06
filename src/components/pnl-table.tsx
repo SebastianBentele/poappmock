@@ -1,4 +1,7 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
+"use client";
+
+import { ChevronLeft, ChevronRight, MessageCircle } from "lucide-react";
+import { useArbioChat, costExplainSeed } from "@/components/arbio-chat";
 
 const months = ["Jan '26", "Feb '26", "Mär '26", "Apr '26", "Mai '26", "Jun '26", "Jul '26"];
 
@@ -58,11 +61,17 @@ const rows: Row[] = [
 ];
 
 export function PnlTable() {
+  const { openChat } = useArbioChat();
+
   return (
     <div className="bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
       <div className="flex items-center justify-between">
         <h3 className="text-[16px] font-medium">P&L Übersicht</h3>
         <div className="flex items-center gap-3">
+          <span className="flex items-center gap-1.5 text-[13px] text-muted">
+            <MessageCircle size={13} />
+            Position anklicken für Erklärung im Chat
+          </span>
           <span className="text-[14px] text-muted">28 Buchungen · 172 belegte Nächte</span>
           <button className="w-9 h-9 rounded-full border border-line flex items-center justify-center text-muted hover:bg-panel">
             <ChevronLeft size={15} />
@@ -109,8 +118,14 @@ export function PnlTable() {
                   </td>
                 </tr>
               ) : (
-                <tr key={ri} className={row.type === "total" ? "border-t border-line" : ""}>
-                  <td className="py-3 pr-4">
+                <tr
+                  key={ri}
+                  onClick={row.type === "line" ? () => openChat(costExplainSeed(row.label)) : undefined}
+                  className={`${row.type === "total" ? "border-t border-line" : ""} ${
+                    row.type === "line" ? "cursor-pointer hover:bg-panel transition-colors" : ""
+                  }`}
+                >
+                  <td className="py-3 pr-4 pl-2 rounded-l-[10px]">
                     <span className={`text-[15px] ${row.type === "total" ? "font-medium" : ""}`}>
                       {row.label}
                     </span>

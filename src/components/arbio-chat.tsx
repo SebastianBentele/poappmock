@@ -1,0 +1,492 @@
+"use client";
+
+import { createContext, useContext, useState, ReactNode } from "react";
+import {
+  X,
+  CheckCircle2,
+  Ticket,
+  Mic,
+  ArrowUp,
+  Bell,
+  Wrench,
+  Banknote,
+  Check,
+} from "lucide-react";
+
+export type Msg =
+  | { kind: "user"; text: string }
+  | { kind: "bot"; text: string }
+  | {
+      kind: "draft";
+      title: string;
+      unit: string;
+      prio: string;
+      status: "pending" | "approved" | "discarded";
+    }
+  | { kind: "confirmed"; title: string; number: string }
+  | {
+      kind: "timeline";
+      title: string;
+      steps: { label: string; meta?: string; state: "done" | "current" | "pending" }[];
+    };
+
+const prefabs = [
+  "Reparatur melden",
+  "Reinigung anfragen",
+  "Abrechnungsfrage",
+  "Ausstattung ändern",
+];
+
+export const requestIntroSeed: Msg[] = [
+  {
+    kind: "bot",
+    text: "Hi Sebastian! Wobei können wir helfen? Wähl eine häufige Anfrage aus oder beschreib dein Anliegen einfach frei — ich erstelle daraus ein Ticket für unser Team.",
+  },
+];
+
+export function costExplainSeed(label: string): Msg[] {
+  const seeds: Record<string, Msg[]> = {
+    "OTA-Provision": [
+      { kind: "user", text: "Erkläre mir die Position „OTA-Provision“ (Juli: –€5.407)" },
+      {
+        kind: "bot",
+        text: "Gerne! Die OTA-Provision ist die Vermittlungsgebühr der Buchungsplattformen — im Juli –€5.407, das sind 13,0% vom Bruttoumsatz. Aufgeteilt: Booking.com –€4.421 (15% auf €29.475 aus 18 Buchungen), Airbnb –€986 (14% auf €7.040 aus 7 Buchungen). Deine 3 Direktbuchungen (€4.936) zahlen keine Provision — deshalb lohnt es sich, den Direct-Anteil auszubauen. Die Provision wird automatisch vor der Auszahlung einbehalten, du musst nichts überweisen.",
+      },
+    ],
+    Umsatzsteuer: [
+      { kind: "user", text: "Erkläre mir die Position „Umsatzsteuer“ (Juli: –€2.712)" },
+      {
+        kind: "bot",
+        text: "Die Umsatzsteuer-Position fasst USt. und Beherbergungssteuer zusammen, die wir aus deinem Bruttoumsatz abführen — im Juli –€2.712 auf €41.451 GBV. Sie steigt proportional zum Umsatz, daher der Anstieg ggü. Juni (–€1.869). Wir führen sie direkt ab und weisen sie in der Abrechnung aus — für deinen Steuerberater findest du die Details im Owner Statement unter Finanzen → Auszahlungen.",
+      },
+    ],
+    "Reinigung · Test": [
+      { kind: "user", text: "Erkläre mir die Position „Reinigung · Test“ (Juli: –€221)" },
+      {
+        kind: "bot",
+        text: "Die –€221 sind Reinigungskosten, die im Juli erstmals als eigene Position in deiner P&L auftauchen (daher der Zusatz „Test“ — wir stellen die Kostenerfassung gerade um). Enthalten: 2 Zusatzreinigungen nach Late-Checkout (Studio Universität, je €68) und eine Grundreinigung im Garten Apartment (€85). Reguläre Wechselreinigungen zahlen die Gäste über die Reinigungsgebühr — sie tauchen hier nicht auf. Hinweis: Bei deinem Buchungsvolumen ist der Betrag ungewöhnlich niedrig; wir prüfen gerade, ob alle Juli-Belege schon erfasst sind.",
+      },
+    ],
+    "Bruttoumsatz (GBV)": [
+      { kind: "user", text: "Erkläre mir die Position „Bruttoumsatz (GBV)“ (Juli: €41.451)" },
+      {
+        kind: "bot",
+        text: "Der Bruttoumsatz (Gross Booking Value) ist die Summe aller Gästezahlungen für Aufenthalte im Juli — €41.451 aus 28 Buchungen und 172 belegten Nächten, über alle Kanäle (Booking.com, Airbnb, Direct). Er ist die Ausgangsbasis der P&L: Davon gehen Umsatzsteuer, OTA-Provision und Kosten ab, bis dein operativer Gewinn von €33.111 übrig bleibt. Wichtig: Der GBV ist nicht dein Auszahlungsbetrag — der entspricht dem Nettoumsatz abzüglich Kosten.",
+      },
+    ],
+  };
+  return (
+    seeds[label] ?? [
+      { kind: "user", text: `Erkläre mir die Position „${label}“` },
+      {
+        kind: "bot",
+        text: `Zu „${label}“ habe ich folgende Informationen: Die Position stammt aus deiner Juli-Abrechnung. Frag mich gern nach Details zu einzelnen Belegen.`,
+      },
+    ]
+  );
+}
+
+type Notification = {
+  id: string;
+  icon: "ticket" | "payout";
+  title: string;
+  text: string;
+  time: string;
+  seed: Msg[];
+};
+
+const notifications: Notification[] = [
+  {
+    id: "n1",
+    icon: "ticket",
+    title: "Ticket #1041 · WLAN-Router",
+    text: "Techniker bestätigt für Di, 14.07., 9–12 Uhr",
+    time: "vor 2 Std",
+    seed: [
+      {
+        kind: "bot",
+        text: "Kurz zu deiner Benachrichtigung: Für Ticket #1041 (WLAN-Router austauschen, Garten Apartment) hat der Techniker den Termin bestätigt — Dienstag, 14.07., zwischen 9 und 12 Uhr.",
+      },
+      {
+        kind: "timeline",
+        title: "Ticket #1041 · WLAN-Router austauschen",
+        steps: [
+          { label: "Gemeldet", meta: "03.07.", state: "done" },
+          { label: "Techniker beauftragt", meta: "04.07.", state: "done" },
+          { label: "Termin bestätigt", meta: "14.07., 9–12 Uhr", state: "current" },
+          { label: "Erledigt", state: "pending" },
+        ],
+      },
+      {
+        kind: "bot",
+        text: "Du musst nichts weiter tun — der Zugang erfolgt über die Schlüsselbox, im Zeitraum ist kein Gast eingebucht. Soll ich dir den Termin in den Kalender eintragen?",
+      },
+    ],
+  },
+  {
+    id: "n2",
+    icon: "ticket",
+    title: "Ticket #1043 · Spülmaschine",
+    text: "Ersatzteil bestellt — Einbau vsl. 16.07.",
+    time: "vor 5 Std",
+    seed: [
+      {
+        kind: "bot",
+        text: "Update zu Ticket #1043 (Spülmaschine macht Geräusche, Altstadt Apartment): Unser Techniker war heute vor Ort — die Umwälzpumpe ist defekt. Das Ersatzteil ist bestellt, der Einbau ist für den 16.07. geplant.",
+      },
+      {
+        kind: "timeline",
+        title: "Ticket #1043 · Spülmaschine macht Geräusche",
+        steps: [
+          { label: "Gemeldet", meta: "gestern", state: "done" },
+          { label: "Techniker vor Ort", meta: "heute", state: "done" },
+          { label: "Ersatzteil bestellt", meta: "Einbau vsl. 16.07.", state: "current" },
+          { label: "Erledigt", state: "pending" },
+        ],
+      },
+      {
+        kind: "bot",
+        text: "Kosten: €140 Material + Anfahrt, taucht danach als Position in deiner Juli-P&L auf. Die Maschine ist bis zum Einbau eingeschränkt nutzbar — die Gäste sind informiert.",
+      },
+    ],
+  },
+  {
+    id: "n3",
+    icon: "payout",
+    title: "Auszahlung Juni überwiesen",
+    text: "€34.900 unterwegs — Eingang vsl. 07.07.",
+    time: "gestern",
+    seed: [
+      {
+        kind: "bot",
+        text: "Deine Juni-Auszahlung über €34.900 wurde gestern überwiesen. Ablauf: Abrechnung erstellt am 01.07., freigegeben am 03.07., überwiesen am 05.07. — der Eingang auf deinem Konto ist voraussichtlich am 07.07. (SEPA, 1–2 Bankarbeitstage).",
+      },
+      {
+        kind: "timeline",
+        title: "Auszahlung Juni 2026 · €34.900",
+        steps: [
+          { label: "Abrechnung erstellt", meta: "01.07.", state: "done" },
+          { label: "Freigegeben", meta: "03.07.", state: "done" },
+          { label: "Überwiesen", meta: "05.07.", state: "done" },
+          { label: "Eingang auf deinem Konto", meta: "vsl. 07.07.", state: "current" },
+        ],
+      },
+      {
+        kind: "bot",
+        text: "Das zugehörige Owner Statement liegt unter Finanzen → Auszahlungen bereit. Sag Bescheid, falls der Betrag bis 08.07. nicht angekommen ist.",
+      },
+    ],
+  },
+];
+
+const draftFor = (text: string) => ({
+  kind: "draft" as const,
+  title: text.length > 60 ? text.slice(0, 57) + "..." : text,
+  unit: "Altstadt Apartment",
+  prio: "Mittel",
+  status: "pending" as const,
+});
+
+const ChatCtx = createContext<{ openChat: (seed: Msg[]) => void }>({
+  openChat: () => {},
+});
+
+export function useArbioChat() {
+  return useContext(ChatCtx);
+}
+
+export function ChatProvider({ children }: { children: ReactNode }) {
+  const [open, setOpen] = useState(false);
+  const [messages, setMessages] = useState<Msg[]>([]);
+  const [input, setInput] = useState("");
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [readIds, setReadIds] = useState<string[]>([]);
+
+  const unread = notifications.filter((n) => !readIds.includes(n.id)).length;
+
+  const openChat = (seed: Msg[]) => {
+    setMessages(seed);
+    setInput("");
+    setNotifOpen(false);
+    setOpen(true);
+  };
+
+  const openNotification = (n: Notification) => {
+    setReadIds((r) => (r.includes(n.id) ? r : [...r, n.id]));
+    openChat(n.seed);
+  };
+
+  const submitRequest = (text: string) => {
+    if (!text.trim()) return;
+    setMessages((m) => [
+      ...m,
+      { kind: "user", text },
+      { kind: "bot", text: "Gerne! Ich habe folgendes Ticket vorbereitet — bitte bestätige kurz:" },
+      draftFor(text),
+    ]);
+    setInput("");
+  };
+
+  const resolveDraft = (idx: number, approved: boolean) => {
+    setMessages((m) => {
+      const next = m.map((msg, i) =>
+        i === idx && msg.kind === "draft"
+          ? { ...msg, status: approved ? ("approved" as const) : ("discarded" as const) }
+          : msg
+      );
+      const draft = m[idx];
+      if (approved && draft.kind === "draft") {
+        next.push({ kind: "confirmed", title: draft.title, number: "#1044" });
+      } else {
+        next.push({
+          kind: "bot",
+          text: "Alles klar, ich habe das Ticket verworfen. Kann ich sonst noch etwas für dich tun?",
+        });
+      }
+      return next;
+    });
+  };
+
+  const hasPendingDraft = messages.some((m) => m.kind === "draft" && m.status === "pending");
+
+  return (
+    <ChatCtx.Provider value={{ openChat }}>
+      {children}
+
+      {/* Notification bell */}
+      <div className="fixed top-5 right-6 z-40">
+        <button
+          onClick={() => setNotifOpen((o) => !o)}
+          className="relative w-11 h-11 rounded-full bg-white border border-line shadow-[0_2px_10px_rgba(0,0,0,0.06)] flex items-center justify-center text-foreground hover:bg-panel"
+        >
+          <Bell size={17} />
+          {unread > 0 && (
+            <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full bg-[#c62828] text-white text-[11px] flex items-center justify-center">
+              {unread}
+            </span>
+          )}
+        </button>
+
+        {notifOpen && (
+          <div className="absolute right-0 top-14 w-[400px] bg-white border border-line rounded-[24px] shadow-[0_16px_50px_rgba(0,0,0,0.14)] overflow-hidden">
+            <div className="px-6 py-4 border-b border-line flex items-center justify-between">
+              <span className="text-[15px]">Benachrichtigungen</span>
+              <span className="text-[13px] text-muted">Klick öffnet den Chat</span>
+            </div>
+            {notifications.map((n) => (
+              <button
+                key={n.id}
+                onClick={() => openNotification(n)}
+                className="w-full flex items-start gap-3.5 px-6 py-4 text-left hover:bg-panel border-b border-line last:border-b-0"
+              >
+                <span className="w-9 h-9 rounded-full bg-panel flex items-center justify-center text-muted shrink-0 mt-0.5">
+                  {n.icon === "ticket" ? <Wrench size={15} /> : <Banknote size={15} />}
+                </span>
+                <span className="flex-1 min-w-0">
+                  <span className="flex items-center gap-2">
+                    <span className="text-[14px] truncate">{n.title}</span>
+                    {!readIds.includes(n.id) && (
+                      <span className="w-2 h-2 rounded-full bg-accent shrink-0" />
+                    )}
+                  </span>
+                  <span className="block text-[13px] text-muted mt-0.5 leading-snug">
+                    {n.text}
+                  </span>
+                  <span className="block text-[12px] text-muted mt-1">{n.time}</span>
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Chat overlay */}
+      {open && (
+        <div className="fixed inset-0 z-50 bg-black/30 flex items-center justify-center px-6">
+          <div className="bg-white rounded-[24px] shadow-[0_20px_60px_rgba(0,0,0,0.2)] w-full max-w-[720px] h-[80vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-7 py-5 border-b border-line">
+              <div className="flex items-center gap-3">
+                <span className="w-9 h-9 rounded-full bg-[#2a2a2a] text-white flex items-center justify-center text-[13px]">
+                  A
+                </span>
+                <div>
+                  <div className="text-[16px]">Frag Arbio</div>
+                  <div className="text-[13px] text-muted">
+                    Anfragen, Tickets und alle Fragen zu deinem Portfolio.
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => setOpen(false)}
+                className="w-9 h-9 rounded-full bg-panel flex items-center justify-center text-muted"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto px-7 py-6 flex flex-col gap-4">
+              {messages.map((m, i) => {
+                if (m.kind === "user")
+                  return (
+                    <div
+                      key={i}
+                      className="self-end max-w-[80%] bg-[#2a2a2a] text-white rounded-[22px] rounded-br-[6px] px-5 py-3 text-[15px] leading-snug"
+                    >
+                      {m.text}
+                    </div>
+                  );
+                if (m.kind === "bot")
+                  return (
+                    <div
+                      key={i}
+                      className="self-start max-w-[85%] bg-panel rounded-[22px] rounded-tl-[6px] px-5 py-3 text-[15px] leading-snug"
+                    >
+                      {m.text}
+                    </div>
+                  );
+                if (m.kind === "timeline")
+                  return (
+                    <div
+                      key={i}
+                      className="self-start w-full max-w-[440px] bg-white border border-line rounded-[18px] px-5 py-4 shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
+                    >
+                      <div className="text-[14px] mb-3">{m.title}</div>
+                      <div className="flex flex-col">
+                        {m.steps.map((s, si) => (
+                          <div key={si} className="flex gap-3">
+                            <div className="flex flex-col items-center">
+                              <span
+                                className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${
+                                  s.state === "done"
+                                    ? "bg-[#dcebd4] text-[#3c5f33]"
+                                    : s.state === "current"
+                                      ? "border-2 border-accent text-accent-text"
+                                      : "border border-line text-muted"
+                                }`}
+                              >
+                                {s.state === "done" ? (
+                                  <Check size={13} />
+                                ) : (
+                                  <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                                )}
+                              </span>
+                              {si < m.steps.length - 1 && (
+                                <span
+                                  className={`w-[2px] h-4 ${
+                                    s.state === "done" ? "bg-[#dcebd4]" : "bg-line"
+                                  }`}
+                                />
+                              )}
+                            </div>
+                            <div className="pb-2">
+                              <span
+                                className={`text-[14px] ${
+                                  s.state === "pending" ? "text-muted" : ""
+                                }`}
+                              >
+                                {s.label}
+                              </span>
+                              {s.meta && (
+                                <span className="text-[13px] text-muted"> · {s.meta}</span>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                if (m.kind === "draft")
+                  return (
+                    <div
+                      key={i}
+                      className={`self-start w-full max-w-[440px] bg-white border border-line rounded-[18px] px-5 py-4 shadow-[0_1px_4px_rgba(0,0,0,0.03)] ${
+                        m.status === "discarded" ? "opacity-50" : ""
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 text-[13px] text-muted">
+                        <Ticket size={13} />
+                        Ticket-Entwurf
+                      </div>
+                      <div className="text-[15px] mt-2">{m.title}</div>
+                      <div className="text-[13px] text-muted mt-1">
+                        {m.unit} · Priorität: {m.prio}
+                      </div>
+                      {m.status === "pending" ? (
+                        <div className="flex gap-2.5 mt-4">
+                          <button
+                            onClick={() => resolveDraft(i, true)}
+                            className="flex-1 bg-[#2a2a2a] text-white rounded-full px-4 py-2.5 text-[14px] hover:bg-black"
+                          >
+                            Ticket bestätigen
+                          </button>
+                          <button
+                            onClick={() => resolveDraft(i, false)}
+                            className="flex-1 border border-line rounded-full px-4 py-2.5 text-[14px] text-muted hover:bg-panel"
+                          >
+                            Verwerfen
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="text-[13px] text-muted mt-3">
+                          {m.status === "approved" ? "Bestätigt" : "Verworfen"}
+                        </div>
+                      )}
+                    </div>
+                  );
+                return (
+                  <div
+                    key={i}
+                    className="self-start w-full max-w-[440px] bg-white border border-line rounded-[18px] px-5 py-4 shadow-[0_1px_4px_rgba(0,0,0,0.03)] flex items-center gap-3"
+                  >
+                    <CheckCircle2 size={18} className="text-accent-text shrink-0" />
+                    <div className="flex-1">
+                      <div className="text-[15px]">Ticket {m.number} erstellt</div>
+                      <div className="text-[13px] text-muted mt-0.5">
+                        {m.title} · Status jederzeit unter Operations
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="px-7 pb-6 pt-2 border-t border-line">
+              {!hasPendingDraft && (
+                <div className="flex gap-2.5 flex-wrap py-3">
+                  {prefabs.map((p) => (
+                    <button
+                      key={p}
+                      onClick={() => submitRequest(p)}
+                      className="border border-line rounded-full px-4 py-2 text-[14px] hover:bg-panel"
+                    >
+                      {p}
+                    </button>
+                  ))}
+                </div>
+              )}
+              <div className="flex items-center gap-2 bg-white border border-line rounded-[30px] shadow-[0_2px_12px_rgba(0,0,0,0.06)] pl-6 pr-2.5 py-2">
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && submitRequest(input)}
+                  placeholder="Beschreib dein Anliegen..."
+                  className="flex-1 bg-transparent outline-none text-[15px] placeholder:text-muted"
+                />
+                <button className="w-10 h-10 rounded-full flex items-center justify-center text-muted hover:bg-panel">
+                  <Mic size={18} />
+                </button>
+                <button
+                  onClick={() => submitRequest(input)}
+                  className="w-10 h-10 rounded-full bg-[#2a2a2a] text-white flex items-center justify-center hover:bg-black"
+                >
+                  <ArrowUp size={18} />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </ChatCtx.Provider>
+  );
+}
