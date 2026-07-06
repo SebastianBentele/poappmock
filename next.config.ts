@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     return [
       { source: "/profitability", destination: "/finanzen", permanent: false },
       { source: "/payouts", destination: "/finanzen", permanent: false },
+      { source: "/anfrage", destination: "/", permanent: false },
     ];
   },
 };

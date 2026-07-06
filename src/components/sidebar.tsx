@@ -8,7 +8,6 @@ import {
   Wallet,
   ClipboardList,
   CalendarDays,
-  LifeBuoy,
   ChevronRight,
   MessageSquarePlus,
   Settings,
@@ -21,7 +20,6 @@ const navItems = [
   { href: "/finanzen", label: "Finanzen", icon: Wallet },
   { href: "/operativ", label: "Operations", icon: ClipboardList },
   { href: "/kalender", label: "Kalender", icon: CalendarDays },
-  { href: "/anfrage", label: "Anfrage stellen", icon: LifeBuoy },
 ];
 
 export function Sidebar() {
