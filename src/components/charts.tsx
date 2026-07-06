@@ -151,6 +151,41 @@ export function PayoutChart() {
   );
 }
 
+const tickets = [
+  { m: "Feb", gelöst: 28, offen: 2 },
+  { m: "Mar", gelöst: 34, offen: 3 },
+  { m: "Apr", gelöst: 31, offen: 2 },
+  { m: "Mai", gelöst: 38, offen: 4 },
+  { m: "Jun", gelöst: 44, offen: 2 },
+  { m: "Jul", gelöst: 41, offen: 3 },
+];
+
+export function TicketsChart() {
+  return (
+    <div className="h-[260px]">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={tickets} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+          <XAxis
+            dataKey="m"
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "#717171", fontSize: 13 }}
+            dy={8}
+          />
+          <YAxis
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "#717171", fontSize: 13 }}
+            ticks={[0, 15, 30, 45]}
+          />
+          <Bar dataKey="gelöst" stackId="t" fill={GREEN_LIGHT} radius={[0, 0, 10, 10]} />
+          <Bar dataKey="offen" stackId="t" fill="#d3d3d3" radius={[10, 10, 0, 0]} />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
 const profitOverTime = [
   { m: "Aug '25", v: 3200 },
   { m: "Sep", v: 2600 },

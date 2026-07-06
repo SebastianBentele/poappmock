@@ -6,6 +6,7 @@ import {
   MessageCircle,
   BarChart3,
   Wallet,
+  ClipboardList,
   ChevronRight,
   MessageSquarePlus,
   Settings,
@@ -16,6 +17,7 @@ const navItems = [
   { href: "/", label: "Frag Arbio", icon: MessageCircle },
   { href: "/portfolio", label: "Dein Portfolio", icon: BarChart3 },
   { href: "/finanzen", label: "Finanzen", icon: Wallet },
+  { href: "/operativ", label: "Operativ", icon: ClipboardList },
 ];
 
 export function Sidebar() {
