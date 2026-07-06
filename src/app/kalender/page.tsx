@@ -196,22 +196,6 @@ export default function Kalender() {
         </div>
       </div>
 
-      {/* Mini stats */}
-      <div className="grid grid-cols-3 gap-4 mt-5 max-w-[720px]">
-        <div className="bg-panel rounded-[18px] px-5 py-4">
-          <div className="text-[13px] text-muted">Auslastung Juli</div>
-          <div className="text-[26px] tracking-[-0.5px] mt-0.5">78%</div>
-        </div>
-        <div className="bg-panel rounded-[18px] px-5 py-4">
-          <div className="text-[13px] text-muted">Anreisen</div>
-          <div className="text-[26px] tracking-[-0.5px] mt-0.5">11</div>
-        </div>
-        <div className="bg-panel rounded-[18px] px-5 py-4">
-          <div className="text-[13px] text-muted">Nächte Eigenbelegung</div>
-          <div className="text-[26px] tracking-[-0.5px] mt-0.5">5</div>
-        </div>
-      </div>
-
       {/* Own stay modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 bg-black/30 flex items-center justify-center px-6">
