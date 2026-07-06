@@ -2,7 +2,39 @@ import { Calendar, MapPin, ChevronDown, Info } from "lucide-react";
 import { KpiCard } from "@/components/kpi-card";
 import { AiCard } from "@/components/ai-card";
 import { ChatInput } from "@/components/chat-input";
-import { RollingRevenueChart, DailyRevenueChart } from "@/components/charts";
+import {
+  RollingRevenueChart,
+  DailyRevenueChart,
+  DailyOccupancyChart,
+  DailyRateChart,
+  ChannelDonut,
+} from "@/components/charts";
+import { Info as InfoIcon } from "lucide-react";
+
+const channelRows = [
+  { color: "#f5455c", name: "Booking.com", marge: "85% Marge", share: "71,1%", value: "€29.475", width: "71%" },
+  { color: "#1e3a75", name: "Airbnb", marge: "97% Marge", share: "17,0%", value: "€7.040", width: "17%" },
+  { color: "#2fbf4f", name: "Direct", marge: "100% Marge", share: "11,9%", value: "€4.936", width: "12%" },
+];
+
+const bookingWindows = [
+  { label: "90 Tage vorher", value: "39%", delta: "-12,5%", vj: "Gleicher Zeitraum VJ: 52%" },
+  { label: "60 Tage vorher", value: "51%", delta: "-8,2%", vj: "Gleicher Zeitraum VJ: 59%" },
+  { label: "30 Tage vorher", value: "56%", delta: "-9,7%", vj: "Gleicher Zeitraum VJ: 65%" },
+];
+
+function DjVjLegend() {
+  return (
+    <div className="flex gap-5 text-[13px] text-muted">
+      <span className="flex items-center gap-2">
+        <span className="w-4 h-[2.5px] bg-accent inline-block rounded" /> DJ
+      </span>
+      <span className="flex items-center gap-2">
+        <span className="w-4 h-[2px] inline-block rounded border-t-2 border-dashed border-[#b5b5b5]" /> VJ
+      </span>
+    </div>
+  );
+}
 
 export default function Portfolio() {
   return (
@@ -119,6 +151,119 @@ export default function Portfolio() {
           <div>
             <div className="text-[15px] text-muted">Zuwachs</div>
             <div className="text-[32px] tracking-[-0.5px] mt-1 text-accent-text">€39.903</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Daily occupancy + daily rate */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 mt-5">
+        {[
+          { title: "Tägliche Auslastung", chart: <DailyOccupancyChart /> },
+          { title: "Tägliche Tagesrate", chart: <DailyRateChart /> },
+        ].map(({ title, chart }) => (
+          <div
+            key={title}
+            className="bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
+          >
+            <div className="flex items-start justify-between">
+              <h3 className="text-[13px] tracking-[1.5px] uppercase text-muted">{title}</h3>
+              <DjVjLegend />
+            </div>
+            <div className="mt-4">{chart}</div>
+            <p className="text-[12px] text-muted mt-3">* DJ = Dieses Jahr · VJ = Vorjahr</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Kanal-Mix + Buchungstempo */}
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_1.5fr] gap-4 mt-5">
+        <div className="bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+          <div className="flex items-start justify-between">
+            <h3 className="text-[17px]">Kanal-Mix</h3>
+            <div className="text-right">
+              <span className="flex items-center gap-1.5 text-[15px] text-muted justify-end">
+                Ø Netto-Marge <InfoIcon size={13} />
+              </span>
+              <div className="text-[24px] tracking-[-0.5px] mt-1">88,8%</div>
+            </div>
+          </div>
+          <div className="mt-4">
+            <ChannelDonut />
+          </div>
+          <div className="flex flex-col mt-6">
+            {channelRows.map(({ color, name, marge, share, value, width }, i) => (
+              <div key={name} className={`py-4 ${i > 0 ? "border-t border-line" : ""}`}>
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-2.5">
+                    <span
+                      className="w-3 h-3 rounded-full inline-block"
+                      style={{ backgroundColor: color }}
+                    />
+                    <span className="text-[16px]">{name}</span>
+                    <span className="flex items-center gap-1 text-[14px] text-muted">
+                      {marge} <InfoIcon size={12} />
+                    </span>
+                  </span>
+                  <span className="text-right">
+                    <span className="block text-[16px]">{share}</span>
+                    <span className="block text-[15px] text-muted">{value}</span>
+                  </span>
+                </div>
+                <div className="h-[5px] bg-panel rounded-full overflow-hidden mt-3 max-w-[75%]">
+                  <div
+                    className="h-full rounded-full"
+                    style={{ width, backgroundColor: color }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+          <h3 className="text-[17px]">Buchungstempo</h3>
+          <p className="text-[14px] text-muted mt-1">
+            Zeigt, wie stark der Zeitraum heute und in den 30/60/90-Tage-Buchungsfenstern
+            gebucht ist.
+          </p>
+
+          <div className="flex items-end justify-between mt-7">
+            <div>
+              <div className="text-[44px] leading-none tracking-[-1px]">55,5%</div>
+              <div className="text-[16px] mt-1.5">der Nächte bisher gebucht</div>
+            </div>
+            <div className="text-right">
+              <div className="text-[14px] text-muted">Gleicher Zeitpunkt im Vorjahr</div>
+              <div className="text-[30px] tracking-[-0.5px]">61,0%</div>
+              <div className="text-[14px] text-accent-text">-5,5% ggü. gleichem Zeitraum VJ</div>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3 mt-6">
+            <div className="flex items-center gap-3">
+              <div className="flex-1 h-[16px] bg-panel rounded-full overflow-hidden">
+                <div className="h-full bg-accent rounded-full" style={{ width: "55.5%" }} />
+              </div>
+              <span className="text-[13px] text-muted w-[70px]">DJ 55,5%</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="flex-1 h-[16px] bg-panel rounded-full overflow-hidden">
+                <div className="h-full bg-[#c9c9c9] rounded-full" style={{ width: "61%" }} />
+              </div>
+              <span className="text-[13px] text-muted w-[70px]">VJ 61,0%</span>
+            </div>
+          </div>
+
+          <h4 className="text-[17px] mt-8">Buchungsfenster</h4>
+          <div className="grid grid-cols-3 gap-4 mt-4">
+            {bookingWindows.map(({ label, value, delta, vj }) => (
+              <div key={label} className="border border-line rounded-[18px] px-5 py-4">
+                <div className="text-[14px] text-muted">{label}</div>
+                <div className="text-[34px] tracking-[-0.5px] mt-2">{value}</div>
+                <div className="text-[14px] text-accent-text mt-1">{delta}</div>
+                <div className="text-[13px] text-muted mt-1">{vj}</div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

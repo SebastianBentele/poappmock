@@ -12,6 +12,8 @@ import {
   ReferenceLine,
   CartesianGrid,
   Cell,
+  PieChart,
+  Pie,
 } from "recharts";
 
 const GREEN = "#7db86c";
@@ -147,6 +149,135 @@ export function PayoutChart() {
           </Bar>
         </BarChart>
       </ResponsiveContainer>
+    </div>
+  );
+}
+
+// Two months of daily data (1..30, 1..30), deterministic
+const dailyKpis = Array.from({ length: 60 }, (_, i) => {
+  const day = (i % 30) + 1;
+  const w1 = Math.sin(i / 3.2) * 0.5 + Math.sin(i / 8.5) * 0.3;
+  const w2 = Math.sin((i + 9) / 4.1) * 0.55 + Math.sin(i / 11) * 0.35;
+  return {
+    d: day,
+    occDj: Math.round(Math.min(88, Math.max(30, 55 + w1 * 22))),
+    occVj: Math.round(Math.min(95, Math.max(22, 48 + w2 * 30))),
+    rateDj: Math.round(Math.min(310, Math.max(185, 240 + w1 * 55))),
+    rateVj: Math.round(Math.min(250, Math.max(160, 200 + w2 * 28))),
+  };
+});
+
+function DailyKpiChart({
+  djKey,
+  vjKey,
+  ticks,
+  formatter,
+  domain,
+}: {
+  djKey: string;
+  vjKey: string;
+  ticks: number[];
+  formatter: (v: number) => string;
+  domain: [number, number];
+}) {
+  return (
+    <div className="h-[240px]">
+      <ResponsiveContainer width="100%" height="100%">
+        <ComposedChart data={dailyKpis} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+          <CartesianGrid vertical={false} stroke="#f0f0f0" />
+          <XAxis
+            dataKey="d"
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "#717171", fontSize: 12 }}
+            ticks={[1, 7, 14, 21, 28]}
+            dy={8}
+          />
+          <YAxis
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "#717171", fontSize: 12 }}
+            ticks={ticks}
+            domain={domain}
+            tickFormatter={formatter}
+          />
+          <Area type="monotone" dataKey={djKey} fill="url(#greenFadeDaily)" stroke="none" />
+          <Line type="monotone" dataKey={djKey} stroke={GREEN} strokeWidth={2} dot={false} />
+          <Line
+            type="monotone"
+            dataKey={vjKey}
+            stroke="#b5b5b5"
+            strokeWidth={1.5}
+            strokeDasharray="5 5"
+            dot={false}
+          />
+          <defs>
+            <linearGradient id="greenFadeDaily" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={GREEN} stopOpacity={0.18} />
+              <stop offset="100%" stopColor={GREEN} stopOpacity={0.02} />
+            </linearGradient>
+          </defs>
+        </ComposedChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+export function DailyOccupancyChart() {
+  return (
+    <DailyKpiChart
+      djKey="occDj"
+      vjKey="occVj"
+      ticks={[0, 25, 50, 75, 100]}
+      domain={[0, 100]}
+      formatter={(v) => `${v}%`}
+    />
+  );
+}
+
+export function DailyRateChart() {
+  return (
+    <DailyKpiChart
+      djKey="rateDj"
+      vjKey="rateVj"
+      ticks={[0, 100, 200, 300, 350]}
+      domain={[0, 350]}
+      formatter={(v) => `€${v}`}
+    />
+  );
+}
+
+const channels = [
+  { name: "Booking.com", value: 71.1, color: "#f5455c" },
+  { name: "Airbnb", value: 17.0, color: "#1e3a75" },
+  { name: "Direct", value: 11.9, color: "#2fbf4f" },
+];
+
+export function ChannelDonut() {
+  return (
+    <div className="relative h-[220px] w-[220px] mx-auto">
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          <Pie
+            data={channels}
+            dataKey="value"
+            innerRadius={82}
+            outerRadius={96}
+            startAngle={90}
+            endAngle={-270}
+            paddingAngle={3}
+            cornerRadius={8}
+            stroke="none"
+          >
+            {channels.map((c) => (
+              <Cell key={c.name} fill={c.color} />
+            ))}
+          </Pie>
+        </PieChart>
+      </ResponsiveContainer>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className="text-[30px] tracking-[-0.5px]">€41.451</span>
+      </div>
     </div>
   );
 }
