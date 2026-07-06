@@ -13,6 +13,7 @@ import { KpiCard } from "@/components/kpi-card";
 import { AiCard } from "@/components/ai-card";
 import { ChatInput } from "@/components/chat-input";
 import { ProfitChart, PayoutChart } from "@/components/charts";
+import { PnlTable } from "@/components/pnl-table";
 
 const costs = [
   { label: "OTA-Provision", pct: "13,0%", width: "72%" },
@@ -138,6 +139,11 @@ export default function Finanzen() {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* P&L detail */}
+          <div className="mt-5">
+            <PnlTable />
           </div>
         </>
       ) : (
