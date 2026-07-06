@@ -1,0 +1,141 @@
+"use client";
+
+import {
+  ResponsiveContainer,
+  ComposedChart,
+  Line,
+  Area,
+  Bar,
+  BarChart,
+  XAxis,
+  YAxis,
+  ReferenceLine,
+  CartesianGrid,
+} from "recharts";
+
+const GREEN = "#7db86c";
+const GREEN_LIGHT = "#b9d9ae";
+const GRAY = "#9a9a9a";
+
+const rollingRevenue = [
+  { m: "Apr", dj: 21000, fc: null, lj: 6200, vj: 5800 },
+  { m: "May", dj: 24500, fc: null, lj: 7400, vj: 6300 },
+  { m: "Jun", dj: 29000, fc: null, lj: 6900, vj: 6100 },
+  { m: "Jul", dj: 43400, fc: 43400, lj: 7100, vj: 6600 },
+  { m: "Aug", dj: null, fc: 39800, lj: 6800, vj: 6400 },
+  { m: "Sep", dj: null, fc: 24500, lj: 6500, vj: 6200 },
+  { m: "Oct", dj: null, fc: 10800, lj: 6900, vj: 2200 },
+  { m: "Nov", dj: null, fc: 1600, lj: 1400, vj: 1300 },
+  { m: "Dec", dj: null, fc: 1500, lj: 1600, vj: 1400 },
+  { m: "Jan", dj: null, fc: 1400, lj: 1500, vj: 1300 },
+  { m: "Feb", dj: null, fc: 1500, lj: 1800, vj: 1400 },
+  { m: "Mar", dj: null, fc: 1600, lj: 2100, vj: 1500 },
+];
+
+export function RollingRevenueChart() {
+  return (
+    <div className="h-[360px]">
+      <ResponsiveContainer width="100%" height="100%">
+        <ComposedChart data={rollingRevenue} margin={{ top: 24, right: 16, left: 0, bottom: 0 }}>
+          <CartesianGrid vertical={false} stroke="#f0f0f0" />
+          <XAxis
+            dataKey="m"
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "#717171", fontSize: 13 }}
+            dy={8}
+          />
+          <YAxis
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "#717171", fontSize: 13 }}
+            tickFormatter={(v: number) => (v === 0 ? "€0" : `€${Math.round(v / 1000)}k`)}
+            ticks={[0, 17000, 34000, 50000]}
+          />
+          <ReferenceLine
+            x="Jul"
+            stroke="#c5c5c5"
+            label={{ value: "Today", position: "top", fill: "#717171", fontSize: 12 }}
+          />
+          <Area type="monotone" dataKey="dj" fill="url(#greenFade)" stroke="none" />
+          <Line type="monotone" dataKey="dj" stroke={GREEN} strokeWidth={2.5} dot={{ r: 3.5, fill: GREEN }} />
+          <Line type="monotone" dataKey="fc" stroke={GREEN} strokeWidth={2} strokeDasharray="6 6" dot={{ r: 3.5, fill: GREEN }} />
+          <Line type="monotone" dataKey="lj" stroke={GRAY} strokeWidth={1.5} dot={false} />
+          <Line type="monotone" dataKey="vj" stroke={GRAY} strokeWidth={1.5} strokeDasharray="5 5" dot={false} />
+          <defs>
+            <linearGradient id="greenFade" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={GREEN} stopOpacity={0.25} />
+              <stop offset="100%" stopColor={GREEN} stopOpacity={0.02} />
+            </linearGradient>
+          </defs>
+        </ComposedChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+const dailyRevenue = Array.from({ length: 62 }, (_, i) => {
+  const wave = Math.sin(i / 4.5) * 0.4 + 0.9;
+  const spike = i % 13 === 0 ? 1.6 : 1;
+  return {
+    d: i,
+    dj: Math.round((420 + ((i * 137) % 700)) * wave * spike),
+    vj: Math.round((360 + ((i * 91) % 520)) * wave),
+  };
+});
+
+export function DailyRevenueChart() {
+  return (
+    <div className="h-[230px]">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={dailyRevenue} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barGap={0}>
+          <XAxis dataKey="d" hide />
+          <YAxis
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "#717171", fontSize: 13 }}
+            tickFormatter={(v: number) => (v === 0 ? "€0" : `€${Math.round(v / 1000)}k`)}
+            ticks={[0, 1000, 2000]}
+          />
+          <Bar dataKey="dj" fill={GREEN} radius={[2, 2, 0, 0]} />
+          <Bar dataKey="vj" fill={GREEN_LIGHT} radius={[2, 2, 0, 0]} />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+const profitOverTime = [
+  { m: "Aug '25", v: 3200 },
+  { m: "Sep", v: 2600 },
+  { m: "Okt", v: 1400 },
+  { m: "Nov", v: 250 },
+  { m: "Dez", v: 480 },
+  { m: "Jan '26", v: 380 },
+  { m: "Feb", v: 900 },
+  { m: "Mar", v: 2100 },
+  { m: "Apr", v: 2400 },
+  { m: "Mai", v: 2800 },
+  { m: "Jun", v: 3300 },
+  { m: "Jul", v: 4300 },
+];
+
+export function ProfitChart() {
+  return (
+    <div className="h-[280px]">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={profitOverTime} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+          <XAxis
+            dataKey="m"
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "#717171", fontSize: 13 }}
+            dy={8}
+          />
+          <YAxis hide />
+          <Bar dataKey="v" fill="#b9d9ae" radius={[10, 10, 10, 10]} />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
