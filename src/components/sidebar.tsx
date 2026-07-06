@@ -7,6 +7,7 @@ import {
   BarChart3,
   Wallet,
   ClipboardList,
+  CalendarDays,
   LifeBuoy,
   ChevronRight,
   MessageSquarePlus,
@@ -19,6 +20,7 @@ const navItems = [
   { href: "/portfolio", label: "Umsatz", icon: BarChart3 },
   { href: "/finanzen", label: "Finanzen", icon: Wallet },
   { href: "/operativ", label: "Operations", icon: ClipboardList },
+  { href: "/kalender", label: "Kalender", icon: CalendarDays },
   { href: "/anfrage", label: "Anfrage stellen", icon: LifeBuoy },
 ];
 
