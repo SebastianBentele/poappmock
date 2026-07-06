@@ -7,6 +7,7 @@ import {
   BarChart3,
   Wallet,
   ClipboardList,
+  LifeBuoy,
   ChevronRight,
   MessageSquarePlus,
   Settings,
@@ -18,6 +19,7 @@ const navItems = [
   { href: "/portfolio", label: "Umsatz", icon: BarChart3 },
   { href: "/finanzen", label: "Finanzen", icon: Wallet },
   { href: "/operativ", label: "Operations", icon: ClipboardList },
+  { href: "/anfrage", label: "Anfrage stellen", icon: LifeBuoy },
 ];
 
 export function Sidebar() {
