@@ -124,15 +124,7 @@ export default function Home() {
         ))}
       </div>
 
-      <button
-        onClick={openChat}
-        className="flex items-center gap-2.5 bg-[#2a2a2a] text-white rounded-full px-8 py-4 text-[16px] mt-10 hover:bg-black transition-colors"
-      >
-        <LifeBuoy size={17} />
-        Anfrage stellen
-      </button>
-
-      <div className="flex gap-3 mt-16 flex-wrap justify-center">
+      <div className="flex gap-3 mt-24 flex-wrap justify-center">
         {chips.map((c) => (
           <button
             key={c}
@@ -147,6 +139,14 @@ export default function Home() {
         placeholder="Frag etwas zu deinem Portfolio..."
         className="w-full max-w-[1060px] mt-5"
       />
+
+      <button
+        onClick={openChat}
+        className="flex items-center gap-2.5 bg-[#2a2a2a] text-white rounded-full px-8 py-4 text-[16px] mt-8 hover:bg-black transition-colors"
+      >
+        <LifeBuoy size={17} />
+        Anfrage stellen
+      </button>
 
       {/* Request chat overlay */}
       {chatOpen && (
