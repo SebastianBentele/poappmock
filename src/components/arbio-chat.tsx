@@ -74,6 +74,27 @@ export function costExplainSeed(label: string): Msg[] {
         text: "Der Bruttoumsatz (Gross Booking Value) ist die Summe aller Gästezahlungen für Aufenthalte im Juli — €41.451 aus 28 Buchungen und 172 belegten Nächten, über alle Kanäle (Booking.com, Airbnb, Direct). Er ist die Ausgangsbasis der P&L: Davon gehen Umsatzsteuer, OTA-Provision und Kosten ab, bis dein operativer Gewinn von €33.111 übrig bleibt. Wichtig: Der GBV ist nicht dein Auszahlungsbetrag — der entspricht dem Nettoumsatz abzüglich Kosten.",
       },
     ],
+    "Miete / Finanzierung": [
+      { kind: "user", text: "Erkläre mir die Position „Miete / Finanzierung“ (–€2.100/Monat)" },
+      {
+        kind: "bot",
+        text: "Das ist eine von dir gepflegte Kostenposition: „Kredit Altstadt Apartment“, €2.100 pro Monat, aktiv seit 01.01.2026. Sie stammt nicht aus der Arbio-Abrechnung, sondern aus deinen eigenen Angaben unter Finanzen → Kosten — dort kannst du sie jederzeit anpassen oder pro Einheit aufteilen. Sie fließt in deinen echten Netto-Gewinn ein, damit die P&L dein komplettes Investment abbildet, nicht nur die Vermietungsseite.",
+      },
+    ],
+    Versicherung: [
+      { kind: "user", text: "Erkläre mir die Position „Versicherung“ (–€245/Monat)" },
+      {
+        kind: "bot",
+        text: "Deine Gebäudeversicherung mit €245 pro Monat — von dir unter Finanzen → Kosten gepflegt und auf alle Einheiten angewendet. Tipp: Wenn einzelne Einheiten unterschiedlich versichert sind, kannst du im Kosten-Tab pro Einheit abweichende Werte hinterlegen.",
+      },
+    ],
+    "Nebenkosten & Internet": [
+      { kind: "user", text: "Erkläre mir die Position „Nebenkosten & Internet“ (–€290/Monat)" },
+      {
+        kind: "bot",
+        text: "Diese Position fasst zwei von dir gepflegte Kosten zusammen: Strom & Gas Abschlag (€200/Monat) und Glasfaser für 3 Einheiten (€90/Monat). Beide findest du unter Finanzen → Kosten. Hinweis: Bei stark gestiegenen Energiekosten lohnt ein Blick auf den Abschlag — dein aktueller Wert ist seit Januar unverändert.",
+      },
+    ],
   };
   return (
     seeds[label] ?? [

@@ -16,6 +16,7 @@ import { AiCard } from "@/components/ai-card";
 import { ChatInput } from "@/components/chat-input";
 import { ProfitChart, PayoutChart } from "@/components/charts";
 import { PnlTable } from "@/components/pnl-table";
+import { OwnerCosts } from "@/components/owner-costs";
 import { useArbioChat, costExplainSeed, type Msg } from "@/components/arbio-chat";
 
 const payoutTrackers: {
@@ -76,7 +77,7 @@ const statements = [
   { month: "November 2025", period: "01.11. – 30.11.2025", amount: "€8.200,00" },
 ];
 
-const tabs = ["Profitabilität", "Auszahlungen"] as const;
+const tabs = ["Profitabilität", "Auszahlungen", "Kosten"] as const;
 type Tab = (typeof tabs)[number];
 
 export default function Finanzen() {
@@ -201,7 +202,7 @@ export default function Finanzen() {
             <PnlTable />
           </div>
         </>
-      ) : (
+      ) : tab === "Auszahlungen" ? (
         <>
           {/* Accumulated payout + AI card */}
           <div className="grid grid-cols-1 xl:grid-cols-[1fr_1.15fr] gap-4">
@@ -361,6 +362,8 @@ export default function Finanzen() {
             </div>
           </div>
         </>
+      ) : (
+        <OwnerCosts />
       )}
 
       {/* Floating chat */}
@@ -369,7 +372,9 @@ export default function Finanzen() {
           placeholder={
             tab === "Profitabilität"
               ? "Frag alles über deine Profitabilität..."
-              : "Frag alles über deine Auszahlungen..."
+              : tab === "Auszahlungen"
+                ? "Frag alles über deine Auszahlungen..."
+                : "Frag alles über deine Kosten..."
           }
           className="w-full max-w-[620px] pointer-events-auto"
         />

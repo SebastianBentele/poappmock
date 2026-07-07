@@ -13,6 +13,7 @@ type Row =
       sub?: string;
       values: (string | null)[];
       negative?: boolean;
+      signed?: boolean;
     };
 
 const rows: Row[] = [
@@ -57,6 +58,32 @@ const rows: Row[] = [
     type: "total",
     label: "Operativer Gewinn",
     values: ["€1.206", "€1.230", "€2.993", "€18.140", "€20.157", "€22.720", "€33.111"],
+  },
+  { type: "section", label: "Eigene Kosten · von dir gepflegt" },
+  {
+    type: "line",
+    label: "Miete / Finanzierung",
+    negative: true,
+    values: ["–€2.100", "–€2.100", "–€2.100", "–€2.100", "–€2.100", "–€2.100", "–€2.100"],
+  },
+  {
+    type: "line",
+    label: "Versicherung",
+    negative: true,
+    values: ["–€245", "–€245", "–€245", "–€245", "–€245", "–€245", "–€245"],
+  },
+  {
+    type: "line",
+    label: "Nebenkosten & Internet",
+    negative: true,
+    values: ["–€290", "–€290", "–€290", "–€290", "–€290", "–€290", "–€290"],
+  },
+  {
+    type: "total",
+    label: "Echter Netto-Gewinn",
+    sub: "nach deinen Kosten",
+    signed: true,
+    values: ["–€1.429", "–€1.405", "€358", "€15.505", "€17.522", "€20.085", "€30.476"],
   },
 ];
 
@@ -140,7 +167,9 @@ export function PnlTable() {
                         v === null
                           ? "text-line"
                           : row.type === "total"
-                            ? "text-accent-text"
+                            ? row.signed && v.startsWith("–")
+                              ? "text-negative"
+                              : "text-accent-text"
                             : row.negative
                               ? "text-negative"
                               : ""
