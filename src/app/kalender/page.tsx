@@ -10,8 +10,10 @@ import {
   ChevronDown,
   Home,
   Wrench,
+  MessageCircle,
 } from "lucide-react";
 import { ChatInput } from "@/components/chat-input";
+import { useArbioChat, type Msg } from "@/components/arbio-chat";
 
 const DAYS = 31;
 
@@ -28,7 +30,51 @@ type Booking = {
   ticket?: string;
   lostRevenue?: string;
   note?: string;
+  seed?: Msg[];
 };
+
+const wasserschadenSeed: Msg[] = [
+  { kind: "user", text: "Wie ist der Status beim Wasserschaden im Studio Universität?" },
+  {
+    kind: "bot",
+    text: "Das Studio Universität ist seit dem 04.07. wegen eines Wasserschadens im Bad blockiert (Ticket #1038, undichte Silikonfuge an der Dusche). Der Zeitraum ist auf allen Kanälen gesperrt, damit keine Gäste betroffen sind — die Freigabe ist für den 11.07. geplant.",
+  },
+  {
+    kind: "timeline",
+    title: "Ticket #1038 · Wasserschaden Bad · Studio Universität",
+    steps: [
+      { label: "Schaden festgestellt & blockiert", meta: "04.07.", state: "done" },
+      { label: "Trocknung läuft", meta: "05.–09.07.", state: "current" },
+      { label: "Reparatur & Endkontrolle", meta: "10.07.", state: "pending" },
+      { label: "Einheit wieder live", meta: "vsl. 11.07.", state: "pending" },
+    ],
+  },
+  {
+    kind: "bot",
+    text: "Entgangener Umsatz bisher: ca. €610 (5 blockierte Nächte à ~€122). Empfehlung: Wir erneuern direkt alle Silikonfugen im Bad (€90 zusätzlich) — das senkt das Risiko eines erneuten Ausfalls deutlich.",
+  },
+];
+
+const thermeSeed: Msg[] = [
+  { kind: "user", text: "Was ist zur Therme-Wartung im Altstadt Apartment geplant?" },
+  {
+    kind: "bot",
+    text: "Die jährliche Thermenwartung im Altstadt Apartment ist für den 13.–14.07. eingeplant (Ticket #1046, Drittanbieter). Der Zeitraum liegt in einer Buchungslücke — kein Gast ist betroffen. Der Zugang erfolgt über die Schlüsselbox.",
+  },
+  {
+    kind: "timeline",
+    title: "Ticket #1046 · Therme-Wartung · Altstadt Apartment",
+    steps: [
+      { label: "Termin vereinbart", meta: "01.07.", state: "done" },
+      { label: "Zeitraum blockiert", meta: "13.–14.07.", state: "current" },
+      { label: "Wartung durchgeführt", state: "pending" },
+    ],
+  },
+  {
+    kind: "bot",
+    text: "Kosten: ca. €140 (Drittanbieter) — erscheint danach als Position in deiner Juli-P&L. Ich melde mich, sobald die Wartung abgeschlossen ist.",
+  },
+];
 
 const units: { name: string; bookings: Booking[] }[] = [
   {
@@ -41,7 +87,9 @@ const units: { name: string; bookings: Booking[] }[] = [
         end: 14,
         label: "Therme-Wartung",
         kind: "maintenance",
+        ticket: "#1046",
         note: "Jährliche Thermenwartung (Drittanbieter). Kein Gast betroffen.",
+        seed: thermeSeed,
       },
       { start: 15, end: 22, label: "J. Karlsson", price: "€1.610", profit: "€1.180" },
       { start: 27, end: 31, label: "T. Becker", price: "€760", profit: "€550" },
@@ -59,6 +107,7 @@ const units: { name: string; bookings: Booking[] }[] = [
         ticket: "#1038",
         lostRevenue: "ca. €610",
         note: "Trocknung & Reparatur. Zeitraum auf allen Kanälen gesperrt.",
+        seed: wasserschadenSeed,
       },
       { start: 13, end: 16, label: "S. Meier", price: "€560", profit: "€400" },
       { start: 18, end: 31, label: "F. Dubois", price: "€1.890", profit: "€1.400" },
@@ -75,8 +124,19 @@ const units: { name: string; bookings: Booking[] }[] = [
   },
 ];
 
-function BookingBar({ b }: { b: Booking }) {
+type Hovered = { b: Booking; left: number; top: number; bottom: number };
+
+function BookingBar({
+  b,
+  onHover,
+  onClick,
+}: {
+  b: Booking;
+  onHover: (h: Hovered | null) => void;
+  onClick: (b: Booking) => void;
+}) {
   const kind = b.kind ?? "guest";
+  const clickable = kind === "maintenance" && !!b.seed;
   const style =
     kind === "guest"
       ? "bg-[#dcebd4] text-[#3c5f33] hover:bg-[#cfe3c4]"
@@ -93,66 +153,93 @@ function BookingBar({ b }: { b: Booking }) {
       : undefined;
 
   return (
-    <div
-      className="group relative h-9 flex items-center"
-      style={{ gridColumn: `${b.start} / ${b.end + 1}` }}
-    >
+    <div className="h-9 flex items-center" style={{ gridColumn: `${b.start} / ${b.end + 1}` }}>
       <div
-        className={`w-full h-full rounded-full flex items-center gap-1.5 px-3 text-[13px] truncate cursor-default ${style}`}
+        onMouseEnter={(e) => {
+          const r = e.currentTarget.getBoundingClientRect();
+          onHover({ b, left: r.left, top: r.top, bottom: r.bottom });
+        }}
+        onMouseLeave={() => onHover(null)}
+        onClick={() => clickable && onClick(b)}
+        className={`w-full h-full rounded-full flex items-center gap-1.5 px-3 text-[13px] truncate ${style} ${
+          clickable ? "cursor-pointer" : "cursor-default"
+        }`}
         style={hatch}
       >
         {kind === "maintenance" && <Wrench size={12} className="shrink-0" />}
         <span className="truncate">{b.label}</span>
       </div>
+    </div>
+  );
+}
 
-      {/* Hover tooltip */}
-      <div className="hidden group-hover:block absolute bottom-full left-0 mb-2 z-20 pointer-events-none">
-        <div className="bg-white border border-line rounded-[18px] shadow-[0_8px_30px_rgba(0,0,0,0.12)] px-5 py-4 w-[250px]">
-          <div className="text-[15px]">{b.label}</div>
-          <div className="text-[13px] text-muted mt-0.5">
-            {String(b.start).padStart(2, "0")}. – {String(b.end).padStart(2, "0")}. Juli 2026
-          </div>
-          {kind === "guest" && (
-            <div className="flex flex-col gap-1.5 mt-3">
-              <div className="flex justify-between text-[14px]">
-                <span className="text-muted">Buchungswert</span>
-                <span>{b.price}</span>
-              </div>
-              <div className="flex justify-between text-[14px]">
-                <span className="text-muted">Geschätzter Profit</span>
-                <span className="text-accent-text">{b.profit}</span>
-              </div>
-            </div>
-          )}
-          {kind === "owner" && (
-            <div className="text-[13px] text-muted mt-3">
-              Eigenbelegung · Zeitraum für Gäste blockiert
-            </div>
-          )}
-          {kind === "maintenance" && (
-            <div className="mt-3 flex flex-col gap-1.5">
-              <div className="flex items-center gap-1.5 text-[13px] text-[#8a5a1a]">
-                <Wrench size={12} />
-                Wartung · für Gäste blockiert
-              </div>
-              {b.note && <p className="text-[13px] text-muted leading-snug">{b.note}</p>}
-              <div className="flex flex-col gap-1 mt-1">
-                {b.ticket && (
-                  <div className="flex justify-between text-[14px]">
-                    <span className="text-muted">Ticket</span>
-                    <span>{b.ticket}</span>
-                  </div>
-                )}
-                {b.lostRevenue && (
-                  <div className="flex justify-between text-[14px]">
-                    <span className="text-muted">Entgangener Umsatz</span>
-                    <span className="text-negative">{b.lostRevenue}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+function Tooltip({ h }: { h: Hovered }) {
+  const b = h.b;
+  const kind = b.kind ?? "guest";
+  const width = 260;
+  const placeBelow = h.top < 260;
+  const left = Math.max(
+    12,
+    Math.min(h.left, (typeof window !== "undefined" ? window.innerWidth : 1280) - width - 12)
+  );
+  const positionStyle = placeBelow
+    ? { top: h.bottom + 8 }
+    : { top: h.top - 8, transform: "translateY(-100%)" };
+
+  return (
+    <div
+      className="fixed z-[60] pointer-events-none"
+      style={{ left, width, ...positionStyle }}
+    >
+      <div className="bg-white border border-line rounded-[18px] shadow-[0_8px_30px_rgba(0,0,0,0.14)] px-5 py-4">
+        <div className="text-[15px]">{b.label}</div>
+        <div className="text-[13px] text-muted mt-0.5">
+          {String(b.start).padStart(2, "0")}. – {String(b.end).padStart(2, "0")}. Juli 2026
         </div>
+        {kind === "guest" && (
+          <div className="flex flex-col gap-1.5 mt-3">
+            <div className="flex justify-between text-[14px]">
+              <span className="text-muted">Buchungswert</span>
+              <span>{b.price}</span>
+            </div>
+            <div className="flex justify-between text-[14px]">
+              <span className="text-muted">Geschätzter Profit</span>
+              <span className="text-accent-text">{b.profit}</span>
+            </div>
+          </div>
+        )}
+        {kind === "owner" && (
+          <div className="text-[13px] text-muted mt-3">
+            Eigenbelegung · Zeitraum für Gäste blockiert
+          </div>
+        )}
+        {kind === "maintenance" && (
+          <div className="mt-3 flex flex-col gap-1.5">
+            <div className="flex items-center gap-1.5 text-[13px] text-[#8a5a1a]">
+              <Wrench size={12} />
+              Wartung · für Gäste blockiert
+            </div>
+            {b.note && <p className="text-[13px] text-muted leading-snug">{b.note}</p>}
+            {b.ticket && (
+              <div className="flex justify-between text-[14px] mt-1">
+                <span className="text-muted">Ticket</span>
+                <span>{b.ticket}</span>
+              </div>
+            )}
+            {b.lostRevenue && (
+              <div className="flex justify-between text-[14px]">
+                <span className="text-muted">Entgangener Umsatz</span>
+                <span className="text-negative">{b.lostRevenue}</span>
+              </div>
+            )}
+            {b.seed && (
+              <div className="flex items-center gap-1.5 text-[13px] text-muted mt-2 pt-2 border-t border-line">
+                <MessageCircle size={12} />
+                Klicken für Status im Chat
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -161,9 +248,11 @@ function BookingBar({ b }: { b: Booking }) {
 type Mode = "aufenthalt" | "wartung";
 
 export default function Kalender() {
+  const { openChat } = useArbioChat();
   const [modalOpen, setModalOpen] = useState(false);
   const [mode, setMode] = useState<Mode>("aufenthalt");
   const [done, setDone] = useState(false);
+  const [hovered, setHovered] = useState<Hovered | null>(null);
 
   const open = () => {
     setDone(false);
@@ -238,7 +327,12 @@ export default function Kalender() {
                 }}
               >
                 {bookings.map((b) => (
-                  <BookingBar key={`${name}-${b.start}`} b={b} />
+                  <BookingBar
+                    key={`${name}-${b.start}`}
+                    b={b}
+                    onHover={setHovered}
+                    onClick={(bk) => bk.seed && openChat(bk.seed)}
+                  />
                 ))}
               </div>
             </div>
@@ -257,6 +351,9 @@ export default function Kalender() {
           </span>
         </div>
       </div>
+
+      {/* Hover tooltip (rendered fixed so it is never clipped) */}
+      {hovered && <Tooltip h={hovered} />}
 
       {/* Entry modal */}
       {modalOpen && (
