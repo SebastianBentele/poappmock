@@ -204,9 +204,7 @@ export default function Operativ() {
         <div className="grid grid-cols-2 gap-4">
           <KpiCard label="Ø Bewertung" value="4,8 ★" delta="0,1 vs. Vormonat" deltaDirection="up" />
           <KpiCard label="Reinigungen" value="38" subline="diesen Monat · 2 Zusatzreinigungen" />
-          <KpiCard label="Gelöste Tickets" value="41" subline="diesen Monat" />
           <KpiCard label="Offene Tickets" value="3" subline="davon 1 in Arbeit" />
-          <KpiCard label="Check-ins / Check-outs" value="11 / 9" subline="diesen Monat" />
           <KpiCard label="Ø Antwortzeit" value="4 Min" subline="Antwortrate 98%" />
         </div>
         <AiCard
