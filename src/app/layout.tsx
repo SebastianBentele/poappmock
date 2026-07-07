@@ -5,7 +5,7 @@ import { ChatProvider } from "@/components/arbio-chat";
 import { PasswordGate } from "@/components/password-gate";
 
 export const metadata: Metadata = {
-  title: "Arbio Portal",
+  title: "Arbio Property Owner App",
   description: "Property Owner App Mockup",
 };
 
