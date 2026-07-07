@@ -162,7 +162,7 @@ const blockedUnits: {
       },
       {
         kind: "bot",
-        text: "Entgangener Umsatz bisher: ca. €610 (5 blockierte Nächte à ~€122). Bei planmäßiger Freigabe kommen noch ~€240 dazu. Empfehlung: Wir erneuern direkt alle Silikonfugen im Bad (€90 zusätzlich) — das senkt das Risiko eines erneuten Ausfalls deutlich.",
+        text: "Volle Transparenz: Entgangener Umsatz bisher ca. €610 (5 blockierte Nächte à ~€122), bei planmäßiger Freigabe kommen noch ~€240 dazu. Das Team erneuert im Zuge der Reparatur direkt alle Silikonfugen im Bad — so senken wir das Risiko eines erneuten Ausfalls. Du musst nichts tun, wir halten dich auf dem Laufenden.",
       },
     ],
   },
@@ -211,16 +211,16 @@ export default function Operativ() {
           title="Dein Betrieb. Auf einen Blick."
           rows={[
             {
-              label: "Signal",
-              text: "38 Reinigungen und 11 Check-ins liefen diesen Monat reibungslos — 41 Tickets gelöst, nur 3 offen.",
+              label: "Ergebnis",
+              text: "Deine Immobilien laufen großartig: 4,8 ★, 38 Reinigungen und 11 Check-ins liefen diesen Monat reibungslos.",
             },
             {
-              label: "Treiber",
-              text: "Sauberkeit und Check-in werden in 9 von 10 Bewertungen positiv erwähnt.",
+              label: "Warum",
+              text: "Sauberkeit und Check-in werden in 9 von 10 Bewertungen positiv erwähnt — 41 Tickets wurden gelöst, nur 3 sind offen.",
             },
             {
-              label: "Empfehlung",
-              text: "Das Studio Universität ist wegen Wasserschaden blockiert — Details und Umsatz-Impact unten oder im Chat.",
+              label: "Arbio kümmert sich",
+              text: "Das Team behebt den Wasserschaden im Studio Universität — Freigabe vsl. 11.07., du musst nichts tun.",
             },
           ]}
           chatHint="Details im Chat fragen"

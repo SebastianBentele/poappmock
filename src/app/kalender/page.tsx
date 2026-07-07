@@ -51,7 +51,7 @@ const wasserschadenSeed: Msg[] = [
   },
   {
     kind: "bot",
-    text: "Entgangener Umsatz bisher: ca. €610 (5 blockierte Nächte à ~€122). Empfehlung: Wir erneuern direkt alle Silikonfugen im Bad (€90 zusätzlich) — das senkt das Risiko eines erneuten Ausfalls deutlich.",
+    text: "Volle Transparenz: Entgangener Umsatz bisher ca. €610 (5 blockierte Nächte à ~€122). Das Team erneuert im Zuge der Reparatur direkt alle Silikonfugen im Bad — so senken wir das Risiko eines erneuten Ausfalls. Du musst nichts tun, wir halten dich auf dem Laufenden.",
   },
 ];
 

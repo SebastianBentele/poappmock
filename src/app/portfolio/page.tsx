@@ -75,16 +75,16 @@ export default function Portfolio() {
           title="Dein Portfolio. Auf einen Blick."
           rows={[
             {
-              label: "Signal",
-              text: "Umsatz steigt auf 41451 € trotz eines Rückgangs der Portfolio-Auslastung auf 55 %",
+              label: "Ergebnis",
+              text: "Dein Umsatz steigt auf 41.451 € — 7,6 % über dem Vorjahr. Dein Portfolio läuft großartig.",
             },
             {
-              label: "Treiber",
-              text: "Eine starke Durchschnittsrate von 241 € kompensiert die geringere Belegung bei stabilen 6.5 Nächten",
+              label: "Warum",
+              text: "Arbio hat die Durchschnittsrate auf 241 € optimiert — das gleicht die saisonal geringere Auslastung bei stabilen 6,5 Nächten mehr als aus.",
             },
             {
-              label: "Empfehlung",
-              text: "Senken Sie die Mindestaufenthaltsdauer für freie Lücken, um die Auslastung und Marge zu maximieren",
+              label: "Arbio kümmert sich",
+              text: "Preise und Verfügbarkeiten werden täglich vom Revenue-Team überprüft — du musst nichts tun.",
             },
           ]}
           chatHint="Details im Chat fragen"

@@ -50,7 +50,7 @@ export function costExplainSeed(label: string): Msg[] {
       { kind: "user", text: "Erkläre mir die Position „OTA-Provision“ (Juli: –€5.407)" },
       {
         kind: "bot",
-        text: "Gerne! Die OTA-Provision ist die Vermittlungsgebühr der Buchungsplattformen — im Juli –€5.407, das sind 13,0% vom Bruttoumsatz. Aufgeteilt: Booking.com –€4.421 (15% auf €29.475 aus 18 Buchungen), Airbnb –€986 (14% auf €7.040 aus 7 Buchungen). Deine 3 Direktbuchungen (€4.936) zahlen keine Provision — deshalb lohnt es sich, den Direct-Anteil auszubauen. Die Provision wird automatisch vor der Auszahlung einbehalten, du musst nichts überweisen.",
+        text: "Gerne! Die OTA-Provision ist die Vermittlungsgebühr der Buchungsplattformen — im Juli –€5.407, das sind 13,0% vom Bruttoumsatz. Volle Transparenz: Booking.com –€4.421 (15% auf €29.475 aus 18 Buchungen), Airbnb –€986 (14% auf €7.040 aus 7 Buchungen). Deine 3 Direktbuchungen (€4.936) sind provisionsfrei — Arbio steuert deinen Kanal-Mix laufend so aus, dass unterm Strich am meisten für dich übrig bleibt. Die Provision wird automatisch vor der Auszahlung einbehalten, du musst nichts tun.",
       },
     ],
     Umsatzsteuer: [
@@ -92,7 +92,7 @@ export function costExplainSeed(label: string): Msg[] {
       { kind: "user", text: "Erkläre mir die Position „Nebenkosten & Internet“ (–€290/Monat)" },
       {
         kind: "bot",
-        text: "Diese Position fasst zwei von dir gepflegte Kosten zusammen: Strom & Gas Abschlag (€200/Monat) und Glasfaser für 3 Einheiten (€90/Monat). Beide findest du unter Finanzen → Kosten. Hinweis: Bei stark gestiegenen Energiekosten lohnt ein Blick auf den Abschlag — dein aktueller Wert ist seit Januar unverändert.",
+        text: "Diese Position fasst zwei von dir gepflegte Kosten zusammen: Strom & Gas Abschlag (€200/Monat) und Glasfaser für 3 Einheiten (€90/Monat). Beide findest du unter Finanzen → Kosten und kannst sie dort jederzeit anpassen — sie fließen automatisch in deinen echten Netto-Gewinn ein.",
       },
     ],
   };

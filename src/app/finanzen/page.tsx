@@ -55,7 +55,7 @@ const payoutTrackers: {
       { kind: "user", text: "Wann kommt meine Juli-Auszahlung?" },
       {
         kind: "bot",
-        text: "Für Juli sind bisher €18.450 aufgelaufen — der Monat läuft noch bis 31.07. Danach: Abrechnung am 01.08., Freigabe am 03.08., Auszahlung am 05.08. (kostenlos). Wenn du nicht warten willst: Über „Sofort auszahlen“ bekommst du den aktuellen Stand gegen 2% Gebühr (€369) sofort.",
+        text: "Für Juli sind bisher €18.450 aufgelaufen — der Monat läuft noch bis 31.07. Danach läuft alles automatisch: Abrechnung am 01.08., Freigabe am 03.08., Auszahlung am 05.08. (kostenlos), du musst nichts tun. Falls du den Betrag früher benötigst, steht dir jederzeit die Sofortauszahlung zur Verfügung (2% Gebühr, €369).",
       },
     ],
   },
@@ -134,16 +134,16 @@ export default function Finanzen() {
               title="Arbio Zusammenfassung"
               rows={[
                 {
-                  label: "Kostenentwicklung",
-                  text: "Die Gesamtkosten stiegen saisonal bedingt auf 5628 €, getrieben durch 5407 € OTA-Provisionen.",
+                  label: "Ergebnis",
+                  text: "Deine operative Marge liegt bei starken 85 % — deine Immobilien wirtschaften hervorragend mit Arbio.",
                 },
                 {
-                  label: "Margenentwicklung",
-                  text: "Die operative Marge bleibt mit starken 85% auf einem hervorragenden Niveau.",
+                  label: "Warum",
+                  text: "Die Gesamtkosten stiegen saisonal bedingt auf 5.628 € (davon 5.407 € OTA-Provision) — dein Umsatz wuchs schneller als die Kosten.",
                 },
                 {
-                  label: "Weitere Hinweise",
-                  text: "Prüfen Sie die ungewöhnlich niedrigen Reinigungskosten von nur 221 € bei diesem hohen Buchungsvolumen.",
+                  label: "Arbio kümmert sich",
+                  text: "Wir prüfen gerade die Reinigungsbelege für Juli auf Vollständigkeit — du bekommst eine Nachricht, sobald alle erfasst sind.",
                 },
               ]}
               chatHint="Details im Chat fragen"
@@ -227,16 +227,16 @@ export default function Finanzen() {
               title="Deine Auszahlungen. Auf einen Blick."
               rows={[
                 {
-                  label: "Signal",
+                  label: "Ergebnis",
                   text: "Bereits 18.450 € für Juli aufgelaufen — 12 % über dem Vormonat zum gleichen Stichtag.",
                 },
                 {
-                  label: "Treiber",
-                  text: "Starke Sommerbelegung und eine höhere Durchschnittsrate treiben die Auszahlung.",
+                  label: "Warum",
+                  text: "Starke Sommerbelegung und eine höhere Durchschnittsrate treiben deine Auszahlung.",
                 },
                 {
-                  label: "Empfehlung",
-                  text: "Die reguläre Auszahlung am 05.08. ist kostenlos — eine Sofortauszahlung kostet dich aktuell 369 €.",
+                  label: "Arbio kümmert sich",
+                  text: "Deine Juni-Auszahlung (34.900 €) ist unterwegs — Eingang vsl. 07.07. Alles läuft planmäßig, du musst nichts tun.",
                 },
               ]}
               chatHint="Details im Chat fragen"
