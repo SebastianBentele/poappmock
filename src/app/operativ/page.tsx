@@ -1,8 +1,21 @@
-import { Calendar, MapPin, ChevronDown, Star, Wrench, Sparkles } from "lucide-react";
+"use client";
+
+import {
+  Calendar,
+  MapPin,
+  ChevronDown,
+  Star,
+  Wrench,
+  Sparkles,
+  MessageCircle,
+  CheckCircle2,
+  AlertTriangle,
+} from "lucide-react";
 import { KpiCard } from "@/components/kpi-card";
 import { AiCard } from "@/components/ai-card";
 import { ChatInput } from "@/components/chat-input";
 import { TicketsChart } from "@/components/charts";
+import { useArbioChat, type Msg } from "@/components/arbio-chat";
 
 const sentiments = [
   { label: "Sauberkeit", pct: "94%", width: "94%" },
@@ -27,10 +40,132 @@ const reviews = [
   },
 ];
 
-const openTickets = [
-  { title: "WLAN-Router austauschen", unit: "Garten Apartment", status: "In Arbeit", icon: Wrench },
-  { title: "Spülmaschine macht Geräusche", unit: "Altstadt Apartment", status: "Offen", icon: Wrench },
-  { title: "Zusatzreinigung nach Late-Checkout", unit: "Studio Universität", status: "Offen", icon: Sparkles },
+const openTickets: {
+  id: string;
+  title: string;
+  unit: string;
+  status: string;
+  icon: typeof Wrench;
+  seed: Msg[];
+}[] = [
+  {
+    id: "#1041",
+    title: "WLAN-Router austauschen",
+    unit: "Garten Apartment",
+    status: "In Arbeit",
+    icon: Wrench,
+    seed: [
+      {
+        kind: "bot",
+        text: "Zu Ticket #1041 (WLAN-Router austauschen, Garten Apartment): Der Techniker hat den Termin bestätigt — Dienstag, 14.07., zwischen 9 und 12 Uhr. Gemeldet wurde das Ticket am 03.07. über den Chat.",
+      },
+      {
+        kind: "timeline",
+        title: "Ticket #1041 · WLAN-Router austauschen",
+        steps: [
+          { label: "Gemeldet", meta: "03.07.", state: "done" },
+          { label: "Techniker beauftragt", meta: "04.07.", state: "done" },
+          { label: "Termin bestätigt", meta: "14.07., 9–12 Uhr", state: "current" },
+          { label: "Erledigt", state: "pending" },
+        ],
+      },
+      {
+        kind: "bot",
+        text: "Du musst nichts weiter tun — der Zugang erfolgt über die Schlüsselbox, im Zeitraum ist kein Gast eingebucht.",
+      },
+    ],
+  },
+  {
+    id: "#1043",
+    title: "Spülmaschine macht Geräusche",
+    unit: "Altstadt Apartment",
+    status: "Offen",
+    icon: Wrench,
+    seed: [
+      {
+        kind: "bot",
+        text: "Zu Ticket #1043 (Spülmaschine macht Geräusche, Altstadt Apartment): Unser Techniker war vor Ort — die Umwälzpumpe ist defekt. Das Ersatzteil ist bestellt, der Einbau ist für den 16.07. geplant.",
+      },
+      {
+        kind: "timeline",
+        title: "Ticket #1043 · Spülmaschine macht Geräusche",
+        steps: [
+          { label: "Gemeldet", meta: "gestern", state: "done" },
+          { label: "Techniker vor Ort", meta: "heute", state: "done" },
+          { label: "Ersatzteil bestellt", meta: "Einbau vsl. 16.07.", state: "current" },
+          { label: "Erledigt", state: "pending" },
+        ],
+      },
+      {
+        kind: "bot",
+        text: "Kosten: €140 Material + Anfahrt — taucht danach als Position in deiner Juli-P&L auf. Die Maschine ist bis zum Einbau eingeschränkt nutzbar, die Gäste sind informiert.",
+      },
+    ],
+  },
+  {
+    id: "#1039",
+    title: "Zusatzreinigung nach Late-Checkout",
+    unit: "Studio Universität",
+    status: "Offen",
+    icon: Sparkles,
+    seed: [
+      {
+        kind: "bot",
+        text: "Zu Ticket #1039 (Zusatzreinigung nach Late-Checkout, Studio Universität): Die Reinigung ist für den 09.07. um 14 Uhr eingeplant — rechtzeitig vor dem nächsten Check-in am selben Abend.",
+      },
+      {
+        kind: "timeline",
+        title: "Ticket #1039 · Zusatzreinigung nach Late-Checkout",
+        steps: [
+          { label: "Gemeldet", meta: "gestern", state: "done" },
+          { label: "Eingeplant", meta: "09.07., 14 Uhr", state: "current" },
+          { label: "Erledigt", state: "pending" },
+        ],
+      },
+      {
+        kind: "bot",
+        text: "Kosten: €68 — erscheint als Reinigungsposition in deiner Juli-P&L. Der nächste Gast checkt planmäßig um 18 Uhr ein, es gibt keinen Konflikt.",
+      },
+    ],
+  },
+];
+
+const blockedUnits: {
+  unit: string;
+  reason: string;
+  period: string;
+  lostRevenue: string;
+  ticket: string;
+  seed: Msg[];
+}[] = [
+  {
+    unit: "Studio Universität",
+    reason: "Wasserschaden im Bad",
+    period: "seit 04.07. · vsl. bis 11.07.",
+    lostRevenue: "ca. €610",
+    ticket: "#1038",
+    seed: [
+      { kind: "user", text: "Warum ist das Studio Universität blockiert?" },
+      {
+        kind: "bot",
+        text: "Das Studio Universität ist seit dem 04.07. blockiert: Ein Wasserschaden im Bad (undichte Silikonfuge an der Dusche) muss getrocknet und repariert werden. Die Freigabe ist für den 11.07. geplant — der Zeitraum ist auf allen Kanälen gesperrt, damit keine Gäste betroffen sind.",
+      },
+      {
+        kind: "timeline",
+        title: "Ticket #1038 · Wasserschaden Bad · Studio Universität",
+        steps: [
+          { label: "Schaden festgestellt & blockiert", meta: "04.07.", state: "done" },
+          { label: "Trocknung läuft", meta: "05.–09.07.", state: "current" },
+          { label: "Reparatur & Endkontrolle", meta: "10.07.", state: "pending" },
+          { label: "Einheit wieder live", meta: "vsl. 11.07.", state: "pending" },
+        ],
+      },
+      {
+        kind: "bot",
+        text: "Entgangener Umsatz bisher: ca. €610 (5 blockierte Nächte à ~€122). Bei planmäßiger Freigabe kommen noch ~€240 dazu. Empfehlung: Wir erneuern direkt alle Silikonfugen im Bad (€90 zusätzlich) — das senkt das Risiko eines erneuten Ausfalls deutlich.",
+      },
+    ],
+  },
 ];
 
 const commTopics = [
@@ -41,6 +176,8 @@ const commTopics = [
 ];
 
 export default function Operativ() {
+  const { openChat } = useArbioChat();
+
   return (
     <div className="relative min-h-screen px-8 py-6 pb-32">
       <h1 className="text-[22px]">Operations</h1>
@@ -66,8 +203,10 @@ export default function Operativ() {
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_1.15fr] gap-4">
         <div className="grid grid-cols-2 gap-4">
           <KpiCard label="Ø Bewertung" value="4,8 ★" delta="0,1 vs. Vormonat" deltaDirection="up" />
+          <KpiCard label="Reinigungen" value="38" subline="diesen Monat · 2 Zusatzreinigungen" />
           <KpiCard label="Gelöste Tickets" value="41" subline="diesen Monat" />
           <KpiCard label="Offene Tickets" value="3" subline="davon 1 in Arbeit" />
+          <KpiCard label="Check-ins / Check-outs" value="11 / 9" subline="diesen Monat" />
           <KpiCard label="Ø Antwortzeit" value="4 Min" subline="Antwortrate 98%" />
         </div>
         <AiCard
@@ -75,7 +214,7 @@ export default function Operativ() {
           rows={[
             {
               label: "Signal",
-              text: "Bewertungen steigen auf 4,8 ★ — 41 Tickets wurden diesen Monat gelöst, nur 3 sind offen.",
+              text: "38 Reinigungen und 11 Check-ins liefen diesen Monat reibungslos — 41 Tickets gelöst, nur 3 offen.",
             },
             {
               label: "Treiber",
@@ -83,11 +222,68 @@ export default function Operativ() {
             },
             {
               label: "Empfehlung",
-              text: "WLAN ist das häufigste Negativthema — der Routertausch im Garten Apartment ist bereits in Arbeit.",
+              text: "Das Studio Universität ist wegen Wasserschaden blockiert — Details und Umsatz-Impact unten oder im Chat.",
             },
           ]}
           chatHint="Details im Chat fragen"
         />
+      </div>
+
+      {/* Blocked units */}
+      <div className="bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+        <div className="flex items-start justify-between">
+          <h3 className="text-[16px]">Blockierte Einheiten</h3>
+          {blockedUnits.length > 0 && (
+            <span className="flex items-center gap-1.5 text-[13px] text-muted">
+              <MessageCircle size={13} />
+              Klick öffnet Details im Chat
+            </span>
+          )}
+        </div>
+        {blockedUnits.length === 0 ? (
+          <div className="flex items-center gap-3 mt-4">
+            <span className="w-10 h-10 rounded-full bg-[#eef5eb] flex items-center justify-center text-accent-text shrink-0">
+              <CheckCircle2 size={18} />
+            </span>
+            <div>
+              <div className="text-[15px]">Alle Einheiten sind live</div>
+              <div className="text-[13px] text-muted mt-0.5">
+                Keine Blockierungen — alle Einheiten sind buchbar.
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col mt-2">
+            {blockedUnits.map(({ unit, reason, period, lostRevenue, ticket, seed }, i) => (
+              <button
+                key={unit}
+                onClick={() => openChat(seed)}
+                className={`flex items-center gap-4 py-3.5 px-3 -mx-3 rounded-[16px] text-left hover:bg-panel transition-colors ${
+                  i > 0 ? "border-t border-line" : ""
+                }`}
+              >
+                <span className="w-10 h-10 rounded-full bg-[#fdecea] flex items-center justify-center text-negative shrink-0">
+                  <AlertTriangle size={16} />
+                </span>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[15px] leading-tight">
+                    {unit} · {reason}
+                  </div>
+                  <div className="text-[13px] text-muted mt-0.5">
+                    {period} · Ticket {ticket}
+                  </div>
+                </div>
+                <div className="text-right shrink-0">
+                  <div className="text-[13px] text-muted">Entgangener Umsatz</div>
+                  <div className="text-[15px] text-negative">{lostRevenue}</div>
+                </div>
+                <span className="text-[13px] rounded-full px-3 py-1 bg-[#fdecea] text-negative shrink-0">
+                  Blockiert
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Guest review insights */}
@@ -164,22 +360,33 @@ export default function Operativ() {
           </div>
         </div>
         <div className="bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
-          <h3 className="text-[16px]">Offene Tickets</h3>
+          <div className="flex items-start justify-between">
+            <h3 className="text-[16px]">Offene Tickets</h3>
+            <span className="flex items-center gap-1.5 text-[13px] text-muted">
+              <MessageCircle size={13} />
+              Klick öffnet Details
+            </span>
+          </div>
           <div className="flex flex-col mt-2">
-            {openTickets.map(({ title, unit, status, icon: Icon }, i) => (
-              <div
-                key={title}
-                className={`flex items-center gap-4 py-3.5 ${i > 0 ? "border-t border-line" : ""}`}
+            {openTickets.map(({ id, title, unit, status, icon: Icon, seed }, i) => (
+              <button
+                key={id}
+                onClick={() => openChat(seed)}
+                className={`flex items-center gap-4 py-3.5 px-3 -mx-3 rounded-[16px] text-left hover:bg-panel transition-colors ${
+                  i > 0 ? "border-t border-line" : ""
+                }`}
               >
                 <span className="w-10 h-10 rounded-full bg-panel flex items-center justify-center text-muted shrink-0">
                   <Icon size={16} />
                 </span>
                 <div className="flex-1 min-w-0">
                   <div className="text-[15px] leading-tight">{title}</div>
-                  <div className="text-[13px] text-muted mt-0.5">{unit}</div>
+                  <div className="text-[13px] text-muted mt-0.5">
+                    {id} · {unit}
+                  </div>
                 </div>
                 <span
-                  className={`text-[13px] rounded-full px-3 py-1 ${
+                  className={`text-[13px] rounded-full px-3 py-1 shrink-0 ${
                     status === "In Arbeit"
                       ? "bg-[#eef5eb] text-accent-text"
                       : "bg-panel text-muted"
@@ -187,7 +394,7 @@ export default function Operativ() {
                 >
                   {status}
                 </span>
-              </div>
+              </button>
             ))}
           </div>
         </div>
