@@ -8,7 +8,6 @@ const kpis = [
   { label: "Monatsumsatz", value: "41.451 €" },
   { label: "Tagesrate", value: "241 €" },
   { label: "Auslastung", value: "55 %" },
-  { label: "Contribution Margin", value: "86 %" },
   { label: "Operativer Gewinn", value: "33.111 €" },
 ];
 
