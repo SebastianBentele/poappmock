@@ -41,7 +41,7 @@ export function FilterBar({ showStepper = true }: { showStepper?: boolean }) {
   const close = () => setOpen(null);
 
   const btn =
-    "flex items-center gap-2 border border-line rounded-full px-5 py-2.5 text-[15px] bg-white hover:bg-panel";
+    "flex items-center gap-2 border border-line rounded-full h-11 px-5 text-[15px] bg-white hover:bg-panel";
 
   return (
     <div className="relative flex items-center gap-3 flex-wrap">
@@ -50,7 +50,7 @@ export function FilterBar({ showStepper = true }: { showStepper?: boolean }) {
 
       {/* Period */}
       <div className="relative z-40">
-        <div className="flex items-center gap-1 border border-line rounded-full bg-white pl-1 pr-1">
+        <div className="flex items-center gap-1 border border-line rounded-full bg-white h-11 pl-1 pr-1">
           {showStepper && (
             <button className="w-8 h-8 rounded-full hover:bg-panel flex items-center justify-center text-muted">
               <ChevronLeft size={16} />
@@ -58,7 +58,7 @@ export function FilterBar({ showStepper = true }: { showStepper?: boolean }) {
           )}
           <button
             onClick={() => setOpen(open === "period" ? null : "period")}
-            className="flex items-center gap-2 px-3 py-1.5 text-[15px]"
+            className="flex items-center gap-2 px-3 text-[15px]"
           >
             <Calendar size={15} />
             {period}
