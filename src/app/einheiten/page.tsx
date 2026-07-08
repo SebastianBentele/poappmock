@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -143,17 +143,35 @@ type Popup = { unit: Unit; x: number; y: number };
 
 function UnitPopup({ p, onClose }: { p: Popup; onClose: () => void }) {
   const width = 360;
-  const height = 580;
-  const left = Math.max(12, Math.min(p.x + 14, (typeof window !== "undefined" ? window.innerWidth : 1400) - width - 16));
-  const top = Math.max(12, Math.min(p.y - 60, (typeof window !== "undefined" ? window.innerHeight : 900) - height - 12));
+  const ref = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState<{ left: number; top: number } | null>(null);
   const u = p.unit;
+
+  // Position after render using the popup's real height so it always
+  // stays fully inside the viewport (image header makes height dynamic).
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const { width: w, height: h } = el.getBoundingClientRect();
+    setPos({
+      left: Math.max(12, Math.min(p.x + 14, window.innerWidth - w - 16)),
+      top: Math.max(12, Math.min(p.y - 60, window.innerHeight - h - 12)),
+    });
+  }, [p]);
 
   return (
     <>
       <div className="fixed inset-0 z-40" onClick={onClose} />
       <div
-        className="fixed z-50 bg-white border border-line rounded-[22px] shadow-[0_20px_60px_rgba(0,0,0,0.18)] p-6"
-        style={{ left, top, width }}
+        ref={ref}
+        className="fixed z-50 bg-white border border-line rounded-[22px] shadow-[0_20px_60px_rgba(0,0,0,0.18)] p-6 overflow-y-auto"
+        style={{
+          left: pos?.left ?? p.x,
+          top: pos?.top ?? 12,
+          width,
+          maxHeight: "calc(100vh - 24px)",
+          visibility: pos ? "visible" : "hidden",
+        }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
