@@ -457,8 +457,8 @@ export default function Einheiten() {
             Deine Einheiten auf der Karte und im Überblick
           </p>
         </div>
-        {/* View toggle */}
-        <div className="flex items-center border border-line rounded-full p-1 bg-white">
+        {/* View toggle — right margin keeps clear of the fixed notification bell */}
+        <div className="flex items-center border border-line rounded-full p-1 bg-white mr-14">
           <button
             onClick={() => setView("karte")}
             className={`flex items-center gap-2 rounded-full px-5 py-2 text-[15px] ${
