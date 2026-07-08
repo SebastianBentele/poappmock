@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import {
-  ChevronLeft,
-  ChevronRight,
   Plus,
   X,
   CheckCircle2,
@@ -13,6 +11,7 @@ import {
   MessageCircle,
 } from "lucide-react";
 import { ChatInput } from "@/components/chat-input";
+import { FilterBar } from "@/components/filter-bar";
 import { useArbioChat, type Msg } from "@/components/arbio-chat";
 
 const DAYS = 31;
@@ -267,17 +266,9 @@ export default function Kalender() {
         Alle Einheiten, Buchungen und Wartungen im Überblick
       </p>
 
-      {/* Month nav + entry button */}
+      {/* Filters + entry button */}
       <div className="flex items-center gap-3 mt-5 mb-6 flex-wrap">
-        <div className="flex items-center gap-1 border border-line rounded-full px-2 py-1.5">
-          <button className="w-8 h-8 rounded-full hover:bg-panel flex items-center justify-center text-muted">
-            <ChevronLeft size={16} />
-          </button>
-          <span className="text-[15px] px-3">Juli 2026</span>
-          <button className="w-8 h-8 rounded-full hover:bg-panel flex items-center justify-center text-muted">
-            <ChevronRight size={16} />
-          </button>
-        </div>
+        <FilterBar />
         <div className="flex-1" />
         <button
           onClick={open}

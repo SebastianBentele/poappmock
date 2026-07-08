@@ -351,3 +351,81 @@ export function ProfitChart() {
     </div>
   );
 }
+
+// Year-on-year revenue trajectory since Arbio took over
+const growthByYear = [
+  { y: "2023", label: "vor Arbio", v: 198000, pre: true },
+  { y: "2024", label: "Jahr 1", v: 246000 },
+  { y: "2025", label: "Jahr 2", v: 288000 },
+  { y: "2026", label: "YTD", v: 337000, ytd: true },
+];
+
+export function GrowthChart() {
+  return (
+    <div className="h-[260px]">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={growthByYear} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+          <CartesianGrid vertical={false} stroke="#f0f0f0" />
+          <XAxis
+            dataKey="y"
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "#717171", fontSize: 13 }}
+            dy={8}
+          />
+          <YAxis
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "#717171", fontSize: 13 }}
+            tickFormatter={(v: number) => `€${Math.round(v / 1000)}k`}
+            ticks={[0, 100000, 200000, 300000]}
+          />
+          <Bar dataKey="v" radius={[10, 10, 10, 10]}>
+            {growthByYear.map((d) => (
+              <Cell key={d.y} fill={d.pre ? "#d3d3d3" : d.ytd ? GREEN : GREEN_LIGHT} />
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+// Length-of-stay distribution
+const losBuckets = [
+  { b: "1 Nacht", share: 8 },
+  { b: "2–3 Nächte", share: 34 },
+  { b: "4–6 Nächte", share: 39 },
+  { b: "7+ Nächte", share: 19 },
+];
+
+export function LosChart() {
+  return (
+    <div className="h-[220px]">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={losBuckets} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+          <CartesianGrid vertical={false} stroke="#f0f0f0" />
+          <XAxis
+            dataKey="b"
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "#717171", fontSize: 13 }}
+            dy={8}
+          />
+          <YAxis
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "#717171", fontSize: 13 }}
+            tickFormatter={(v: number) => `${v}%`}
+            ticks={[0, 20, 40]}
+          />
+          <Bar dataKey="share" radius={[10, 10, 10, 10]}>
+            {losBuckets.map((d) => (
+              <Cell key={d.b} fill={d.share >= 39 ? GREEN : GREEN_LIGHT} />
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}

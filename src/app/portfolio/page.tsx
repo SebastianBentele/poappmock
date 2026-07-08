@@ -1,15 +1,24 @@
-import { Calendar, MapPin, ChevronDown, Info } from "lucide-react";
+import { Info } from "lucide-react";
 import { KpiCard } from "@/components/kpi-card";
 import { AiCard } from "@/components/ai-card";
 import { ChatInput } from "@/components/chat-input";
+import { FilterBar } from "@/components/filter-bar";
 import {
   RollingRevenueChart,
   DailyRevenueChart,
   DailyOccupancyChart,
   DailyRateChart,
   ChannelDonut,
+  GrowthChart,
+  LosChart,
 } from "@/components/charts";
 import { Info as InfoIcon } from "lucide-react";
+
+const growthStats = [
+  { label: "Umsatz p.a.", then: "€198k", now: "€337k", delta: "+70 %" },
+  { label: "Ø Tagesrate (ADR)", then: "€180", now: "€241", delta: "+34 %" },
+  { label: "Auslastung", then: "61 %", now: "72 %", delta: "+11 Pp." },
+];
 
 const channelRows = [
   { color: "#f5455c", name: "Booking.com", marge: "85% Marge", share: "71,1%", value: "€29.475", width: "71%" },
@@ -41,16 +50,7 @@ export default function Portfolio() {
     <div className="relative min-h-screen px-8 py-6 pb-32">
       {/* Filter bar */}
       <div className="flex items-center gap-3 mb-6 flex-wrap">
-        <button className="flex items-center gap-2 border border-line rounded-full px-5 py-2.5 text-[15px]">
-          <Calendar size={15} />
-          Dieser Monat
-          <ChevronDown size={15} className="text-muted" />
-        </button>
-        <button className="flex items-center gap-2 border border-line rounded-full px-5 py-2.5 text-[15px]">
-          <MapPin size={15} />
-          Alle Einheiten
-          <ChevronDown size={15} className="text-muted" />
-        </button>
+        <FilterBar />
         <div className="flex items-center border border-line rounded-full p-1">
           <button className="bg-[#2a2a2a] text-white rounded-full px-5 py-1.5 text-[15px]">
             Alle
@@ -117,6 +117,82 @@ export default function Portfolio() {
           <span className="flex items-center gap-2">
             <span className="w-4 h-[2px] inline-block rounded border-t-2 border-dashed border-[#9a9a9a]" /> Vorjahr
           </span>
+        </div>
+      </div>
+
+      {/* Growth with Arbio (YoY, accented) */}
+      <div className="bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+        <div className="grid grid-cols-1 xl:grid-cols-[1fr_1.3fr] gap-8">
+          <div>
+            <h3 className="text-[16px]">Dein Wachstum mit Arbio</h3>
+            <p className="text-[13px] text-muted mt-0.5">Seit Beginn 2024 · über alle Einheiten</p>
+            <div className="flex flex-col gap-3 mt-5">
+              {growthStats.map(({ label, then, now, delta }) => (
+                <div
+                  key={label}
+                  className="flex items-center justify-between bg-panel rounded-[16px] px-5 py-4"
+                >
+                  <div>
+                    <div className="text-[14px]">{label}</div>
+                    <div className="text-[13px] text-muted mt-0.5">
+                      {then} → <span className="text-foreground">{now}</span>
+                    </div>
+                  </div>
+                  <span className="text-[22px] tracking-[-0.5px] text-accent-text">{delta}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="flex items-start justify-between">
+              <span className="text-[15px] text-muted">Portfolio-Umsatz pro Jahr</span>
+              <span className="text-[13px] text-muted">seit Beginn +70 %</span>
+            </div>
+            <div className="mt-2">
+              <GrowthChart />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Length-of-stay optimization */}
+      <div className="bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+        <div className="grid grid-cols-1 xl:grid-cols-[1.4fr_1fr] gap-8">
+          <div>
+            <h3 className="text-[16px]">Aufenthaltsdauer-Optimierung</h3>
+            <p className="text-[13px] text-muted mt-0.5">
+              Verteilung der Buchungen nach Aufenthaltsdauer · Juli
+            </p>
+            <div className="mt-4">
+              <LosChart />
+            </div>
+          </div>
+          <div className="flex flex-col justify-center gap-4">
+            <div className="flex gap-6">
+              <div className="flex-1 bg-panel rounded-[16px] px-5 py-4">
+                <div className="text-[13px] text-muted">Ø Aufenthaltsdauer</div>
+                <div className="text-[26px] tracking-[-0.5px] mt-0.5">6,5 Nächte</div>
+              </div>
+              <div className="flex-1 bg-panel rounded-[16px] px-5 py-4">
+                <div className="text-[13px] text-muted">1-Nacht-Anteil</div>
+                <div className="text-[26px] tracking-[-0.5px] mt-0.5">8 %</div>
+              </div>
+            </div>
+            <div className="bg-[#f1f6ee] rounded-[16px] px-5 py-4">
+              <div className="flex items-center gap-2 text-[13px] text-accent-text">
+                <span className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-[11px]">
+                  A
+                </span>
+                Was Arbio hier tut
+              </div>
+              <p className="text-[14px] leading-snug mt-2">
+                Arbio steuert deine Mindestaufenthaltsdauer dynamisch: kurze Lücken werden für
+                1–2-Nächte-Buchungen geöffnet, Hochsaison-Wochenenden für längere Aufenthalte
+                geschützt. So sinken deine Reinigungs- und Turnover-Kosten pro Nacht, während die
+                Auslastung hoch bleibt.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 

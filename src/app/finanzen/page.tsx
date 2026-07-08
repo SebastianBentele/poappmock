@@ -3,8 +3,6 @@
 import { useState } from "react";
 import {
   Calendar,
-  MapPin,
-  ChevronDown,
   Zap,
   Download,
   FileText,
@@ -14,6 +12,7 @@ import {
 import { KpiCard } from "@/components/kpi-card";
 import { AiCard } from "@/components/ai-card";
 import { ChatInput } from "@/components/chat-input";
+import { FilterBar } from "@/components/filter-bar";
 import { ProfitChart, PayoutChart } from "@/components/charts";
 import { PnlTable } from "@/components/pnl-table";
 import { OwnerCosts } from "@/components/owner-costs";
@@ -108,16 +107,7 @@ export default function Finanzen() {
             </button>
           ))}
         </div>
-        <button className="flex items-center gap-2 border border-line rounded-full px-5 py-2.5 text-[15px]">
-          <MapPin size={15} />
-          Alle Einheiten
-          <ChevronDown size={15} className="text-muted" />
-        </button>
-        <button className="flex items-center gap-2 border border-line rounded-full px-5 py-2.5 text-[15px]">
-          <Calendar size={15} />
-          Dieser Monat
-          <ChevronDown size={15} className="text-muted" />
-        </button>
+        <FilterBar showStepper={false} />
       </div>
 
       {tab === "Profitabilität" ? (

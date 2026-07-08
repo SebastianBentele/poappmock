@@ -1,21 +1,20 @@
 "use client";
 
 import {
-  Calendar,
-  MapPin,
-  ChevronDown,
   Star,
   Wrench,
   Sparkles,
   MessageCircle,
   CheckCircle2,
   AlertTriangle,
+  BadgeEuro,
 } from "lucide-react";
 import { KpiCard } from "@/components/kpi-card";
 import { AiCard } from "@/components/ai-card";
 import { ChatInput } from "@/components/chat-input";
+import { FilterBar } from "@/components/filter-bar";
 import { TicketsChart } from "@/components/charts";
-import { useArbioChat, type Msg } from "@/components/arbio-chat";
+import { useArbioChat, waterDamageApprovalSeed, type Msg } from "@/components/arbio-chat";
 
 const sentiments = [
   { label: "Sauberkeit", pct: "94%", width: "94%" },
@@ -187,17 +186,28 @@ export default function Operativ() {
 
       {/* Filters */}
       <div className="flex items-center gap-3 mt-5 mb-6 flex-wrap">
-        <button className="flex items-center gap-2 border border-line rounded-full px-5 py-2.5 text-[15px]">
-          <MapPin size={15} />
-          Alle Einheiten
-          <ChevronDown size={15} className="text-muted" />
-        </button>
-        <button className="flex items-center gap-2 border border-line rounded-full px-5 py-2.5 text-[15px]">
-          <Calendar size={15} />
-          Dieser Monat
-          <ChevronDown size={15} className="text-muted" />
-        </button>
+        <FilterBar showStepper={false} />
       </div>
+
+      {/* Budget approval callout */}
+      <button
+        onClick={() => openChat(waterDamageApprovalSeed)}
+        className="w-full flex items-center gap-4 bg-[#fbf6ee] border border-[#f0e2c8] rounded-[18px] px-5 py-4 mb-4 text-left hover:bg-[#f8f0e2] transition-colors"
+      >
+        <span className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#8a5a1a] shrink-0">
+          <BadgeEuro size={17} />
+        </span>
+        <div className="flex-1 min-w-0">
+          <div className="text-[15px]">Kostenfreigabe erforderlich · Duschglaswand-Austausch</div>
+          <div className="text-[13px] text-muted mt-0.5">
+            Studio Universität · Ticket #1038 · externer Handwerker · €780
+          </div>
+        </div>
+        <span className="flex items-center gap-1.5 text-[13px] text-[#8a5a1a] shrink-0">
+          <MessageCircle size={13} />
+          Prüfen & freigeben
+        </span>
+      </button>
 
       {/* KPI grid + AI card */}
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_1.15fr] gap-4">

@@ -11,6 +11,11 @@ import {
   Wrench,
   Banknote,
   Check,
+  Image as ImageIcon,
+  BadgeEuro,
+  Phone,
+  AlertTriangle,
+  HelpCircle,
 } from "lucide-react";
 
 export type Msg =
@@ -28,19 +33,61 @@ export type Msg =
       kind: "timeline";
       title: string;
       steps: { label: string; meta?: string; state: "done" | "current" | "pending" }[];
-    };
+    }
+  | {
+      kind: "approval";
+      title: string;
+      unit: string;
+      report: string;
+      photos: number;
+      cost: string;
+      status: "pending" | "approved" | "declined";
+    }
+  | { kind: "kamcall"; slots: string[]; chosen?: string };
 
-const prefabs = [
-  "Reparatur melden",
-  "Reinigung anfragen",
-  "Abrechnungsfrage",
-  "Ausstattung ändern",
+type ReqType = "report" | "request" | "data";
+
+const requestTypes: {
+  type: ReqType;
+  label: string;
+  hint: string;
+  icon: typeof AlertTriangle;
+  options: string[];
+}[] = [
+  {
+    type: "report",
+    label: "Melden",
+    hint: "Schaden oder Vorfall",
+    icon: AlertTriangle,
+    options: ["Schaden melden", "Sicherheitsvorfall melden"],
+  },
+  {
+    type: "request",
+    label: "Anfragen",
+    hint: "Reparatur, Reinigung, Ausstattung",
+    icon: Wrench,
+    options: ["Reparatur anfragen", "Reinigung anfragen", "Ausstattung ändern"],
+  },
+  {
+    type: "data",
+    label: "Datenfrage",
+    hint: "Frage zu deinen Zahlen",
+    icon: HelpCircle,
+    options: ["Wie war meine Auslastung im Juli?", "Wie entwickelt sich meine ADR?"],
+  },
 ];
+
+const dataAnswers: Record<string, string> = {
+  "Wie war meine Auslastung im Juli?":
+    "Deine Auslastung im Juli liegt bei 55,5 %. Das ist saisonal etwas niedriger, aber deine Durchschnittsrate von 241 € gleicht das aus — der Umsatz liegt 7,6 % über Vorjahr. Details findest du unter Umsatz.",
+  "Wie entwickelt sich meine ADR?":
+    "Deine ADR liegt aktuell bei 241 € — +37 € gegenüber dem Vorjahreszeitraum (+18 %). Seit Beginn mit Arbio ist sie um 34 % gestiegen. Die vollständige Entwicklung siehst du unter Umsatz.",
+};
 
 export const requestIntroSeed: Msg[] = [
   {
     kind: "bot",
-    text: "Hi Sebastian! Wobei können wir helfen? Wähl eine häufige Anfrage aus oder beschreib dein Anliegen einfach frei — ich erstelle daraus ein Ticket für unser Team.",
+    text: "Hi Sebastian! Was möchtest du tun? Wähl eine Kategorie — Melden, Anfragen oder Datenfrage — oder beschreib dein Anliegen frei. Für komplexere Themen kannst du unten auch direkt einen Call mit deinem KAM buchen.",
   },
 ];
 
@@ -109,14 +156,39 @@ export function costExplainSeed(label: string): Msg[] {
 
 type Notification = {
   id: string;
-  icon: "ticket" | "payout";
+  icon: "ticket" | "payout" | "approval";
   title: string;
   text: string;
   time: string;
   seed: Msg[];
 };
 
+export const waterDamageApprovalSeed: Msg[] = [
+  {
+    kind: "bot",
+    text: "Beim Wasserschaden im Studio Universität (Ticket #1038) ist eine zusätzliche Reparatur nötig: Die Duschglaswand ist gerissen und muss von einem externen Handwerker getauscht werden. Wir haben ein Angebot eingeholt und brauchen kurz deine Freigabe.",
+  },
+  {
+    kind: "approval",
+    title: "Duschglaswand-Austausch (externer Handwerker)",
+    unit: "Studio Universität · Ticket #1038",
+    report:
+      "Bei der Trocknung entdeckt: Die Glasabtrennung der Dusche ist gesprungen (Folgeschaden). Austausch inkl. Montage durch Glaserei Berger. Termin wäre der 10.07., damit die Einheit planmäßig am 11.07. wieder live geht.",
+    photos: 2,
+    cost: "€780 (Festpreis inkl. Material & Montage)",
+    status: "pending",
+  },
+];
+
 const notifications: Notification[] = [
+  {
+    id: "n4",
+    icon: "approval",
+    title: "Kostenfreigabe · Wasserschaden",
+    text: "Externer Handwerker · €780 — deine Freigabe nötig",
+    time: "vor 1 Std",
+    seed: waterDamageApprovalSeed,
+  },
   {
     id: "n1",
     icon: "ticket",
@@ -237,15 +309,76 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     openChat(n.seed);
   };
 
-  const submitRequest = (text: string) => {
+  const submitRequest = (text: string, type: ReqType = "request") => {
     if (!text.trim()) return;
+    if (type === "data") {
+      setMessages((m) => [
+        ...m,
+        { kind: "user", text },
+        {
+          kind: "bot",
+          text:
+            dataAnswers[text] ??
+            "Gute Frage — ich schaue mir deine Zahlen an. Die Auswertung findest du auch jederzeit unter Umsatz und Finanzen.",
+        },
+      ]);
+    } else {
+      setMessages((m) => [
+        ...m,
+        { kind: "user", text },
+        {
+          kind: "bot",
+          text:
+            type === "report"
+              ? "Danke für die Meldung! Ich habe folgendes Ticket vorbereitet — bitte bestätige kurz:"
+              : "Gerne! Ich habe folgendes Ticket vorbereitet — bitte bestätige kurz:",
+        },
+        draftFor(text),
+      ]);
+    }
+    setInput("");
+  };
+
+  const bookKamCall = () => {
     setMessages((m) => [
       ...m,
-      { kind: "user", text },
-      { kind: "bot", text: "Gerne! Ich habe folgendes Ticket vorbereitet — bitte bestätige kurz:" },
-      draftFor(text),
+      { kind: "user", text: "Ich möchte einen Termin mit meinem KAM buchen." },
+      {
+        kind: "bot",
+        text: "Sehr gern — dein persönlicher Key Account Manager ist Jovana. Wähl einen der nächsten freien Termine, dann schicke ich dir die Kalendereinladung.",
+      },
+      { kind: "kamcall", slots: ["Mi 09.07. · 10:00", "Do 10.07. · 14:30", "Fr 11.07. · 09:00"] },
     ]);
-    setInput("");
+  };
+
+  const chooseSlot = (idx: number, slot: string) => {
+    setMessages((m) => {
+      const next = m.map((msg, i) =>
+        i === idx && msg.kind === "kamcall" ? { ...msg, chosen: slot } : msg
+      );
+      next.push({
+        kind: "bot",
+        text: `Perfekt, dein Termin mit Jovana ist bestätigt: ${slot}. Du erhältst gleich eine Kalendereinladung per E-Mail. Bis dahin kannst du hier alle Details schon vorbereiten.`,
+      });
+      return next;
+    });
+  };
+
+  const resolveApproval = (idx: number, approved: boolean) => {
+    setMessages((m) => {
+      const next = m.map((msg, i) =>
+        i === idx && msg.kind === "approval"
+          ? { ...msg, status: approved ? ("approved" as const) : ("declined" as const) }
+          : msg
+      );
+      next.push({
+        kind: "bot",
+        text: approved
+          ? "Danke für die Freigabe! Der Termin mit der Glaserei ist für den 10.07. gebucht. Die Kosten (€780) erscheinen transparent in deiner Juli-P&L. Die Einheit geht planmäßig am 11.07. wieder live — ich halte dich auf dem Laufenden."
+          : "Alles klar, die Reparatur wird nicht beauftragt. Die Duschglaswand bleibt vorerst gesperrt — sag Bescheid, wenn du ein alternatives Angebot möchtest.",
+      });
+      return next;
+    });
   };
 
   const resolveDraft = (idx: number, approved: boolean) => {
@@ -268,7 +401,11 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const hasPendingDraft = messages.some((m) => m.kind === "draft" && m.status === "pending");
+  const hasPending = messages.some(
+    (m) =>
+      (m.kind === "draft" && m.status === "pending") ||
+      (m.kind === "approval" && m.status === "pending")
+  );
 
   return (
     <ChatCtx.Provider value={{ openChat }}>
@@ -301,7 +438,13 @@ export function ChatProvider({ children }: { children: ReactNode }) {
                 className="w-full flex items-start gap-3.5 px-6 py-4 text-left hover:bg-panel border-b border-line last:border-b-0"
               >
                 <span className="w-9 h-9 rounded-full bg-panel flex items-center justify-center text-muted shrink-0 mt-0.5">
-                  {n.icon === "ticket" ? <Wrench size={15} /> : <Banknote size={15} />}
+                  {n.icon === "ticket" ? (
+                    <Wrench size={15} />
+                  ) : n.icon === "payout" ? (
+                    <Banknote size={15} />
+                  ) : (
+                    <BadgeEuro size={15} />
+                  )}
                 </span>
                 <span className="flex-1 min-w-0">
                   <span className="flex items-center gap-2">
@@ -454,35 +597,149 @@ export function ChatProvider({ children }: { children: ReactNode }) {
                       )}
                     </div>
                   );
-                return (
-                  <div
-                    key={i}
-                    className="self-start w-full max-w-[440px] bg-white border border-line rounded-[18px] px-5 py-4 shadow-[0_1px_4px_rgba(0,0,0,0.03)] flex items-center gap-3"
-                  >
-                    <CheckCircle2 size={18} className="text-accent-text shrink-0" />
-                    <div className="flex-1">
-                      <div className="text-[15px]">Ticket {m.number} erstellt</div>
-                      <div className="text-[13px] text-muted mt-0.5">
-                        {m.title} · Status jederzeit unter Operations
+                if (m.kind === "approval")
+                  return (
+                    <div
+                      key={i}
+                      className={`self-start w-full max-w-[460px] bg-white border border-line rounded-[18px] px-5 py-4 shadow-[0_1px_4px_rgba(0,0,0,0.03)] ${
+                        m.status === "declined" ? "opacity-50" : ""
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 text-[13px] text-[#8a5a1a]">
+                        <BadgeEuro size={14} />
+                        Kostenfreigabe erforderlich
+                      </div>
+                      <div className="text-[15px] mt-2">{m.title}</div>
+                      <div className="text-[13px] text-muted mt-0.5">{m.unit}</div>
+                      <p className="text-[14px] leading-snug mt-3">{m.report}</p>
+                      <div className="flex gap-2 mt-3">
+                        {Array.from({ length: m.photos }).map((_, pi) => (
+                          <span
+                            key={pi}
+                            className="w-16 h-16 rounded-[12px] bg-panel flex items-center justify-center text-muted"
+                          >
+                            <ImageIcon size={18} />
+                          </span>
+                        ))}
+                      </div>
+                      <div className="flex items-center justify-between mt-4 bg-panel rounded-[12px] px-4 py-3">
+                        <span className="text-[14px] text-muted">Kostenvoranschlag</span>
+                        <span className="text-[16px]">{m.cost}</span>
+                      </div>
+                      {m.status === "pending" ? (
+                        <div className="flex gap-2.5 mt-4">
+                          <button
+                            onClick={() => resolveApproval(i, true)}
+                            className="flex-1 bg-[#2a2a2a] text-white rounded-full px-4 py-2.5 text-[14px] hover:bg-black"
+                          >
+                            Freigeben
+                          </button>
+                          <button
+                            onClick={() => resolveApproval(i, false)}
+                            className="flex-1 border border-line rounded-full px-4 py-2.5 text-[14px] text-muted hover:bg-panel"
+                          >
+                            Ablehnen
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1.5 text-[13px] mt-3 text-muted">
+                          {m.status === "approved" ? (
+                            <>
+                              <CheckCircle2 size={14} className="text-accent-text" />
+                              Freigegeben
+                            </>
+                          ) : (
+                            "Abgelehnt"
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                if (m.kind === "kamcall")
+                  return (
+                    <div
+                      key={i}
+                      className="self-start w-full max-w-[440px] bg-white border border-line rounded-[18px] px-5 py-4 shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="w-10 h-10 rounded-full bg-panel flex items-center justify-center text-[13px] font-medium">
+                          JO
+                        </span>
+                        <div>
+                          <div className="text-[15px]">Termin mit Jovana</div>
+                          <div className="text-[13px] text-muted">Dein Key Account Manager</div>
+                        </div>
+                      </div>
+                      {m.chosen ? (
+                        <div className="flex items-center gap-1.5 text-[14px] mt-4 text-accent-text">
+                          <CheckCircle2 size={15} />
+                          {m.chosen} · bestätigt
+                        </div>
+                      ) : (
+                        <div className="flex flex-col gap-2 mt-4">
+                          {m.slots.map((s) => (
+                            <button
+                              key={s}
+                              onClick={() => chooseSlot(i, s)}
+                              className="flex items-center gap-2 border border-line rounded-full px-4 py-2.5 text-[14px] hover:bg-panel"
+                            >
+                              <Phone size={13} className="text-muted" />
+                              {s}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                if (m.kind === "confirmed")
+                  return (
+                    <div
+                      key={i}
+                      className="self-start w-full max-w-[440px] bg-white border border-line rounded-[18px] px-5 py-4 shadow-[0_1px_4px_rgba(0,0,0,0.03)] flex items-center gap-3"
+                    >
+                      <CheckCircle2 size={18} className="text-accent-text shrink-0" />
+                      <div className="flex-1">
+                        <div className="text-[15px]">Ticket {m.number} erstellt</div>
+                        <div className="text-[13px] text-muted mt-0.5">
+                          {m.title} · Status jederzeit unter Operations
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
+                  );
+                return null;
               })}
             </div>
 
             <div className="px-7 pb-6 pt-2 border-t border-line">
-              {!hasPendingDraft && (
-                <div className="flex gap-2.5 flex-wrap py-3">
-                  {prefabs.map((p) => (
-                    <button
-                      key={p}
-                      onClick={() => submitRequest(p)}
-                      className="border border-line rounded-full px-4 py-2 text-[14px] hover:bg-panel"
-                    >
-                      {p}
-                    </button>
+              {!hasPending && (
+                <div className="flex flex-col gap-2.5 py-3">
+                  {requestTypes.map(({ type, label, hint, icon: Icon, options }) => (
+                    <div key={type} className="flex items-start gap-3">
+                      <span className="flex items-center gap-1.5 text-[13px] text-muted w-[112px] shrink-0 mt-1.5">
+                        <Icon size={13} />
+                        {label}
+                      </span>
+                      <div className="flex gap-2 flex-wrap flex-1">
+                        {options.map((o) => (
+                          <button
+                            key={o}
+                            onClick={() => submitRequest(o, type)}
+                            className="border border-line rounded-full px-4 py-2 text-[14px] hover:bg-panel"
+                            title={hint}
+                          >
+                            {o}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   ))}
+                  <button
+                    onClick={bookKamCall}
+                    className="flex items-center gap-2 text-[14px] text-accent-text hover:underline mt-1"
+                  >
+                    <Phone size={14} />
+                    Komplexes Thema oder Beschwerde? Termin mit deinem KAM buchen
+                  </button>
                 </div>
               )}
               <div className="flex items-center gap-2 bg-white border border-line rounded-[30px] shadow-[0_2px_12px_rgba(0,0,0,0.06)] pl-6 pr-2.5 py-2">
