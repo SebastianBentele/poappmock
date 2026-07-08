@@ -7,9 +7,11 @@ const ALL_UNITS = [
   { name: "Altstadt Apartment", city: "München" },
   { name: "Studio Universität", city: "München" },
   { name: "Garten Apartment", city: "Berlin" },
+  { name: "Kiez Apartment Prenzlauer Berg", city: "Berlin" },
+  { name: "Altbau Suite Eppendorf", city: "Hamburg" },
 ];
 
-const CITIES = ["München", "Berlin"];
+const CITIES = ["München", "Berlin", "Hamburg"];
 
 const periodPresets = [
   "Dieser Monat",

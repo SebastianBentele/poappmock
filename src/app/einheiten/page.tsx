@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useEffect } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -11,9 +12,6 @@ import {
   Star,
   Wrench,
   Sparkles,
-  Armchair,
-  BedDouble,
-  Sofa,
   CheckCircle2,
 } from "lucide-react";
 import { ChatInput } from "@/components/chat-input";
@@ -28,8 +26,7 @@ type Unit = {
   rating: string;
   status: "live" | "blocked";
   blockedNote?: string;
-  gradient: string;
-  icon: typeof Armchair;
+  image: string;
   map: { x: number; y: number };
   recommendations: { title: string; price: string; note: string }[];
   tickets: { id: string; title: string; status: string }[];
@@ -45,8 +42,7 @@ const units: Unit[] = [
     revenue: "€15.400",
     rating: "4,9 ★",
     status: "live",
-    gradient: "linear-gradient(135deg, #f2d9b0 0%, #e2b183 100%)",
-    icon: Armchair,
+    image: "/units/altstadt.jpg",
     map: { x: 430, y: 300 },
     recommendations: [
       {
@@ -70,8 +66,7 @@ const units: Unit[] = [
     rating: "4,7 ★",
     status: "blocked",
     blockedNote: "Wasserschaden Bad · wieder live vsl. 11.07.",
-    gradient: "linear-gradient(135deg, #c9d9ea 0%, #9db8d2 100%)",
-    icon: BedDouble,
+    image: "/units/studio.jpg",
     map: { x: 720, y: 480 },
     recommendations: [
       { title: "Toaster ersetzen", price: "€35", note: "Von Gästen zweimal angefragt" },
@@ -90,8 +85,7 @@ const units: Unit[] = [
     revenue: "€12.900",
     rating: "4,8 ★",
     status: "live",
-    gradient: "linear-gradient(135deg, #cfe3c4 0%, #a3c492 100%)",
-    icon: Sofa,
+    image: "/units/garten.jpg",
     map: { x: 1030, y: 250 },
     recommendations: [
       {
@@ -102,13 +96,53 @@ const units: Unit[] = [
     ],
     tickets: [{ id: "#1041", title: "WLAN-Router austauschen", status: "In Arbeit" }],
   },
+  {
+    key: "eppendorf",
+    name: "Altbau Suite Eppendorf",
+    city: "Hamburg",
+    adr: "198 €",
+    occ: "79 %",
+    revenue: "€11.600",
+    rating: "4,8 ★",
+    status: "live",
+    image: "/units/eppendorf.jpg",
+    map: { x: 260, y: 640 },
+    recommendations: [
+      {
+        title: "Kaffeemaschine upgraden",
+        price: "€120",
+        note: "Häufigster Gästewunsch in den Bewertungen — kleiner Invest, spürbarer Review-Effekt",
+      },
+    ],
+    tickets: [],
+  },
+  {
+    key: "prenzlauer",
+    name: "Kiez Apartment Prenzlauer Berg",
+    city: "Berlin",
+    adr: "174 €",
+    occ: "84 %",
+    revenue: "€10.200",
+    rating: "4,6 ★",
+    status: "live",
+    image: "/units/prenzlauer.jpg",
+    map: { x: 1180, y: 560 },
+    recommendations: [
+      {
+        title: "Schallschutz-Vorhänge",
+        price: "€150",
+        note: "Straßenlärm wird in 3 Bewertungen erwähnt — Vorhänge heben vsl. die Schlaf-Scores",
+      },
+    ],
+    tickets: [{ id: "#1047", title: "Abfluss Küche läuft langsam ab", status: "Offen" }],
+  },
 ];
 
 type Popup = { unit: Unit; x: number; y: number };
 
 function UnitPopup({ p, onClose }: { p: Popup; onClose: () => void }) {
   const width = 360;
-  const height = 470;
+  const height = 580;
   const left = Math.max(12, Math.min(p.x + 14, (typeof window !== "undefined" ? window.innerWidth : 1400) - width - 16));
   const top = Math.max(12, Math.min(p.y - 60, (typeof window !== "undefined" ? window.innerHeight : 900) - height - 12));
   const u = p.unit;
@@ -120,6 +154,13 @@ function UnitPopup({ p, onClose }: { p: Popup; onClose: () => void }) {
         className="fixed z-50 bg-white border border-line rounded-[22px] shadow-[0_20px_60px_rgba(0,0,0,0.18)] p-6"
         style={{ left, top, width }}
       >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={u.image}
+          alt={u.name}
+          className="w-full h-[130px] object-cover rounded-[14px] mb-4"
+          draggable={false}
+        />
         <div className="flex items-start justify-between">
           <div>
             <div className="text-[16px]">{u.name}</div>
@@ -229,6 +270,13 @@ export default function Einheiten() {
   const [zoom, setZoom] = useState(1);
   const drag = useRef<{ startX: number; startY: number; panX: number; panY: number } | null>(null);
   const moved = useRef(false);
+  const trackRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    trackRef.current
+      ?.querySelector(`[data-card="${active}"]`)
+      ?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+  }, [active]);
 
   const openPopup = (unit: Unit, e: { clientX: number; clientY: number }) => {
     if (moved.current) return;
@@ -384,25 +432,32 @@ export default function Einheiten() {
           </div>
         </div>
 
-        <div className="flex items-center justify-center gap-6 mt-8 min-h-[430px]">
+        <div
+          ref={trackRef}
+          className="flex items-center gap-6 mt-8 min-h-[440px] overflow-x-auto px-[calc(50%-170px)] [&::-webkit-scrollbar]:hidden"
+          style={{ scrollbarWidth: "none" }}
+        >
           {units.map((u, i) => {
             const isActive = i === active;
-            const Icon = u.icon;
             return (
               <button
                 key={u.key}
+                data-card={i}
                 onClick={(e) => (isActive ? openPopup(u, e) : setActive(i))}
-                className={`text-left bg-white border border-line rounded-[24px] overflow-hidden transition-all duration-300 ${
+                className={`text-left bg-white border border-line rounded-[24px] overflow-hidden shrink-0 transition-all duration-300 ${
                   isActive
                     ? "w-[340px] shadow-[0_16px_50px_rgba(0,0,0,0.12)]"
                     : "w-[290px] opacity-80 scale-[0.94] shadow-[0_2px_10px_rgba(0,0,0,0.05)]"
                 }`}
               >
-                <div
-                  className="relative h-[220px] flex items-center justify-center"
-                  style={{ background: u.gradient }}
-                >
-                  <Icon size={64} className="text-white/60" />
+                <div className="relative h-[220px] overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={u.image}
+                    alt={u.name}
+                    className="w-full h-full object-cover"
+                    draggable={false}
+                  />
                   {u.status === "blocked" && (
                     <span className="absolute top-3 right-3 bg-white/90 text-negative rounded-full px-3 py-1 text-[12px]">
                       Blockiert
