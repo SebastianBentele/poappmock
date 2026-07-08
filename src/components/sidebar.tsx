@@ -8,6 +8,7 @@ import {
   Wallet,
   ClipboardList,
   CalendarDays,
+  LayoutGrid,
   ChevronRight,
   MessageSquarePlus,
   Settings,
@@ -16,6 +17,7 @@ import {
 
 const navItems = [
   { href: "/", label: "Frag Arbio", icon: MessageCircle },
+  { href: "/einheiten", label: "Portfolio", icon: LayoutGrid },
   { href: "/portfolio", label: "Umsatz", icon: BarChart3 },
   { href: "/finanzen", label: "Finanzen", icon: Wallet },
   { href: "/operativ", label: "Operations", icon: ClipboardList },
