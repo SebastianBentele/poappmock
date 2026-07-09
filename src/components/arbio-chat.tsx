@@ -15,6 +15,7 @@ import {
   BadgeEuro,
   Phone,
   AlertTriangle,
+  Sparkles,
 } from "lucide-react";
 
 export type Msg =
@@ -53,6 +54,8 @@ export type Msg =
       status: "live" | "blocked";
       blockedNote?: string;
       kpis: { label: string; value: string }[];
+      recommendations?: { title: string; price: string; note: string }[];
+      tickets?: { id: string; title: string; status: string }[];
     }
   | {
       kind: "bars";
@@ -511,7 +514,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
                   return (
                     <div
                       key={i}
-                      className="self-end max-w-[80%] bg-[#2a2a2a] text-white rounded-[22px] rounded-br-[6px] px-5 py-3 text-[15px] leading-snug"
+                      className="shrink-0 self-end max-w-[80%] bg-[#2a2a2a] text-white rounded-[22px] rounded-br-[6px] px-5 py-3 text-[15px] leading-snug"
                     >
                       {m.text}
                     </div>
@@ -520,7 +523,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
                   return (
                     <div
                       key={i}
-                      className="self-start max-w-[85%] bg-panel rounded-[22px] rounded-tl-[6px] px-5 py-3 text-[15px] leading-snug"
+                      className="shrink-0 self-start max-w-[85%] bg-panel rounded-[22px] rounded-tl-[6px] px-5 py-3 text-[15px] leading-snug"
                     >
                       {m.text}
                     </div>
@@ -529,7 +532,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
                   return (
                     <div
                       key={i}
-                      className="self-start w-full max-w-[440px] bg-white border border-line rounded-[18px] px-5 py-4 shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
+                      className="shrink-0 self-start w-full max-w-[440px] bg-white border border-line rounded-[18px] px-5 py-4 shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
                     >
                       <div className="text-[14px] mb-3">{m.title}</div>
                       <div className="flex flex-col">
@@ -676,7 +679,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
                   return (
                     <div
                       key={i}
-                      className="self-start w-full max-w-[440px] bg-white border border-line rounded-[18px] px-5 py-4 shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
+                      className="shrink-0 self-start w-full max-w-[440px] bg-white border border-line rounded-[18px] px-5 py-4 shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
                     >
                       <div className="flex items-center gap-3">
                         <span className="w-10 h-10 rounded-full bg-panel flex items-center justify-center text-[13px] font-medium">
@@ -712,7 +715,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
                   return (
                     <div
                       key={i}
-                      className="self-start w-full max-w-[440px] bg-white border border-line rounded-[18px] overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
+                      className="shrink-0 self-start w-full max-w-[440px] bg-white border border-line rounded-[18px] overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
@@ -750,6 +753,56 @@ export function ChatProvider({ children }: { children: ReactNode }) {
                             </div>
                           ))}
                         </div>
+                        {m.recommendations && m.recommendations.length > 0 && (
+                          <div className="mt-4">
+                            <div className="flex items-center gap-1.5 text-[12px] tracking-[1.5px] uppercase text-muted">
+                              <Sparkles size={12} />
+                              Empfehlungen von Arbio
+                            </div>
+                            {m.recommendations.map(({ title, price, note }) => (
+                              <div key={title} className="py-2 border-b border-line last:border-b-0">
+                                <div className="flex items-center justify-between text-[14px]">
+                                  <span>{title}</span>
+                                  <span>{price}</span>
+                                </div>
+                                <p className="text-[13px] text-muted leading-snug mt-0.5">{note}</p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {m.tickets && (
+                          <div className="mt-4">
+                            <div className="flex items-center gap-1.5 text-[12px] tracking-[1.5px] uppercase text-muted">
+                              <Wrench size={12} />
+                              Tickets
+                            </div>
+                            {m.tickets.length === 0 ? (
+                              <div className="flex items-center gap-2 text-[13px] text-muted mt-1.5">
+                                <CheckCircle2 size={13} className="text-accent-text" />
+                                Keine offenen Tickets
+                              </div>
+                            ) : (
+                              m.tickets.map(({ id, title, status }) => (
+                                <div
+                                  key={id}
+                                  className="flex items-center gap-3 py-2 border-b border-line last:border-b-0"
+                                >
+                                  <span className="text-[13px] text-muted shrink-0">{id}</span>
+                                  <span className="flex-1 text-[14px] truncate">{title}</span>
+                                  <span
+                                    className={`text-[12px] rounded-full px-2.5 py-0.5 shrink-0 ${
+                                      status === "In Arbeit"
+                                        ? "bg-[#eef5eb] text-accent-text"
+                                        : "bg-panel text-muted"
+                                    }`}
+                                  >
+                                    {status}
+                                  </span>
+                                </div>
+                              ))
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
                   );
@@ -757,7 +810,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
                   return (
                     <div
                       key={i}
-                      className="self-start w-full max-w-[440px] bg-white border border-line rounded-[18px] px-5 py-4 shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
+                      className="shrink-0 self-start w-full max-w-[440px] bg-white border border-line rounded-[18px] px-5 py-4 shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
                     >
                       <div className="text-[14px] mb-3">{m.title}</div>
                       <div className="flex flex-col gap-2.5">
@@ -778,7 +831,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
                   );
                 if (m.kind === "chips")
                   return (
-                    <div key={i} className="self-start flex gap-2 flex-wrap max-w-[85%]">
+                    <div key={i} className="shrink-0 self-start flex gap-2 flex-wrap max-w-[85%]">
                       {m.options.map((o) => (
                         <button
                           key={o.label}
@@ -794,7 +847,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
                   return (
                     <div
                       key={i}
-                      className="self-start w-full max-w-[440px] bg-white border border-line rounded-[18px] px-5 py-4 shadow-[0_1px_4px_rgba(0,0,0,0.03)] flex items-center gap-3"
+                      className="shrink-0 self-start w-full max-w-[440px] bg-white border border-line rounded-[18px] px-5 py-4 shadow-[0_1px_4px_rgba(0,0,0,0.03)] flex items-center gap-3"
                     >
                       <CheckCircle2 size={18} className="text-accent-text shrink-0" />
                       <div className="flex-1">

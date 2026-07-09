@@ -244,10 +244,6 @@ function insightSeed(u: Unit): Msg[] {
   }
   return [
     {
-      kind: "bot",
-      text: `Gern — hier ist der detaillierte Blick auf dein ${u.name}. Tipp unten auf ein Thema oder frag frei drauflos.`,
-    },
-    {
       kind: "unitcard",
       image: u.image,
       name: u.name,
@@ -260,13 +256,15 @@ function insightSeed(u: Unit): Msg[] {
         { label: "Ø Tagesrate", value: u.adr },
         { label: "Bewertung", value: u.rating },
       ],
+      recommendations: u.recommendations,
+      tickets: u.tickets,
     },
     {
       kind: "bot",
       text:
         u.status === "blocked"
-          ? `Kurz eingeordnet: Die Einheit ist aktuell blockiert (${u.blockedNote}), das Team arbeitet an der Freigabe. Davon abgesehen steht sie stark da — ${u.rating} Bewertung und ${u.revenue} Juli-Umsatz.`
-          : `Kurz eingeordnet: Die Einheit läuft großartig — ${u.rating} Bewertung, ${u.occ} Auslastung und ${u.revenue} Umsatz im Juli. Arbio prüft Preise und Verfügbarkeiten täglich.`,
+          ? `Kurz eingeordnet: Die Einheit ist aktuell blockiert (${u.blockedNote}), das Team arbeitet an der Freigabe. Davon abgesehen steht sie stark da — ${u.rating} Bewertung und ${u.revenue} Juli-Umsatz. Tipp unten auf ein Thema oder frag frei drauflos.`
+          : `Kurz eingeordnet: Die Einheit läuft großartig — ${u.rating} Bewertung, ${u.occ} Auslastung und ${u.revenue} Umsatz im Juli. Arbio prüft Preise und Verfügbarkeiten täglich. Tipp unten auf ein Thema oder frag frei drauflos.`,
     },
     { kind: "chips", options: chips },
   ];
