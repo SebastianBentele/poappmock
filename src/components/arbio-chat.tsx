@@ -15,7 +15,6 @@ import {
   BadgeEuro,
   Phone,
   AlertTriangle,
-  HelpCircle,
 } from "lucide-react";
 
 export type Msg =
@@ -62,49 +61,18 @@ export type Msg =
     }
   | { kind: "chips"; options: { label: string; answer: Msg[] }[] };
 
-type ReqType = "report" | "request" | "data";
-
-const requestTypes: {
-  type: ReqType;
-  label: string;
-  hint: string;
-  icon: typeof AlertTriangle;
-  options: string[];
-}[] = [
-  {
-    type: "report",
-    label: "Melden",
-    hint: "Schaden oder Vorfall",
-    icon: AlertTriangle,
-    options: ["Schaden melden", "Sicherheitsvorfall melden"],
-  },
-  {
-    type: "request",
-    label: "Anfragen",
-    hint: "Reparatur, Reinigung, Ausstattung",
-    icon: Wrench,
-    options: ["Reparatur anfragen", "Reinigung anfragen", "Ausstattung ändern"],
-  },
-  {
-    type: "data",
-    label: "Datenfrage",
-    hint: "Frage zu deinen Zahlen",
-    icon: HelpCircle,
-    options: ["Wie war meine Auslastung im Juli?", "Wie entwickelt sich meine ADR?"],
-  },
+const UNIT_NAMES = [
+  "Altstadt Apartment",
+  "Studio Universität",
+  "Garten Apartment",
+  "Altbau Suite Eppendorf",
+  "Kiez Apartment Prenzlauer Berg",
 ];
-
-const dataAnswers: Record<string, string> = {
-  "Wie war meine Auslastung im Juli?":
-    "Deine Auslastung im Juli liegt bei 55,5 %. Das ist saisonal etwas niedriger, aber deine Durchschnittsrate von 241 € gleicht das aus — der Umsatz liegt 7,6 % über Vorjahr. Details findest du unter Umsatz.",
-  "Wie entwickelt sich meine ADR?":
-    "Deine ADR liegt aktuell bei 241 € — +37 € gegenüber dem Vorjahreszeitraum (+18 %). Seit Beginn mit Arbio ist sie um 34 % gestiegen. Die vollständige Entwicklung siehst du unter Umsatz.",
-};
 
 export const requestIntroSeed: Msg[] = [
   {
     kind: "bot",
-    text: "Hi Sebastian! Was möchtest du tun? Wähl eine Kategorie — Melden, Anfragen oder Datenfrage — oder beschreib dein Anliegen frei. Für komplexere Themen kannst du unten auch direkt einen Call mit deinem KAM buchen.",
+    text: "Hi Sebastian! Wähl unten Melden oder Anfragen — ich führe dich Schritt für Schritt durch. Für komplexe Themen oder Beschwerden buch direkt einen Termin mit deinem KAM, oder beschreib dein Anliegen einfach frei.",
   },
 ];
 
@@ -326,34 +294,58 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     openChat(n.seed);
   };
 
-  const submitRequest = (text: string, type: ReqType = "request") => {
+  const submitRequest = (text: string) => {
     if (!text.trim()) return;
-    if (type === "data") {
-      setMessages((m) => [
-        ...m,
-        { kind: "user", text },
-        {
-          kind: "bot",
-          text:
-            dataAnswers[text] ??
-            "Gute Frage — ich schaue mir deine Zahlen an. Die Auswertung findest du auch jederzeit unter Umsatz und Finanzen.",
-        },
-      ]);
-    } else {
-      setMessages((m) => [
-        ...m,
-        { kind: "user", text },
-        {
-          kind: "bot",
-          text:
-            type === "report"
-              ? "Danke für die Meldung! Ich habe folgendes Ticket vorbereitet — bitte bestätige kurz:"
-              : "Gerne! Ich habe folgendes Ticket vorbereitet — bitte bestätige kurz:",
-        },
-        draftFor(text),
-      ]);
-    }
+    setMessages((m) => [
+      ...m,
+      { kind: "user", text },
+      { kind: "bot", text: "Gerne! Ich habe folgendes Ticket vorbereitet — bitte bestätige kurz:" },
+      draftFor(text),
+    ]);
     setInput("");
+  };
+
+  // Guided flows: type → unit → ticket draft to confirm
+  const startGuided = (mode: "melden" | "anfragen") => {
+    const types =
+      mode === "melden"
+        ? ["Schaden", "Sicherheitsvorfall", "Sonstiger Vorfall"]
+        : ["Reparatur", "Reinigung", "Ausstattung ändern"];
+    const draftTitle = (t: string) =>
+      mode === "melden" ? `${t} melden` : t === "Ausstattung ändern" ? t : `${t} anfragen`;
+    setMessages((m) => [
+      ...m,
+      { kind: "user", text: mode === "melden" ? "Ich möchte etwas melden." : "Ich möchte etwas anfragen." },
+      {
+        kind: "bot",
+        text:
+          mode === "melden"
+            ? "Alles klar — was möchtest du melden?"
+            : "Gerne — was brauchst du?",
+      },
+      {
+        kind: "chips",
+        options: types.map((t) => ({
+          label: t,
+          answer: [
+            { kind: "bot", text: `${t} — für welche Einheit?` },
+            {
+              kind: "chips",
+              options: UNIT_NAMES.map((u) => ({
+                label: u,
+                answer: [
+                  {
+                    kind: "bot",
+                    text: "Danke! Ich habe alles vorbereitet — bitte bestätige kurz:",
+                  },
+                  { kind: "draft", title: draftTitle(t), unit: u, prio: "Mittel", status: "pending" },
+                ],
+              })),
+            },
+          ],
+        })),
+      },
+    ]);
   };
 
   const bookKamCall = () => {
@@ -819,33 +811,27 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 
             <div className="px-7 pb-6 pt-2 border-t border-line">
               {!hasPending && (
-                <div className="flex flex-col gap-2.5 py-3">
-                  {requestTypes.map(({ type, label, hint, icon: Icon, options }) => (
-                    <div key={type} className="flex items-start gap-3">
-                      <span className="flex items-center gap-1.5 text-[13px] text-muted w-[112px] shrink-0 mt-1.5">
-                        <Icon size={13} />
-                        {label}
-                      </span>
-                      <div className="flex gap-2 flex-wrap flex-1">
-                        {options.map((o) => (
-                          <button
-                            key={o}
-                            onClick={() => submitRequest(o, type)}
-                            className="border border-line rounded-full px-4 py-2 text-[14px] hover:bg-panel"
-                            title={hint}
-                          >
-                            {o}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
+                <div className="flex gap-2.5 flex-wrap py-3">
+                  <button
+                    onClick={() => startGuided("melden")}
+                    className="flex items-center gap-2 border border-line rounded-full px-5 py-2.5 text-[14px] hover:bg-panel"
+                  >
+                    <AlertTriangle size={14} className="text-muted" />
+                    Melden
+                  </button>
+                  <button
+                    onClick={() => startGuided("anfragen")}
+                    className="flex items-center gap-2 border border-line rounded-full px-5 py-2.5 text-[14px] hover:bg-panel"
+                  >
+                    <Wrench size={14} className="text-muted" />
+                    Anfragen
+                  </button>
                   <button
                     onClick={bookKamCall}
-                    className="flex items-center gap-2 text-[14px] text-accent-text hover:underline mt-1"
+                    className="flex items-center gap-2 border border-line rounded-full px-5 py-2.5 text-[14px] hover:bg-panel"
                   >
-                    <Phone size={14} />
-                    Komplexes Thema oder Beschwerde? Termin mit deinem KAM buchen
+                    <Phone size={14} className="text-muted" />
+                    KAM-Termin buchen
                   </button>
                 </div>
               )}
