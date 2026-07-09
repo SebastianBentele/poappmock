@@ -809,9 +809,28 @@ export function ChatProvider({ children }: { children: ReactNode }) {
               })}
             </div>
 
-            <div className="px-7 pb-6 pt-2 border-t border-line">
+            <div className="px-7 pb-5 pt-4 border-t border-line">
+              <div className="flex items-center gap-2 bg-white border border-line rounded-[30px] shadow-[0_2px_12px_rgba(0,0,0,0.06)] pl-6 pr-2.5 py-2">
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && submitRequest(input)}
+                  placeholder="Beschreib dein Anliegen..."
+                  className="flex-1 bg-transparent outline-none text-[15px] placeholder:text-muted"
+                />
+                <button className="w-10 h-10 rounded-full flex items-center justify-center text-muted hover:bg-panel">
+                  <Mic size={18} />
+                </button>
+                <button
+                  onClick={() => submitRequest(input)}
+                  className="w-10 h-10 rounded-full bg-[#2a2a2a] text-white flex items-center justify-center hover:bg-black"
+                >
+                  <ArrowUp size={18} />
+                </button>
+              </div>
               {!hasPending && (
-                <div className="flex gap-2.5 flex-wrap py-3">
+                <div className="flex gap-2.5 flex-wrap justify-center pt-3">
                   <button
                     onClick={() => startGuided("melden")}
                     className="flex items-center gap-2 border border-line rounded-full px-5 py-2.5 text-[14px] hover:bg-panel"
@@ -835,25 +854,6 @@ export function ChatProvider({ children }: { children: ReactNode }) {
                   </button>
                 </div>
               )}
-              <div className="flex items-center gap-2 bg-white border border-line rounded-[30px] shadow-[0_2px_12px_rgba(0,0,0,0.06)] pl-6 pr-2.5 py-2">
-                <input
-                  type="text"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && submitRequest(input)}
-                  placeholder="Beschreib dein Anliegen..."
-                  className="flex-1 bg-transparent outline-none text-[15px] placeholder:text-muted"
-                />
-                <button className="w-10 h-10 rounded-full flex items-center justify-center text-muted hover:bg-panel">
-                  <Mic size={18} />
-                </button>
-                <button
-                  onClick={() => submitRequest(input)}
-                  className="w-10 h-10 rounded-full bg-[#2a2a2a] text-white flex items-center justify-center hover:bg-black"
-                >
-                  <ArrowUp size={18} />
-                </button>
-              </div>
             </div>
           </div>
         </div>
