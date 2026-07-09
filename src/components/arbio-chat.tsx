@@ -42,8 +42,25 @@ export type Msg =
       photos: number;
       cost: string;
       status: "pending" | "approved" | "declined";
+      approveText?: string;
+      declineText?: string;
     }
-  | { kind: "kamcall"; slots: string[]; chosen?: string };
+  | { kind: "kamcall"; slots: string[]; chosen?: string }
+  | {
+      kind: "unitcard";
+      image: string;
+      name: string;
+      city: string;
+      status: "live" | "blocked";
+      blockedNote?: string;
+      kpis: { label: string; value: string }[];
+    }
+  | {
+      kind: "bars";
+      title: string;
+      bars: { label: string; value: string; pct: number }[];
+    }
+  | { kind: "chips"; options: { label: string; answer: Msg[] }[] };
 
 type ReqType = "report" | "request" | "data";
 
@@ -371,14 +388,22 @@ export function ChatProvider({ children }: { children: ReactNode }) {
           ? { ...msg, status: approved ? ("approved" as const) : ("declined" as const) }
           : msg
       );
+      const appr = m[idx];
+      const custom = appr.kind === "approval" ? appr : null;
       next.push({
         kind: "bot",
         text: approved
-          ? "Danke für die Freigabe! Der Termin mit der Glaserei ist für den 10.07. gebucht. Die Kosten (€780) erscheinen transparent in deiner Juli-P&L. Die Einheit geht planmäßig am 11.07. wieder live — ich halte dich auf dem Laufenden."
-          : "Alles klar, die Reparatur wird nicht beauftragt. Die Duschglaswand bleibt vorerst gesperrt — sag Bescheid, wenn du ein alternatives Angebot möchtest.",
+          ? (custom?.approveText ??
+            "Danke für die Freigabe! Der Termin mit der Glaserei ist für den 10.07. gebucht. Die Kosten (€780) erscheinen transparent in deiner Juli-P&L. Die Einheit geht planmäßig am 11.07. wieder live — ich halte dich auf dem Laufenden.")
+          : (custom?.declineText ??
+            "Alles klar, die Reparatur wird nicht beauftragt. Die Duschglaswand bleibt vorerst gesperrt — sag Bescheid, wenn du ein alternatives Angebot möchtest."),
       });
       return next;
     });
+  };
+
+  const chooseInlineChip = (option: { label: string; answer: Msg[] }) => {
+    setMessages((m) => [...m, { kind: "user", text: option.label }, ...option.answer]);
   };
 
   const resolveDraft = (idx: number, approved: boolean) => {
@@ -689,6 +714,88 @@ export function ChatProvider({ children }: { children: ReactNode }) {
                           ))}
                         </div>
                       )}
+                    </div>
+                  );
+                if (m.kind === "unitcard")
+                  return (
+                    <div
+                      key={i}
+                      className="self-start w-full max-w-[440px] bg-white border border-line rounded-[18px] overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={m.image}
+                        alt={m.name}
+                        className="w-full h-[150px] object-cover"
+                        draggable={false}
+                      />
+                      <div className="p-5">
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <div className="text-[16px]">{m.name}</div>
+                            <div className="text-[13px] text-muted mt-0.5">{m.city}</div>
+                          </div>
+                          {m.status === "live" ? (
+                            <span className="flex items-center gap-1.5 bg-[#eef5eb] text-accent-text rounded-full px-3 py-1 text-[13px]">
+                              <span className="w-2 h-2 rounded-full bg-accent inline-block" />
+                              Live
+                            </span>
+                          ) : (
+                            <span className="flex items-center gap-1.5 bg-[#fdecea] text-negative rounded-full px-3 py-1 text-[13px]">
+                              <span className="w-2 h-2 rounded-full bg-negative inline-block" />
+                              Blockiert
+                            </span>
+                          )}
+                        </div>
+                        {m.blockedNote && (
+                          <div className="text-[13px] text-negative mt-1.5">{m.blockedNote}</div>
+                        )}
+                        <div className="grid grid-cols-2 gap-2 mt-3.5">
+                          {m.kpis.map(({ label, value }) => (
+                            <div key={label} className="bg-panel rounded-[12px] px-3.5 py-2.5">
+                              <div className="text-[12px] text-muted">{label}</div>
+                              <div className="text-[17px] tracking-[-0.3px] mt-0.5">{value}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                if (m.kind === "bars")
+                  return (
+                    <div
+                      key={i}
+                      className="self-start w-full max-w-[440px] bg-white border border-line rounded-[18px] px-5 py-4 shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
+                    >
+                      <div className="text-[14px] mb-3">{m.title}</div>
+                      <div className="flex flex-col gap-2.5">
+                        {m.bars.map(({ label, value, pct }) => (
+                          <div key={label} className="flex items-center gap-3">
+                            <span className="w-[54px] shrink-0 text-[13px] text-muted">{label}</span>
+                            <div className="flex-1 h-[8px] bg-panel rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-accent rounded-full"
+                                style={{ width: `${pct}%` }}
+                              />
+                            </div>
+                            <span className="w-[72px] text-right text-[13px]">{value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                if (m.kind === "chips")
+                  return (
+                    <div key={i} className="self-start flex gap-2 flex-wrap max-w-[85%]">
+                      {m.options.map((o) => (
+                        <button
+                          key={o.label}
+                          onClick={() => chooseInlineChip(o)}
+                          className="border border-line bg-white rounded-full px-4 py-2 text-[14px] hover:bg-panel"
+                        >
+                          {o.label}
+                        </button>
+                      ))}
                     </div>
                   );
                 if (m.kind === "confirmed")

@@ -14,8 +14,10 @@ import {
   CheckCircle2,
   Map as MapIcon,
   LayoutGrid,
+  MessageCircle,
 } from "lucide-react";
 import { ChatInput } from "@/components/chat-input";
+import { useArbioChat, type Msg } from "@/components/arbio-chat";
 
 type Unit = {
   key: string;
@@ -29,6 +31,7 @@ type Unit = {
   blockedNote?: string;
   image: string;
   map: { x: number; y: number };
+  monthly: { label: string; value: string; pct: number }[];
   recommendations: { title: string; price: string; note: string }[];
   tickets: { id: string; title: string; status: string }[];
 };
@@ -45,6 +48,11 @@ const units: Unit[] = [
     status: "live",
     image: "/units/altstadt.jpg",
     map: { x: 560, y: 380 },
+    monthly: [
+      { label: "Mai", value: "€11.900", pct: 77 },
+      { label: "Juni", value: "€13.800", pct: 90 },
+      { label: "Juli", value: "€15.400", pct: 100 },
+    ],
     recommendations: [
       {
         title: "Neues Sofa",
@@ -69,6 +77,11 @@ const units: Unit[] = [
     blockedNote: "Wasserschaden Bad · wieder live vsl. 11.07.",
     image: "/units/studio.jpg",
     map: { x: 880, y: 620 },
+    monthly: [
+      { label: "Mai", value: "€8.100", pct: 83 },
+      { label: "Juni", value: "€9.200", pct: 94 },
+      { label: "Juli", value: "€9.800", pct: 100 },
+    ],
     recommendations: [
       { title: "Toaster ersetzen", price: "€35", note: "Von Gästen zweimal angefragt" },
     ],
@@ -88,6 +101,11 @@ const units: Unit[] = [
     status: "live",
     image: "/units/garten.jpg",
     map: { x: 1230, y: 330 },
+    monthly: [
+      { label: "Mai", value: "€9.700", pct: 75 },
+      { label: "Juni", value: "€11.400", pct: 88 },
+      { label: "Juli", value: "€12.900", pct: 100 },
+    ],
     recommendations: [
       {
         title: "Verdunkelungsvorhänge",
@@ -108,6 +126,11 @@ const units: Unit[] = [
     status: "live",
     image: "/units/eppendorf.jpg",
     map: { x: 330, y: 780 },
+    monthly: [
+      { label: "Mai", value: "€9.100", pct: 78 },
+      { label: "Juni", value: "€10.500", pct: 91 },
+      { label: "Juli", value: "€11.600", pct: 100 },
+    ],
     recommendations: [
       {
         title: "Kaffeemaschine upgraden",
@@ -128,6 +151,11 @@ const units: Unit[] = [
     status: "live",
     image: "/units/prenzlauer.jpg",
     map: { x: 1420, y: 700 },
+    monthly: [
+      { label: "Mai", value: "€8.400", pct: 82 },
+      { label: "Juni", value: "€9.300", pct: 91 },
+      { label: "Juli", value: "€10.200", pct: 100 },
+    ],
     recommendations: [
       {
         title: "Schallschutz-Vorhänge",
@@ -141,7 +169,118 @@ const units: Unit[] = [
 
 type Popup = { unit: Unit; x: number; y: number };
 
-function UnitPopup({ p, onClose }: { p: Popup; onClose: () => void }) {
+// Chat seed for "Mehr Einblicke": same info as the popup, richer detail,
+// plus interactive follow-ups (bars, timeline, approval) via inline chips.
+function insightSeed(u: Unit): Msg[] {
+  const rec = u.recommendations[0];
+  const ticket = u.tickets[0];
+  const chips: { label: string; answer: Msg[] }[] = [
+    {
+      label: "Umsatz-Verlauf anzeigen",
+      answer: [
+        { kind: "bars", title: `Umsatz ${u.name} · Mai – Juli 2026`, bars: u.monthly },
+        {
+          kind: "bot",
+          text: `Der Trend zeigt klar nach oben: Juli ist mit ${u.revenue} der stärkste Monat — getragen von der Sommernachfrage und einer Rate von ${u.adr}. Die vollständige Historie findest du unter Umsatz.`,
+        },
+      ],
+    },
+    {
+      label: "Auslastung einordnen",
+      answer: [
+        {
+          kind: "bot",
+          text:
+            u.status === "blocked"
+              ? `Die ${u.occ} Auslastung sind durch die Blockierung gedrückt — ohne die gesperrten Nächte läge die Einheit bei rund 85 %. Sobald sie wieder live ist, holt Arbio die Nachfrage über dynamische Preise und Min-Stay-Regeln direkt wieder rein.`
+              : `${u.occ} Auslastung bei ${u.adr} Durchschnittsrate ist ein bewusst gewählter Sweet Spot: Arbio verramscht keine Restnächte, sondern hält die Rate hoch — das maximiert deinen Ertrag pro Nacht. Kurzfristige Lücken öffnen wir gezielt für Kurzaufenthalte.`,
+        },
+      ],
+    },
+  ];
+  if (ticket) {
+    chips.push({
+      label: "Ticket-Status anzeigen",
+      answer: [
+        {
+          kind: "timeline",
+          title: `Ticket ${ticket.id} · ${ticket.title}`,
+          steps: [
+            { label: "Gemeldet", state: "done" },
+            {
+              label: ticket.status === "Geplant" ? "Termin geplant" : "In Bearbeitung",
+              meta: ticket.status,
+              state: "current",
+            },
+            { label: "Erledigt", state: "pending" },
+          ],
+        },
+        {
+          kind: "bot",
+          text: "Das Team kümmert sich — du musst nichts tun. Alle Details und weitere Tickets findest du unter Operations.",
+        },
+      ],
+    });
+  }
+  if (rec) {
+    chips.push({
+      label: `Empfehlung freigeben: ${rec.title}`,
+      answer: [
+        { kind: "bot", text: "Hier sind die Details — du kannst die Empfehlung direkt freigeben:" },
+        {
+          kind: "approval",
+          title: rec.title,
+          unit: u.name,
+          report: rec.note,
+          photos: 1,
+          cost: rec.price,
+          status: "pending",
+          approveText: `Danke für die Freigabe! Wir kümmern uns um „${rec.title}“ (${rec.price}) — die Kosten erscheinen transparent in deiner P&L, und ich melde mich, sobald es umgesetzt ist.`,
+          declineText:
+            "Alles klar — die Empfehlung bleibt gespeichert, du kannst sie jederzeit hier oder über deinen KAM freigeben.",
+        },
+      ],
+    });
+  }
+  return [
+    {
+      kind: "bot",
+      text: `Gern — hier ist der detaillierte Blick auf dein ${u.name}. Tipp unten auf ein Thema oder frag frei drauflos.`,
+    },
+    {
+      kind: "unitcard",
+      image: u.image,
+      name: u.name,
+      city: u.city,
+      status: u.status,
+      blockedNote: u.blockedNote,
+      kpis: [
+        { label: "Umsatz Juli", value: u.revenue },
+        { label: "Auslastung", value: u.occ },
+        { label: "Ø Tagesrate", value: u.adr },
+        { label: "Bewertung", value: u.rating },
+      ],
+    },
+    {
+      kind: "bot",
+      text:
+        u.status === "blocked"
+          ? `Kurz eingeordnet: Die Einheit ist aktuell blockiert (${u.blockedNote}), das Team arbeitet an der Freigabe. Davon abgesehen steht sie stark da — ${u.rating} Bewertung und ${u.revenue} Juli-Umsatz.`
+          : `Kurz eingeordnet: Die Einheit läuft großartig — ${u.rating} Bewertung, ${u.occ} Auslastung und ${u.revenue} Umsatz im Juli. Arbio prüft Preise und Verfügbarkeiten täglich.`,
+    },
+    { kind: "chips", options: chips },
+  ];
+}
+
+function UnitPopup({
+  p,
+  onClose,
+  onMore,
+}: {
+  p: Popup;
+  onClose: () => void;
+  onMore: (u: Unit) => void;
+}) {
   const width = 360;
   const ref = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState<{ left: number; top: number } | null>(null);
@@ -277,6 +416,15 @@ function UnitPopup({ p, onClose }: { p: Popup; onClose: () => void }) {
             </div>
           )}
         </div>
+
+        {/* More insights → chat */}
+        <button
+          onClick={() => onMore(u)}
+          className="w-full flex items-center justify-center gap-2 bg-[#2a2a2a] text-white rounded-full px-5 py-3 text-[15px] mt-5 hover:bg-black transition-colors"
+        >
+          <MessageCircle size={15} />
+          Mehr Einblicke
+        </button>
       </div>
     </>
   );
@@ -397,6 +545,7 @@ function CityMapSvg() {
 type View = "karte" | "uebersicht";
 
 export default function Einheiten() {
+  const { openChat } = useArbioChat();
   const [view, setView] = useState<View>("karte");
   const [popup, setPopup] = useState<Popup | null>(null);
   const [active, setActive] = useState(1);
@@ -687,7 +836,16 @@ export default function Einheiten() {
         </div>
       )}
 
-      {popup && <UnitPopup p={popup} onClose={() => setPopup(null)} />}
+      {popup && (
+        <UnitPopup
+          p={popup}
+          onClose={() => setPopup(null)}
+          onMore={(u) => {
+            setPopup(null);
+            openChat(insightSeed(u));
+          }}
+        />
+      )}
 
       {/* Floating chat */}
       <div className="fixed bottom-6 left-[290px] right-0 flex justify-center px-8 pointer-events-none">
