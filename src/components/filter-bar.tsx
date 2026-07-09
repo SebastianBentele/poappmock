@@ -4,14 +4,14 @@ import { useState } from "react";
 import { Calendar, MapPin, Building2, ChevronDown, Check, ChevronLeft, ChevronRight } from "lucide-react";
 
 const ALL_UNITS = [
-  { name: "Altstadt Apartment", city: "München" },
-  { name: "Studio Universität", city: "München" },
-  { name: "Garten Apartment", city: "Berlin" },
-  { name: "Kiez Apartment Prenzlauer Berg", city: "Berlin" },
+  { name: "Altstadt Apartment", city: "Hamburg" },
+  { name: "Studio Universität", city: "Hamburg" },
+  { name: "Garten Apartment", city: "Hamburg" },
+  { name: "Kiez Apartment Prenzlauer Berg", city: "Hamburg" },
   { name: "Altbau Suite Eppendorf", city: "Hamburg" },
 ];
 
-const CITIES = ["München", "Berlin", "Hamburg"];
+const CITIES = ["Hamburg"];
 
 const periodPresets = [
   "Dieser Monat",

@@ -40,7 +40,7 @@ const units: Unit[] = [
   {
     key: "altstadt",
     name: "Altstadt Apartment",
-    city: "München",
+    city: "Hamburg",
     adr: "265 €",
     occ: "82 %",
     revenue: "€15.400",
@@ -68,7 +68,7 @@ const units: Unit[] = [
   {
     key: "studio",
     name: "Studio Universität",
-    city: "München",
+    city: "Hamburg",
     adr: "182 €",
     occ: "71 %",
     revenue: "€9.800",
@@ -93,7 +93,7 @@ const units: Unit[] = [
   {
     key: "garten",
     name: "Garten Apartment",
-    city: "Berlin",
+    city: "Hamburg",
     adr: "221 €",
     occ: "76 %",
     revenue: "€12.900",
@@ -143,7 +143,7 @@ const units: Unit[] = [
   {
     key: "prenzlauer",
     name: "Kiez Apartment Prenzlauer Berg",
-    city: "Berlin",
+    city: "Hamburg",
     adr: "174 €",
     occ: "84 %",
     revenue: "€10.200",
@@ -534,8 +534,8 @@ function CityMapSvg() {
       <text x="1330" y="640" fill="#9aa39a" fontSize="15" letterSpacing="2">KIEZ</text>
       <text x="360" y="345" fill="#a8b8a0" fontSize="13" letterSpacing="2">STADTPARK</text>
       <text x="1265" y="790" fill="#a8b8a0" fontSize="13" letterSpacing="2">VOLKSPARK</text>
-      <text x="1035" y="105" fill="#b3c6d1" fontSize="13" letterSpacing="2">SEE</text>
-      <text x="1042" y="330" fill="#b3c6d1" fontSize="13" letterSpacing="2" transform="rotate(78 1042 330)">FLUSS</text>
+      <text x="1035" y="105" fill="#b3c6d1" fontSize="13" letterSpacing="2">ALSTER</text>
+      <text x="1042" y="330" fill="#b3c6d1" fontSize="13" letterSpacing="2" transform="rotate(78 1042 330)">ELBE</text>
     </svg>
   );
 }
