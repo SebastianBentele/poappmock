@@ -490,8 +490,9 @@ export function ChatProvider({ children }: { children: ReactNode }) {
           <div className="bg-white rounded-[24px] shadow-[0_20px_60px_rgba(0,0,0,0.2)] w-full max-w-[720px] h-[80vh] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-7 py-5 border-b border-line">
               <div className="flex items-center gap-3">
-                <span className="w-9 h-9 rounded-full bg-[#2a2a2a] text-white flex items-center justify-center text-[13px]">
-                  A
+                <span className="w-9 h-9 rounded-full bg-[#2a2a2a] flex items-center justify-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/arbio-a-white.png" alt="Arbio" className="h-[17px] w-auto" draggable={false} />
                 </span>
                 <div>
                   <div className="text-[16px]">Frag Arbio</div>
