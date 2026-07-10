@@ -9,14 +9,12 @@ import {
   CheckCircle2,
   AlertTriangle,
   BadgeEuro,
-  Shirt,
+  Home,
   ChevronRight,
 } from "lucide-react";
-import { KpiCard } from "@/components/kpi-card";
 import { AiCard } from "@/components/ai-card";
 import { ChatInput } from "@/components/chat-input";
 import { FilterBar } from "@/components/filter-bar";
-import { TicketsChart } from "@/components/charts";
 import { useArbioChat, waterDamageApprovalSeed, type Msg } from "@/components/arbio-chat";
 
 /* ---------- data ---------- */
@@ -37,18 +35,17 @@ const reviews = [
     unit: "Altstadt Apartment · vor 2 Tagen",
   },
   {
+    platform: "Airbnb",
+    score: "5,0",
+    text: "Traumhafte Altbauwohnung — stilvoll eingerichtet und perfekt organisiert.",
+    unit: "Altbau Suite Eppendorf · vor 3 Tagen",
+  },
+  {
     platform: "Booking.com",
     score: "8,0",
     text: "Tolle Lage, aber das WLAN war am zweiten Abend instabil.",
     unit: "Garten Apartment · vor 5 Tagen",
   },
-];
-
-const commTopics = [
-  { label: "Check-in-Infos", pct: "34%", width: "34%" },
-  { label: "Parken", pct: "18%", width: "18%" },
-  { label: "WLAN-Zugang", pct: "15%", width: "15%" },
-  { label: "Late-Checkout", pct: "12%", width: "12%" },
 ];
 
 const blockedSeed: Msg[] = [
@@ -251,101 +248,33 @@ const board: { column: "Offen" | "In Arbeit" | "Diese Woche gelöst"; tickets: B
   },
 ];
 
-type FeedCat = "Reinigung" | "Tickets" | "Gäste";
+// Compact week summary (aggregated) + chat seed
+const weekRows = [
+  { icon: Sparkles, text: "12 Reinigungen", meta: "zuletzt heute 11:30 · Altstadt Apartment" },
+  { icon: Wrench, text: "4 Tickets gelöst", meta: "Ø 1,6 Tage Lösungszeit" },
+  { icon: MessageCircle, text: "19 Gästeanfragen beantwortet", meta: "Ø 4 Min Antwortzeit" },
+  { icon: Home, text: "8 Check-ins begleitet", meta: "alle reibungslos" },
+];
 
-const feed: {
-  day: string;
-  items: { cat: FeedCat; icon: typeof Sparkles; text: string; meta: string; seed?: Msg[] }[];
-}[] = [
+const weekSummarySeed: Msg[] = [
+  { kind: "user", text: "Was hat Arbio diese Woche für mich erledigt?" },
   {
-    day: "Heute",
-    items: [
-      {
-        cat: "Reinigung",
-        icon: Sparkles,
-        text: "Wechselreinigung Altstadt Apartment",
-        meta: "nach Check-out M. Rossi · 11:30",
-      },
-      {
-        cat: "Gäste",
-        icon: MessageCircle,
-        text: "Gästeanfrage beantwortet (Parken)",
-        meta: "Kiez Apartment Prenzlauer Berg · Antwortzeit 3 Min",
-      },
+    kind: "bot",
+    text: "Gern — hier ist deine Woche im Überblick. Insgesamt 43 erledigte Aufgaben über deine 5 Einheiten, alles ohne dein Zutun:",
+  },
+  {
+    kind: "bars",
+    title: "Diese Woche erledigt · 02.–08.07.",
+    bars: [
+      { label: "Gäste", value: "19 Anfragen", pct: 100 },
+      { label: "Reinigung", value: "12 Turnovers", pct: 63 },
+      { label: "Check-ins", value: "8 begleitet", pct: 42 },
+      { label: "Tickets", value: "4 gelöst", pct: 21 },
     ],
   },
   {
-    day: "Gestern",
-    items: [
-      {
-        cat: "Tickets",
-        icon: Wrench,
-        text: "Ticket #1042 gelöst — Heizung entlüftet",
-        meta: "Garten Apartment · in 1,5 Tagen gelöst",
-        seed: board[2].tickets[0].seed,
-      },
-      {
-        cat: "Reinigung",
-        icon: Sparkles,
-        text: "Wechselreinigung Studio Universität",
-        meta: "Grundreinigung nach Trocknungsphase",
-      },
-      {
-        cat: "Gäste",
-        icon: MessageCircle,
-        text: "2 Check-ins begleitet",
-        meta: "Altstadt Apartment & Altbau Suite Eppendorf · reibungslos",
-      },
-    ],
-  },
-  {
-    day: "Dienstag, 07.07.",
-    items: [
-      {
-        cat: "Tickets",
-        icon: Wrench,
-        text: "Zusatzreinigung eingeplant (#1039)",
-        meta: "Studio Universität · 09.07., 14 Uhr",
-        seed: board[1].tickets[2].seed,
-      },
-      {
-        cat: "Reinigung",
-        icon: Sparkles,
-        text: "Wechselreinigung Garten Apartment",
-        meta: "nach Check-out Familie Krüger",
-      },
-      {
-        cat: "Gäste",
-        icon: MessageCircle,
-        text: "12 Gästeanfragen beantwortet",
-        meta: "Ø 4 Min Antwortzeit · alle Einheiten",
-      },
-    ],
-  },
-  {
-    day: "Montag, 06.07.",
-    items: [
-      {
-        cat: "Tickets",
-        icon: Wrench,
-        text: "Ticket #1040 gelöst — Rauchmelder-Batterie",
-        meta: "Altstadt Apartment · in 0,5 Tagen gelöst",
-        seed: board[2].tickets[1].seed,
-      },
-      {
-        cat: "Reinigung",
-        icon: Shirt,
-        text: "Frische Wäsche geliefert",
-        meta: "3 Einheiten · Sets für 9 Betten",
-      },
-      {
-        cat: "Tickets",
-        icon: Wrench,
-        text: "Techniker beauftragt (#1041 WLAN-Router)",
-        meta: "Garten Apartment",
-        seed: board[1].tickets[0].seed,
-      },
-    ],
+    kind: "bot",
+    text: "Highlights: Die Heizung im Garten Apartment war in 1,5 Tagen entlüftet, der Rauchmelder im Altstadt Apartment wurde beim Turnover direkt mit erledigt, und alle 8 Check-ins liefen ohne einen einzigen Anruf bei dir. Offen sind nur noch die Freigabe zur Duschglaswand und der Router-Termin am 14.07.",
   },
 ];
 
@@ -389,14 +318,6 @@ function CountUp({
 
 export default function Operativ() {
   const { openChat } = useArbioChat();
-  const [feedFilter, setFeedFilter] = useState<"Alle" | FeedCat>("Alle");
-
-  const filteredFeed = feed
-    .map((d) => ({
-      ...d,
-      items: d.items.filter((it) => feedFilter === "Alle" || it.cat === feedFilter),
-    }))
-    .filter((d) => d.items.length > 0);
 
   return (
     <div className="relative min-h-screen px-8 py-6 pb-32">
@@ -416,7 +337,6 @@ export default function Operativ() {
         Braucht deine Aufmerksamkeit
       </div>
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-        {/* Approval card */}
         <button
           onClick={() => openChat(waterDamageApprovalSeed)}
           className="text-left bg-[#fbf6ee] border border-[#f0e2c8] rounded-[24px] p-6 hover:bg-[#f8f0e2] transition-colors"
@@ -439,7 +359,6 @@ export default function Operativ() {
           </div>
         </button>
 
-        {/* Blocked unit card with recovery progress */}
         <button
           onClick={() => openChat(blockedSeed)}
           className="text-left bg-[#fdf0ee] border border-[#f2d8d3] rounded-[24px] p-6 hover:bg-[#fbe7e4] transition-colors"
@@ -468,15 +387,33 @@ export default function Operativ() {
         </button>
       </div>
 
-      {/* 2 — Ticket board */}
+      {/* 2 — Ticket board with integrated KPIs */}
       <div className="bg-white border border-line rounded-[24px] p-7 mt-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between flex-wrap gap-4">
           <h3 className="text-[16px]">Tickets</h3>
           <span className="flex items-center gap-1.5 text-[13px] text-muted">
             <MessageCircle size={13} />
             Klick öffnet Details im Chat
           </span>
         </div>
+
+        {/* Integrated month KPIs */}
+        <div className="flex flex-wrap gap-x-10 gap-y-3 mt-4 pb-5 border-b border-line">
+          {[
+            { target: 41, label: "gelöst diesen Monat" },
+            { target: 1.8, decimals: 1, label: "Ø Tage Lösungszeit" },
+            { target: 38, label: "Reinigungen" },
+            { target: 100, suffix: " %", label: "pünktliche Turnovers" },
+          ].map(({ target, decimals, suffix, label }) => (
+            <div key={label} className="flex items-baseline gap-2">
+              <span className="text-[28px] tracking-[-0.5px]">
+                <CountUp target={target} decimals={decimals ?? 0} suffix={suffix ?? ""} />
+              </span>
+              <span className="text-[13px] text-muted">{label}</span>
+            </div>
+          ))}
+        </div>
+
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-5 mt-5">
           {board.map(({ column, tickets }) => (
             <div key={column} className="bg-panel rounded-[18px] p-4">
@@ -525,155 +462,42 @@ export default function Operativ() {
         </div>
       </div>
 
-      {/* 3 — Activity feed */}
+      {/* 3 — Compact week summary */}
       <div className="bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
-        <div className="flex items-start justify-between flex-wrap gap-3">
-          <h3 className="text-[16px]">Das hat Arbio diese Woche erledigt</h3>
-          <div className="flex items-center border border-line rounded-full p-1">
-            {(["Alle", "Reinigung", "Tickets", "Gäste"] as const).map((f) => (
-              <button
-                key={f}
-                onClick={() => setFeedFilter(f)}
-                className={`rounded-full px-4 py-1.5 text-[14px] ${
-                  feedFilter === f ? "bg-[#2a2a2a] text-white" : "text-muted"
-                }`}
-              >
-                {f}
-              </button>
-            ))}
-          </div>
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <h3 className="text-[16px]">Diese Woche erledigt</h3>
+          <button
+            onClick={() => openChat(weekSummarySeed)}
+            className="flex items-center gap-2 border border-line rounded-full px-4 py-2 text-[14px] hover:bg-panel"
+          >
+            <MessageCircle size={14} className="text-muted" />
+            Zusammenfassung im Chat
+          </button>
         </div>
-
-        <div className="mt-5 flex flex-col gap-6">
-          {filteredFeed.map(({ day, items }) => (
-            <div key={day}>
-              <div className="text-[12px] tracking-[1.5px] uppercase text-muted mb-2">{day}</div>
-              <div className="flex flex-col">
-                {items.map((it, i) => {
-                  const Icon = it.icon;
-                  const row = (
-                    <>
-                      <span className="w-9 h-9 rounded-full bg-panel flex items-center justify-center text-muted shrink-0">
-                        <Icon size={15} />
-                      </span>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-[15px] leading-tight flex items-center gap-2">
-                          {it.text}
-                          <CheckCircle2 size={13} className="text-accent-text shrink-0" />
-                        </div>
-                        <div className="text-[13px] text-muted mt-0.5">{it.meta}</div>
-                      </div>
-                    </>
-                  );
-                  return it.seed ? (
-                    <button
-                      key={`${day}-${i}`}
-                      onClick={() => openChat(it.seed!)}
-                      className={`flex items-center gap-3.5 py-2.5 px-2 -mx-2 rounded-[14px] text-left hover:bg-panel transition-colors ${
-                        i > 0 ? "border-t border-line" : ""
-                      }`}
-                    >
-                      {row}
-                      <ChevronRight size={15} className="text-muted shrink-0" />
-                    </button>
-                  ) : (
-                    <div
-                      key={`${day}-${i}`}
-                      className={`flex items-center gap-3.5 py-2.5 px-2 -mx-2 ${
-                        i > 0 ? "border-t border-line" : ""
-                      }`}
-                    >
-                      {row}
-                    </div>
-                  );
-                })}
+        <div className="grid grid-cols-1 xl:grid-cols-4 gap-3 mt-4">
+          {weekRows.map(({ icon: Icon, text, meta }) => (
+            <div key={text} className="flex items-center gap-3 bg-panel rounded-[16px] px-4 py-3.5">
+              <span className="w-9 h-9 rounded-full bg-white flex items-center justify-center text-muted shrink-0">
+                <Icon size={15} />
+              </span>
+              <div className="min-w-0">
+                <div className="text-[15px] leading-tight flex items-center gap-1.5">
+                  {text}
+                  <CheckCircle2 size={13} className="text-accent-text shrink-0" />
+                </div>
+                <div className="text-[12px] text-muted mt-0.5 truncate">{meta}</div>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* 4 — Success strip with count-up */}
-      <div className="bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
-        <div className="grid grid-cols-1 xl:grid-cols-[1fr_1.2fr] gap-8 items-center">
-          <div>
-            <h3 className="text-[16px]">Dein Juli in Zahlen</h3>
-            <div className="grid grid-cols-2 gap-4 mt-4">
-              <div className="bg-panel rounded-[18px] px-5 py-4">
-                <div className="text-[32px] tracking-[-0.5px]">
-                  <CountUp target={38} />
-                </div>
-                <div className="text-[13px] text-muted mt-0.5">Reinigungen</div>
-              </div>
-              <div className="bg-panel rounded-[18px] px-5 py-4">
-                <div className="text-[32px] tracking-[-0.5px]">
-                  <CountUp target={41} />
-                </div>
-                <div className="text-[13px] text-muted mt-0.5">Tickets gelöst</div>
-              </div>
-              <div className="bg-panel rounded-[18px] px-5 py-4">
-                <div className="text-[32px] tracking-[-0.5px]">
-                  <CountUp target={1.8} decimals={1} />
-                </div>
-                <div className="text-[13px] text-muted mt-0.5">Ø Tage Lösungszeit</div>
-              </div>
-              <div className="bg-panel rounded-[18px] px-5 py-4">
-                <div className="text-[32px] tracking-[-0.5px]">
-                  <CountUp target={100} suffix=" %" />
-                </div>
-                <div className="text-[13px] text-muted mt-0.5">pünktliche Turnovers</div>
-              </div>
-            </div>
-          </div>
-          <div>
-            <div className="flex items-start justify-between">
-              <span className="text-[15px] text-muted">Tickets gelöst vs. offen · Feb – Jul</span>
-              <div className="flex gap-5 text-[13px] text-muted">
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#b9d9ae] inline-block" /> Gelöst
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#d3d3d3] inline-block" /> Offen
-                </span>
-              </div>
-            </div>
-            <div className="mt-3">
-              <TicketsChart />
-            </div>
-          </div>
-        </div>
+      {/* 4 — Bewertungen (second half, focused) */}
+      <div className="flex items-center gap-2 text-[12px] tracking-[1.5px] uppercase text-muted mt-8 mb-3">
+        <Star size={12} />
+        Bewertungen
       </div>
-
-      {/* 5 — KPIs + AI card */}
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_1.15fr] gap-4 mt-5">
-        <div className="grid grid-cols-2 gap-4">
-          <KpiCard label="Ø Bewertung" value="4,8 ★" delta="0,1 vs. Vormonat" deltaDirection="up" />
-          <KpiCard label="Reinigungen" value="38" subline="diesen Monat · 2 Zusatzreinigungen" />
-          <KpiCard label="Offene Tickets" value="5" subline="davon 3 in Arbeit" />
-          <KpiCard label="Ø Antwortzeit" value="4 Min" subline="Antwortrate 98%" />
-        </div>
-        <AiCard
-          title="Dein Betrieb. Auf einen Blick."
-          rows={[
-            {
-              label: "Ergebnis",
-              text: "Deine Immobilien laufen großartig: 4,8 ★, 38 Reinigungen und 11 Check-ins liefen diesen Monat reibungslos.",
-            },
-            {
-              label: "Warum",
-              text: "Sauberkeit und Check-in werden in 9 von 10 Bewertungen positiv erwähnt — 41 Tickets wurden gelöst, nur 5 sind in Bearbeitung.",
-            },
-            {
-              label: "Arbio kümmert sich",
-              text: "Das Team behebt den Wasserschaden im Studio Universität — Freigabe vsl. 11.07., du musst nichts tun.",
-            },
-          ]}
-          chatHint="Details im Chat fragen"
-        />
-      </div>
-
-      {/* 6 — Guest review insights */}
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_1.15fr] gap-4 mt-5">
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_1.15fr] gap-4">
         <div className="bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
           <div className="flex items-start justify-between">
             <h3 className="text-[16px]">Bewertungs-Insights</h3>
@@ -705,57 +529,43 @@ export default function Operativ() {
             ))}
           </div>
         </div>
-        <div className="bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
-          <h3 className="text-[16px]">Neueste Bewertungen</h3>
-          <div className="flex flex-col gap-4 mt-5">
-            {reviews.map(({ platform, score, text, unit }) => (
-              <div key={unit} className="bg-panel rounded-[18px] px-5 py-4">
-                <div className="flex items-center gap-2 text-[13px] text-muted">
-                  <Star size={13} className="text-accent-text" />
-                  <span>
-                    {platform} · {score}
-                  </span>
-                </div>
-                <p className="text-[15px] mt-2 leading-snug">„{text}"</p>
-                <p className="text-[13px] text-muted mt-2">{unit}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+
+        <AiCard
+          title="Deine Bewertungen. Auf einen Blick."
+          rows={[
+            {
+              label: "Ergebnis",
+              text: "4,8 ★ auf Airbnb und 9,3 auf Booking.com — deine Immobilien gehören zu den bestbewerteten ihrer Viertel.",
+            },
+            {
+              label: "Warum",
+              text: "Sauberkeit und Check-in werden in 9 von 10 Bewertungen positiv erwähnt — das Ergebnis von 38 Reinigungen und 8 begleiteten Check-ins allein diesen Monat.",
+            },
+            {
+              label: "Arbio kümmert sich",
+              text: "Das WLAN-Thema aus zwei Bewertungen ist adressiert: Der Routertausch im Garten Apartment ist für den 14.07. terminiert.",
+            },
+          ]}
+          chatHint="Details im Chat fragen"
+        />
       </div>
 
-      {/* 7 — Guest comms insights */}
-      <div className="bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
-        <div className="flex items-start justify-between">
-          <h3 className="text-[16px]">Guest-Comms-Insights</h3>
-          <span className="text-[13px] text-muted">Anteil aller Gästeanfragen</span>
-        </div>
-        <div className="grid grid-cols-1 xl:grid-cols-[1fr_1.4fr] gap-8 mt-5">
-          <div className="flex gap-6">
-            <div className="flex-1 bg-panel rounded-[18px] px-5 py-4">
-              <div className="text-[13px] text-muted">Antwortrate</div>
-              <div className="text-[26px] tracking-[-0.5px] mt-0.5">98%</div>
-            </div>
-            <div className="flex-1 bg-panel rounded-[18px] px-5 py-4">
-              <div className="text-[13px] text-muted">Ø Antwortzeit</div>
-              <div className="text-[26px] tracking-[-0.5px] mt-0.5">4 Min</div>
-            </div>
-            <div className="flex-1 bg-panel rounded-[18px] px-5 py-4">
-              <div className="text-[13px] text-muted">Offene Threads</div>
-              <div className="text-[26px] tracking-[-0.5px] mt-0.5">2</div>
-            </div>
-          </div>
-          <div className="flex flex-col gap-4">
-            {commTopics.map(({ label, pct, width }) => (
-              <div key={label} className="flex items-center gap-4">
-                <span className="w-[130px] shrink-0 text-[15px]">{label}</span>
-                <div className="flex-1 h-[6px] bg-panel rounded-full overflow-hidden">
-                  <div className="h-full bg-[#c9c9c9] rounded-full" style={{ width }} />
-                </div>
-                <span className="w-[46px] text-right text-[15px]">{pct}</span>
+      {/* Neueste Bewertungen — full width */}
+      <div className="bg-white border border-line rounded-[24px] p-7 mt-4 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+        <h3 className="text-[16px]">Neueste Bewertungen</h3>
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 mt-5">
+          {reviews.map(({ platform, score, text, unit }) => (
+            <div key={unit} className="bg-panel rounded-[18px] px-5 py-4">
+              <div className="flex items-center gap-2 text-[13px] text-muted">
+                <Star size={13} className="text-accent-text" />
+                <span>
+                  {platform} · {score}
+                </span>
               </div>
-            ))}
-          </div>
+              <p className="text-[15px] mt-2 leading-snug">„{text}"</p>
+              <p className="text-[13px] text-muted mt-2">{unit}</p>
+            </div>
+          ))}
         </div>
       </div>
 
