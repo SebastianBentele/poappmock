@@ -30,7 +30,13 @@ export function Sidebar() {
   return (
     <aside className="w-[290px] shrink-0 bg-[#fafafa] border-r border-line flex flex-col px-4 py-5">
       <div className="flex items-center justify-between px-2 mb-8">
-        <span className="text-[26px] tracking-[-0.5px]">Arbio</span>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/arbio-logo.jpg"
+          alt="Arbio"
+          className="h-[24px] w-auto mix-blend-multiply"
+          draggable={false}
+        />
         <button className="p-2 rounded-lg hover:bg-panel text-muted">
           <PanelLeft size={17} />
         </button>

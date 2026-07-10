@@ -31,8 +31,14 @@ export function PasswordGate({ children }: { children: ReactNode }) {
     return (
       <div className="min-h-screen bg-[#fafafa] flex items-center justify-center px-6">
         <div className="w-full max-w-[400px] bg-white border border-line rounded-[24px] shadow-[0_8px_40px_rgba(0,0,0,0.06)] px-9 py-10 flex flex-col items-center">
-          <span className="text-[30px] tracking-[-0.5px]">Arbio</span>
-          <p className="text-[15px] text-muted mt-1">Property Owner App</p>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/arbio-logo.jpg"
+            alt="Arbio"
+            className="h-[30px] w-auto mix-blend-multiply"
+            draggable={false}
+          />
+          <p className="text-[15px] text-muted mt-2">Property Owner App</p>
 
           <span className="w-11 h-11 rounded-full bg-panel flex items-center justify-center text-muted mt-8">
             <Lock size={17} />
