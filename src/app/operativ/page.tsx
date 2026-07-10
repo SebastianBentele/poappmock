@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   Star,
   Wrench,
@@ -10,6 +11,7 @@ import {
   BadgeEuro,
   Home,
   ChevronRight,
+  X,
 } from "lucide-react";
 import { AiCard } from "@/components/ai-card";
 import { ChatInput } from "@/components/chat-input";
@@ -44,6 +46,64 @@ const reviews = [
     score: "8,0",
     text: "Tolle Lage, aber das WLAN war am zweiten Abend instabil.",
     unit: "Garten Apartment · vor 5 Tagen",
+  },
+];
+
+const allReviews = [
+  ...reviews,
+  {
+    platform: "Booking.com",
+    score: "9,5",
+    text: "Perfekte Kommunikation, alle Fragen wurden in Minuten beantwortet. Sehr professionell.",
+    unit: "Kiez Apartment Prenzlauer Berg · vor 6 Tagen",
+  },
+  {
+    platform: "Airbnb",
+    score: "4,5",
+    text: "Schöne Wohnung in ruhiger Lage. Die Kaffeemaschine könnte ein Upgrade vertragen.",
+    unit: "Altbau Suite Eppendorf · vor 1 Woche",
+  },
+  {
+    platform: "Airbnb",
+    score: "5,0",
+    text: "Der Garten ist ein Traum — perfekt für Familien. Check-in komplett reibungslos.",
+    unit: "Garten Apartment · vor 1 Woche",
+  },
+  {
+    platform: "Booking.com",
+    score: "9,0",
+    text: "Sehr sauber, top ausgestattet, tolle Betten. Gerne wieder in Hamburg!",
+    unit: "Altstadt Apartment · vor 2 Wochen",
+  },
+  {
+    platform: "Airbnb",
+    score: "4,5",
+    text: "Kompaktes, durchdachtes Studio — ideal für einen Städtetrip. Parken war etwas knifflig.",
+    unit: "Studio Universität · vor 2 Wochen",
+  },
+  {
+    platform: "Airbnb",
+    score: "5,0",
+    text: "Stilvoll, hell, ruhig. Die Empfehlungen fürs Viertel im Gäste-Guide waren Gold wert.",
+    unit: "Kiez Apartment Prenzlauer Berg · vor 3 Wochen",
+  },
+  {
+    platform: "Booking.com",
+    score: "8,5",
+    text: "Gutes Preis-Leistungs-Verhältnis, schnelle Antworten. Late-Checkout hat super geklappt.",
+    unit: "Studio Universität · vor 3 Wochen",
+  },
+  {
+    platform: "Airbnb",
+    score: "5,0",
+    text: "Eine der besten Ferienwohnungen, in denen wir je waren. Alles durchdacht bis ins Detail.",
+    unit: "Altstadt Apartment · vor 4 Wochen",
+  },
+  {
+    platform: "Booking.com",
+    score: "9,2",
+    text: "Blitzsauber und zentral. Die Anreise-Infos kamen genau zum richtigen Zeitpunkt.",
+    unit: "Garten Apartment · vor 1 Monat",
   },
 ];
 
@@ -281,6 +341,7 @@ const weekSummarySeed: Msg[] = [
 
 export default function Operativ() {
   const { openChat } = useArbioChat();
+  const [reviewsOpen, setReviewsOpen] = useState(false);
 
   return (
     <div className="relative min-h-screen px-8 py-6 pb-32">
@@ -498,7 +559,16 @@ export default function Operativ() {
 
       {/* Neueste Bewertungen — full width */}
       <div className="bg-white border border-line rounded-[24px] p-7 mt-4 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
-        <h3 className="text-[16px]">Neueste Bewertungen</h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-[16px]">Neueste Bewertungen</h3>
+          <button
+            onClick={() => setReviewsOpen(true)}
+            className="flex items-center gap-2 border border-line rounded-full px-4 py-2 text-[14px] hover:bg-panel"
+          >
+            <Star size={14} className="text-muted" />
+            Alle Bewertungen
+          </button>
+        </div>
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 mt-5">
           {reviews.map(({ platform, score, text, unit }) => (
             <div key={unit} className="bg-panel rounded-[18px] px-5 py-4">
@@ -514,6 +584,48 @@ export default function Operativ() {
           ))}
         </div>
       </div>
+
+      {/* All reviews popup */}
+      {reviewsOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/30 flex items-center justify-center px-6"
+          onClick={() => setReviewsOpen(false)}
+        >
+          <div
+            className="bg-white rounded-[24px] shadow-[0_20px_60px_rgba(0,0,0,0.2)] w-full max-w-[640px] h-[80vh] flex flex-col overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-7 py-5 border-b border-line">
+              <div>
+                <div className="text-[16px]">Alle Bewertungen</div>
+                <div className="text-[13px] text-muted mt-0.5">
+                  {allReviews.length} Bewertungen · Ø 4,8 ★ Airbnb · 9,3 Booking.com
+                </div>
+              </div>
+              <button
+                onClick={() => setReviewsOpen(false)}
+                className="w-9 h-9 rounded-full bg-panel flex items-center justify-center text-muted"
+              >
+                <X size={16} />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto px-7 py-5 flex flex-col gap-3">
+              {allReviews.map(({ platform, score, text, unit }) => (
+                <div key={unit + text.slice(0, 12)} className="shrink-0 bg-panel rounded-[18px] px-5 py-4">
+                  <div className="flex items-center gap-2 text-[13px] text-muted">
+                    <Star size={13} className="text-accent-text" />
+                    <span>
+                      {platform} · {score}
+                    </span>
+                  </div>
+                  <p className="text-[15px] mt-2 leading-snug">„{text}"</p>
+                  <p className="text-[13px] text-muted mt-2">{unit}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Floating chat */}
       <div className="fixed bottom-6 left-[290px] right-0 flex justify-center px-8 pointer-events-none">
