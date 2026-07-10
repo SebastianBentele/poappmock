@@ -75,6 +75,27 @@ const thermeSeed: Msg[] = [
   },
 ];
 
+const abflussSeed: Msg[] = [
+  { kind: "user", text: "Was ist zum Abfluss im Kiez Apartment geplant?" },
+  {
+    kind: "bot",
+    text: "Zu Ticket #1047 (Abfluss Küche läuft langsam ab, Kiez Apartment Prenzlauer Berg): Die Meldung kam über die Reinigungskraft. Unser Hausmeister prüft es beim Turnover am 12.07. — die kurze Buchungslücke reicht dafür aus, kein Gast ist betroffen.",
+  },
+  {
+    kind: "timeline",
+    title: "Ticket #1047 · Abfluss Küche · Kiez Apartment",
+    steps: [
+      { label: "Gemeldet", meta: "heute", state: "done" },
+      { label: "Diagnose beim Turnover", meta: "12.07.", state: "current" },
+      { label: "Erledigt", state: "pending" },
+    ],
+  },
+  {
+    kind: "bot",
+    text: "Falls es mehr als eine Reinigung des Siphons ist, holen wir dir vorab ein Angebot ein — du entscheidest, bevor Kosten entstehen.",
+  },
+];
+
 const units: { name: string; bookings: Booking[] }[] = [
   {
     name: "Altstadt Apartment",
@@ -119,6 +140,33 @@ const units: { name: string; bookings: Booking[] }[] = [
       { start: 8, end: 16, label: "Familie Krüger", price: "€1.320", profit: "€960" },
       { start: 20, end: 24, label: "Eigenbelegung", kind: "owner" },
       { start: 26, end: 30, label: "R. Silva", price: "€830", profit: "€600" },
+    ],
+  },
+  {
+    name: "Altbau Suite Eppendorf",
+    bookings: [
+      { start: 1, end: 4, label: "H. Lindqvist", price: "€780", profit: "€560" },
+      { start: 6, end: 13, label: "Familie Conti", price: "€1.560", profit: "€1.150" },
+      { start: 15, end: 19, label: "A. Popović", price: "€1.010", profit: "€740" },
+      { start: 22, end: 31, label: "Whitfield", price: "€1.980", profit: "€1.460" },
+    ],
+  },
+  {
+    name: "Kiez Apartment Prenzlauer Berg",
+    bookings: [
+      { start: 2, end: 8, label: "E. Fischer", price: "€1.180", profit: "€860" },
+      { start: 10, end: 11, label: "M. Larsson", price: "€360", profit: "€260" },
+      {
+        start: 12,
+        end: 12,
+        label: "Abfluss-Diagnose",
+        kind: "maintenance",
+        ticket: "#1047",
+        note: "Hausmeister prüft den Küchenabfluss beim Turnover. Kein Gast betroffen.",
+        seed: abflussSeed,
+      },
+      { start: 14, end: 20, label: "D. Yılmaz", price: "€1.240", profit: "€910" },
+      { start: 23, end: 28, label: "S. Andersson", price: "€1.040", profit: "€760" },
     ],
   },
 ];
