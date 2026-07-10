@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, LifeBuoy } from "lucide-react";
+import { Calendar } from "lucide-react";
 import { ChatInput } from "@/components/chat-input";
 import { useArbioChat, requestIntroSeed } from "@/components/arbio-chat";
 
@@ -54,15 +54,8 @@ export default function Home() {
       <ChatInput
         placeholder="Frag etwas zu deinem Portfolio..."
         className="w-full max-w-[1060px] mt-5"
+        onRequest={() => openChat(requestIntroSeed)}
       />
-
-      <button
-        onClick={() => openChat(requestIntroSeed)}
-        className="flex items-center gap-2.5 bg-[#2a2a2a] text-white rounded-full px-8 py-4 text-[16px] mt-8 hover:bg-black transition-colors"
-      >
-        <LifeBuoy size={17} />
-        Anfrage stellen
-      </button>
     </div>
   );
 }
