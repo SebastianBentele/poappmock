@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import {
   Star,
   Wrench,
@@ -278,42 +277,6 @@ const weekSummarySeed: Msg[] = [
   },
 ];
 
-/* ---------- helpers ---------- */
-
-function CountUp({
-  target,
-  decimals = 0,
-  suffix = "",
-}: {
-  target: number;
-  decimals?: number;
-  suffix?: string;
-}) {
-  const [v, setV] = useState(0);
-  useEffect(() => {
-    const start = performance.now();
-    const dur = 1200;
-    let raf: number;
-    const tick = (now: number) => {
-      const p = Math.min(1, (now - start) / dur);
-      const eased = 1 - Math.pow(1 - p, 3);
-      setV(target * eased);
-      if (p < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [target]);
-  return (
-    <>
-      {v.toLocaleString("de-DE", {
-        minimumFractionDigits: decimals,
-        maximumFractionDigits: decimals,
-      })}
-      {suffix}
-    </>
-  );
-}
-
 /* ---------- page ---------- */
 
 export default function Operativ() {
@@ -395,23 +358,6 @@ export default function Operativ() {
             <MessageCircle size={13} />
             Klick öffnet Details im Chat
           </span>
-        </div>
-
-        {/* Integrated month KPIs */}
-        <div className="flex flex-wrap gap-x-10 gap-y-3 mt-4 pb-5 border-b border-line">
-          {[
-            { target: 41, label: "gelöst diesen Monat" },
-            { target: 1.8, decimals: 1, label: "Ø Tage Lösungszeit" },
-            { target: 38, label: "Reinigungen" },
-            { target: 100, suffix: " %", label: "pünktliche Turnovers" },
-          ].map(({ target, decimals, suffix, label }) => (
-            <div key={label} className="flex items-baseline gap-2">
-              <span className="text-[28px] tracking-[-0.5px]">
-                <CountUp target={target} decimals={decimals ?? 0} suffix={suffix ?? ""} />
-              </span>
-              <span className="text-[13px] text-muted">{label}</span>
-            </div>
-          ))}
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-5 mt-5">
