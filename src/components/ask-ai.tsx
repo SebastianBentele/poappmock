@@ -29,12 +29,9 @@ export function AskAi({ label }: { label?: string }) {
         openChat(seed);
       }}
       aria-label={t("KI fragen", "Ask AI")}
-      className="group/ask absolute top-3.5 right-3.5 z-10 w-8 h-8 rounded-full bg-white border border-line shadow-[0_2px_8px_rgba(0,0,0,0.10)] flex items-center justify-center text-muted hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+      className="absolute top-3.5 right-3.5 z-10 w-8 h-8 rounded-full bg-white border border-line shadow-[0_2px_8px_rgba(0,0,0,0.10)] flex items-center justify-center text-muted hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
     >
       <MessageCircle size={15} />
-      <span className="pointer-events-none absolute right-full mr-2 top-1/2 -translate-y-1/2 hidden group-hover/ask:block bg-[#2a2a2a] text-white text-[12px] rounded-md px-2 py-1 whitespace-nowrap">
-        {t("KI fragen", "Ask AI")}
-      </span>
     </button>
   );
 }
