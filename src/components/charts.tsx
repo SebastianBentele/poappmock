@@ -14,12 +14,19 @@ import {
   Cell,
   PieChart,
   Pie,
+  Tooltip,
 } from "recharts";
 import { useLang, type Lang } from "@/components/lang";
 
 const GREEN = "#7db86c";
 const GREEN_LIGHT = "#b9d9ae";
+const GREEN_DARK = "#5f9e50";
 const GRAY = "#9a9a9a";
+const GRAY_DARK = "#bdbdbd";
+
+// Invisible tooltip: enables recharts' hover tracking (which drives the
+// per-bar activeBar highlight) without rendering a visible tooltip or cursor band.
+const hoverTracker = <Tooltip cursor={false} content={() => null} />;
 
 // Month axis labels are stored canonically in English (e.g. "Mar", "Aug '25").
 // For German we map the month part back; the year suffix is preserved.
@@ -115,8 +122,9 @@ export function DailyRevenueChart() {
             tickFormatter={(v: number) => (v === 0 ? "€0" : `€${Math.round(v / 1000)}k`)}
             ticks={[0, 1000, 2000]}
           />
-          <Bar dataKey="dj" fill={GREEN} radius={[2, 2, 0, 0]} />
-          <Bar dataKey="vj" fill={GREEN_LIGHT} radius={[2, 2, 0, 0]} />
+          {hoverTracker}
+          <Bar dataKey="dj" fill={GREEN} radius={[2, 2, 0, 0]} activeBar={{ fill: GREEN_DARK }} />
+          <Bar dataKey="vj" fill={GREEN_LIGHT} radius={[2, 2, 0, 0]} activeBar={{ fill: GREEN }} />
         </BarChart>
       </ResponsiveContainer>
     </div>
@@ -159,7 +167,8 @@ export function PayoutChart() {
             tickFormatter={(v: number) => (v === 0 ? "€0" : `€${Math.round(v / 1000)}k`)}
             ticks={[0, 12000, 24000, 36000]}
           />
-          <Bar dataKey="v" radius={[10, 10, 10, 10]}>
+          {hoverTracker}
+          <Bar dataKey="v" radius={[10, 10, 10, 10]} activeBar={{ fill: GREEN_DARK }}>
             {payouts.map((p) => (
               <Cell key={p.m} fill={p.current ? GREEN : GREEN_LIGHT} />
             ))}
@@ -328,8 +337,9 @@ export function TicketsChart() {
             tick={{ fill: "#717171", fontSize: 13 }}
             ticks={[0, 15, 30, 45]}
           />
-          <Bar dataKey="gelöst" stackId="t" fill={GREEN_LIGHT} radius={[0, 0, 10, 10]} />
-          <Bar dataKey="offen" stackId="t" fill="#d3d3d3" radius={[10, 10, 0, 0]} />
+          {hoverTracker}
+          <Bar dataKey="gelöst" stackId="t" fill={GREEN_LIGHT} radius={[0, 0, 10, 10]} activeBar={{ fill: GREEN }} />
+          <Bar dataKey="offen" stackId="t" fill="#d3d3d3" radius={[10, 10, 0, 0]} activeBar={{ fill: GRAY_DARK }} />
         </BarChart>
       </ResponsiveContainer>
     </div>
@@ -366,7 +376,8 @@ export function ProfitChart() {
             dy={8}
           />
           <YAxis hide />
-          <Bar dataKey="v" fill="#b9d9ae" radius={[10, 10, 10, 10]} />
+          {hoverTracker}
+          <Bar dataKey="v" fill="#b9d9ae" radius={[10, 10, 10, 10]} activeBar={{ fill: GREEN }} />
         </BarChart>
       </ResponsiveContainer>
     </div>
@@ -401,7 +412,8 @@ export function GrowthChart() {
             tickFormatter={(v: number) => `€${Math.round(v / 1000)}k`}
             ticks={[0, 100000, 200000, 300000]}
           />
-          <Bar dataKey="v" radius={[10, 10, 10, 10]}>
+          {hoverTracker}
+          <Bar dataKey="v" radius={[10, 10, 10, 10]} activeBar={{ fill: GREEN_DARK }}>
             {growthByYear.map((d) => (
               <Cell key={d.y} fill={d.pre ? "#d3d3d3" : d.ytd ? GREEN : GREEN_LIGHT} />
             ))}
@@ -442,7 +454,8 @@ export function LosChart() {
             tickFormatter={(v: number) => `${v}%`}
             ticks={[0, 20, 40]}
           />
-          <Bar dataKey="share" radius={[10, 10, 10, 10]}>
+          {hoverTracker}
+          <Bar dataKey="share" radius={[10, 10, 10, 10]} activeBar={{ fill: GREEN_DARK }}>
             {losBuckets.map((d) => (
               <Cell key={d.b} fill={d.share >= 39 ? GREEN : GREEN_LIGHT} />
             ))}
