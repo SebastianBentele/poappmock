@@ -331,13 +331,8 @@ export default function Kalender() {
 
   return (
     <div className="relative min-h-screen px-8 py-6 pb-32">
-      <h1 className="text-[22px]">{t("Kalender", "Calendar")}</h1>
-      <p className="text-[15px] text-muted mt-1">
-        {t("Alle Einheiten, Buchungen und Wartungen im Überblick", "All units, bookings and maintenance at a glance")}
-      </p>
-
       {/* Filters + entry button */}
-      <div className="flex items-center gap-3 mt-5 mb-6 flex-wrap">
+      <div className="flex items-center gap-3 mb-6 flex-wrap">
         <FilterBar />
         <div className="flex-1" />
         <button

@@ -375,13 +375,8 @@ export default function Operativ() {
 
   return (
     <div className="relative min-h-screen px-8 py-6 pb-32">
-      <h1 className="text-[22px]">Operations</h1>
-      <p className="text-[15px] text-muted mt-1">
-        {t("Was gerade passiert — und was Arbio für dich erledigt", "What's happening right now — and what Arbio gets done for you")}
-      </p>
-
       {/* Filters */}
-      <div className="flex items-center gap-3 mt-5 mb-6 flex-wrap">
+      <div className="flex items-center gap-3 mb-6 flex-wrap">
         <FilterBar showStepper={false} />
       </div>
 

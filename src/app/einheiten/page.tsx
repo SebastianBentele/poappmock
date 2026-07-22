@@ -630,15 +630,9 @@ export default function Einheiten() {
 
   return (
     <div className="relative min-h-screen px-8 py-6 pb-32">
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <h1 className="text-[22px]">Portfolio</h1>
-          <p className="text-[15px] text-muted mt-1">
-            {t("Deine Einheiten auf der Karte und im Überblick", "Your units on the map and at a glance")}
-          </p>
-        </div>
-        {/* View toggle — right margin keeps clear of the fixed notification bell */}
-        <div className="flex items-center border border-line rounded-full p-1 bg-white mr-14">
+      <div className="flex items-center justify-end flex-wrap gap-3">
+        {/* View toggle */}
+        <div className="flex items-center border border-line rounded-full p-1 bg-white">
           <button
             onClick={() => setView("karte")}
             className={`flex items-center gap-2 rounded-full px-5 py-2 text-[15px] ${

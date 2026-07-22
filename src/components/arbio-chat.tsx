@@ -557,7 +557,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       {/* Chat overlay */}
       {open && (
         <div className="fixed inset-0 z-50 bg-black/30 flex items-center justify-center px-6">
-          <div className="bg-white rounded-[24px] shadow-[0_20px_60px_rgba(0,0,0,0.2)] w-full max-w-[720px] h-[80vh] flex flex-col overflow-hidden">
+          <div className="bg-white rounded-[24px] shadow-[0_20px_60px_rgba(0,0,0,0.2)] w-full max-w-[720px] max-h-[85vh] min-h-[340px] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-7 py-5 border-b border-line">
               <div className="flex items-center gap-3">
                 <span className="w-9 h-9 rounded-full bg-[#2a2a2a] flex items-center justify-center">

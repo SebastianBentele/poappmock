@@ -114,13 +114,8 @@ export default function Finanzen() {
 
   return (
     <div className="relative min-h-screen px-8 py-6 pb-32">
-      <h1 className="text-[22px]">{t("Finanzen", "Finance")}</h1>
-      <p className="text-[15px] text-muted mt-1">
-        {t("Dein P&L, deine Auszahlungen und Abrechnungen im Überblick", "Your P&L, payouts and statements at a glance")}
-      </p>
-
       {/* Tabs + filters */}
-      <div className="flex items-center gap-3 mt-5 mb-6 flex-wrap">
+      <div className="flex items-center gap-3 mb-6 flex-wrap">
         <div className="flex items-center border border-line rounded-full p-1">
           {tabs.map(({ key, label }) => (
             <button

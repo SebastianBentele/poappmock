@@ -39,7 +39,7 @@ export default function Home() {
         {kpis.map(({ label, value }) => (
           <div
             key={label}
-            className="bg-white border border-line rounded-[24px] px-7 py-4 min-w-[180px] shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
+            className="bg-panel rounded-[24px] px-7 py-5 min-w-[180px]"
           >
             <div className="text-[15px]">{label}</div>
             <div className="text-[28px] tracking-[-0.5px] mt-1">{value}</div>
