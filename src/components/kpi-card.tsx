@@ -1,3 +1,5 @@
+import { AskAi } from "@/components/ask-ai";
+
 export function KpiCard({
   label,
   value,
@@ -12,7 +14,8 @@ export function KpiCard({
   subline?: string;
 }) {
   return (
-    <div className="bg-panel rounded-[24px] px-7 py-6 flex flex-col gap-3">
+    <div className="group relative bg-panel rounded-[24px] px-7 py-6 flex flex-col gap-3">
+      <AskAi label={label} />
       <span className="text-[15px]">{label}</span>
       <span className="text-[42px] leading-none tracking-[-1px]">{value}</span>
       {delta && (

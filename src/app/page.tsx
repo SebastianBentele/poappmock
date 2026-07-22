@@ -4,6 +4,7 @@ import { Calendar } from "lucide-react";
 import { ChatInput } from "@/components/chat-input";
 import { useArbioChat, requestIntroSeed } from "@/components/arbio-chat";
 import { useLang } from "@/components/lang";
+import { AskAi } from "@/components/ask-ai";
 
 export default function Home() {
   const { openChat } = useArbioChat();
@@ -39,8 +40,9 @@ export default function Home() {
         {kpis.map(({ label, value }) => (
           <div
             key={label}
-            className="bg-panel rounded-[24px] px-7 py-5 min-w-[180px]"
+            className="group relative bg-panel rounded-[24px] px-7 py-5 min-w-[180px]"
           >
+            <AskAi label={label} />
             <div className="text-[15px]">{label}</div>
             <div className="text-[28px] tracking-[-0.5px] mt-1">{value}</div>
           </div>
