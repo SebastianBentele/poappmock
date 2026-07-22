@@ -8,8 +8,8 @@ import {
   FileText,
   Check,
   MessageCircle,
+  ChevronRight,
 } from "lucide-react";
-import { KpiCard } from "@/components/kpi-card";
 import { AiCard } from "@/components/ai-card";
 import { ChatInput } from "@/components/chat-input";
 import { FilterBar } from "@/components/filter-bar";
@@ -99,6 +99,19 @@ export default function Finanzen() {
   const costs = buildCosts(t);
   const statements = buildStatements(t);
 
+  // Margin funnel: how gross booking value turns into operating profit
+  const funnel: {
+    label: string;
+    value: string;
+    sub: string;
+    deduction?: string;
+    highlight?: boolean;
+  }[] = [
+    { label: t("Bruttoumsatz (GBV)", "Gross Booking Value"), value: "€41,5k", sub: t("Buchungsvolumen", "Booking volume") },
+    { label: t("Nettoumsatz", "Net revenue"), value: "€38,7k", sub: t("nach USt. + Beh.steuer", "after VAT + accom. tax"), deduction: "− €2,8k" },
+    { label: t("Operativer Gewinn", "Operating profit"), value: "€33,1k", sub: t("80% operative Marge", "80% operating margin"), deduction: t("− €5,6k Kosten", "− €5.6k costs"), highlight: true },
+  ];
+
   return (
     <div className="relative min-h-screen px-8 py-6 pb-32">
       <h1 className="text-[22px]">{t("Finanzen", "Finance")}</h1>
@@ -128,13 +141,28 @@ export default function Finanzen() {
 
       {tab === "profit" ? (
         <>
-          {/* KPI grid + AI card */}
-          <div className="grid grid-cols-1 xl:grid-cols-[1fr_1.15fr] gap-4">
-            <div className="grid grid-cols-2 gap-4">
-              <KpiCard label={t("Bruttoumsatz (GBV)", "Gross Booking Value")} value="€41,5k" delta={t("7,6% vs. Vorjahr", "7.6% vs. last year")} deltaDirection="up" />
-              <KpiCard label={t("Nettoumsatz", "Net revenue")} value="€38,7k" subline={t("nach USt. + Beh.steuer", "after VAT + accom. tax")} />
-              <KpiCard label={t("Contribution Margin", "Contribution margin")} value="86,0%" subline={t("vom Nettoumsatz", "of net revenue")} />
-              <KpiCard label={t("Operativer Gewinn", "Operating profit")} value="€33,1k" subline={t("nach allen Kosten", "after all costs")} />
+          {/* Profit hero — the profit graph front and center */}
+          <div className="grid grid-cols-1 xl:grid-cols-[1.5fr_1fr] gap-4">
+            <div className="bg-[#eef5eb] rounded-[24px] p-7 flex flex-col">
+              <div className="flex items-start justify-between">
+                <div>
+                  <span className="text-[15px] text-accent-text">{t("Operativer Gewinn · Juli 2026", "Operating profit · July 2026")}</span>
+                  <div className="flex items-end gap-3 mt-2">
+                    <span className="text-[54px] leading-none tracking-[-1.5px]">€33,1k</span>
+                    <span className="text-[16px] text-accent-text mb-1.5">▲ {t("7,6% vs. Vorjahr", "7.6% vs. last year")}</span>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 mt-4">
+                    <span className="rounded-full bg-white px-3.5 py-1.5 text-[13px]">{t("86,0% Deckungsbeitrag", "86.0% contribution margin")}</span>
+                    <span className="rounded-full bg-white px-3.5 py-1.5 text-[13px]">{t("80% operative Marge", "80% operating margin")}</span>
+                  </div>
+                </div>
+                <span className="flex items-center gap-2 text-[13px] text-muted shrink-0">
+                  <span className="w-4 h-[3px] bg-accent inline-block rounded" /> {t("Gewinn über Zeit", "Profit over time")}
+                </span>
+              </div>
+              <div className="bg-white rounded-[18px] p-4 mt-6">
+                <ProfitChart />
+              </div>
             </div>
             <AiCard
               title={t("Arbio Zusammenfassung", "Arbio summary")}
@@ -165,47 +193,69 @@ export default function Finanzen() {
             />
           </div>
 
-          {/* Profit chart + cost structure */}
-          <div className="grid grid-cols-1 xl:grid-cols-[1.6fr_1fr] gap-4 mt-5">
-            <div className="bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
-              <div className="flex items-start justify-between">
-                <h3 className="text-[16px]">{t("Gewinn über Zeit", "Profit over time")}</h3>
-                <span className="flex items-center gap-2 text-[13px] text-muted">
-                  <span className="w-4 h-[3px] bg-accent inline-block rounded" /> {t("Operativer Gewinn", "Operating profit")}
-                </span>
-              </div>
-              <div className="mt-4">
-                <ProfitChart />
-              </div>
+          {/* Margin funnel — from revenue to profit (P&L-native, not on the revenue page) */}
+          <div className="bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+            <div className="flex items-start justify-between">
+              <h3 className="text-[16px]">{t("Vom Umsatz zum Gewinn", "From revenue to profit")}</h3>
+              <span className="text-[13px] text-muted">{t("Juli 2026", "July 2026")}</span>
             </div>
-            <div className="bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
-              <div className="flex items-start justify-between">
-                <h3 className="text-[16px]">{t("Kostenstruktur", "Cost structure")}</h3>
-                <span className="flex items-center gap-1.5 text-[13px] text-muted">
-                  <MessageCircle size={13} />
-                  {t("% vom GBV", "% of GBV")}
-                </span>
-              </div>
-              <div className="flex flex-col gap-2 mt-5">
-                {costs.map(({ label, key, pct, width }) => (
-                  <button
-                    key={key}
-                    onClick={() => openChat(costExplainSeed(key, t))}
-                    className="flex items-center gap-4 px-2 py-2.5 -mx-2 rounded-[12px] hover:bg-panel transition-colors text-left"
-                  >
-                    <span className="w-[130px] shrink-0 text-[15px]">{label}</span>
-                    <div className="flex-1 h-[6px] bg-panel rounded-full overflow-hidden">
-                      <div className="h-full bg-[#c9c9c9] rounded-full" style={{ width }} />
+            <div className="flex flex-col xl:flex-row xl:items-stretch gap-3 mt-6">
+              {funnel.map((s, i) => (
+                <div key={s.label} className="flex flex-col xl:flex-row xl:items-center gap-3 xl:flex-1">
+                  {i > 0 && (
+                    <div className="flex xl:flex-col items-center justify-center gap-1.5 text-muted shrink-0 xl:px-1">
+                      <ChevronRight size={20} className="rotate-90 xl:rotate-0" />
+                      <span className="text-[12px] whitespace-nowrap">{s.deduction}</span>
                     </div>
-                    <span className="w-[52px] text-right text-[15px]">{pct}</span>
-                  </button>
-                ))}
-                <div className="border-t border-line pt-4 flex items-center justify-between">
-                  <span className="text-[15px]">{t("Gesamt", "Total")}</span>
-                  <span className="text-[15px]">
-                    <b>13,6%</b> <span className="text-muted">{t("vom GBV", "of GBV")}</span>
-                  </span>
+                  )}
+                  <div
+                    className={`flex-1 rounded-[20px] px-6 py-5 ${
+                      s.highlight ? "bg-[#eef5eb]" : "bg-panel"
+                    }`}
+                  >
+                    <div className="text-[14px] text-muted">{s.label}</div>
+                    <div
+                      className={`text-[32px] tracking-[-0.5px] mt-1 ${
+                        s.highlight ? "text-accent-text" : ""
+                      }`}
+                    >
+                      {s.value}
+                    </div>
+                    <div className="text-[13px] text-muted mt-1">{s.sub}</div>
+                  </div>
                 </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Cost structure */}
+          <div className="bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+            <div className="flex items-start justify-between">
+              <h3 className="text-[16px]">{t("Kostenstruktur", "Cost structure")}</h3>
+              <span className="flex items-center gap-1.5 text-[13px] text-muted">
+                <MessageCircle size={13} />
+                {t("% vom GBV · Klick öffnet Details", "% of GBV · click opens details")}
+              </span>
+            </div>
+            <div className="flex flex-col gap-2 mt-5">
+              {costs.map(({ label, key, pct, width }) => (
+                <button
+                  key={key}
+                  onClick={() => openChat(costExplainSeed(key, t))}
+                  className="flex items-center gap-4 px-2 py-2.5 -mx-2 rounded-[12px] hover:bg-panel transition-colors text-left"
+                >
+                  <span className="w-[130px] shrink-0 text-[15px]">{label}</span>
+                  <div className="flex-1 h-[6px] bg-panel rounded-full overflow-hidden">
+                    <div className="h-full bg-[#c9c9c9] rounded-full" style={{ width }} />
+                  </div>
+                  <span className="w-[52px] text-right text-[15px]">{pct}</span>
+                </button>
+              ))}
+              <div className="border-t border-line pt-4 flex items-center justify-between">
+                <span className="text-[15px]">{t("Gesamt", "Total")}</span>
+                <span className="text-[15px]">
+                  <b>13,6%</b> <span className="text-muted">{t("vom GBV", "of GBV")}</span>
+                </span>
               </div>
             </div>
           </div>
