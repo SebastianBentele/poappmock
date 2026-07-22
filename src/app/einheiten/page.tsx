@@ -17,7 +17,10 @@ import {
   MessageCircle,
 } from "lucide-react";
 import { ChatInput } from "@/components/chat-input";
-import { useArbioChat, type Msg } from "@/components/arbio-chat";
+import { useArbioChat, type Msg, type Tr } from "@/components/arbio-chat";
+import { useLang } from "@/components/lang";
+
+type TicketStatus = "Offen" | "Geplant" | "In Arbeit";
 
 type Unit = {
   key: string;
@@ -33,10 +36,13 @@ type Unit = {
   map: { x: number; y: number };
   monthly: { label: string; value: string; pct: number }[];
   recommendations: { title: string; price: string; note: string }[];
-  tickets: { id: string; title: string; status: string }[];
+  tickets: { id: string; title: string; status: TicketStatus }[];
 };
 
-const units: Unit[] = [
+const statusLabel = (s: TicketStatus, t: Tr) =>
+  s === "Offen" ? t("Offen", "Open") : s === "Geplant" ? t("Geplant", "Planned") : t("In Arbeit", "In progress");
+
+const buildUnits = (t: Tr): Unit[] => [
   {
     key: "altstadt",
     name: "Altstadt Apartment",
@@ -49,20 +55,20 @@ const units: Unit[] = [
     image: "/units/altstadt.jpg",
     map: { x: 560, y: 380 },
     monthly: [
-      { label: "Mai", value: "€11.900", pct: 77 },
-      { label: "Juni", value: "€13.800", pct: 90 },
-      { label: "Juli", value: "€15.400", pct: 100 },
+      { label: t("Mai", "May"), value: "€11.900", pct: 77 },
+      { label: t("Juni", "Jun"), value: "€13.800", pct: 90 },
+      { label: t("Juli", "Jul"), value: "€15.400", pct: 100 },
     ],
     recommendations: [
       {
-        title: "Neues Sofa",
+        title: t("Neues Sofa", "New sofa"),
         price: "€700",
-        note: "Aktuelles Sofa wird in Bewertungen erwähnt — vsl. +€8/Nacht ADR nach Austausch",
+        note: t("Aktuelles Sofa wird in Bewertungen erwähnt — vsl. +€8/Nacht ADR nach Austausch", "Current sofa is mentioned in reviews — est. +€8/night ADR after replacement"),
       },
     ],
     tickets: [
-      { id: "#1043", title: "Spülmaschine macht Geräusche", status: "Offen" },
-      { id: "#1046", title: "Therme-Wartung 13.–14.07.", status: "Geplant" },
+      { id: "#1043", title: t("Spülmaschine macht Geräusche", "Dishwasher making noise"), status: "Offen" },
+      { id: "#1046", title: t("Therme-Wartung 13.–14.07.", "Boiler service Jul 13–14"), status: "Geplant" },
     ],
   },
   {
@@ -74,20 +80,20 @@ const units: Unit[] = [
     revenue: "€9.800",
     rating: "4,7 ★",
     status: "blocked",
-    blockedNote: "Wasserschaden Bad · wieder live vsl. 11.07.",
+    blockedNote: t("Wasserschaden Bad · wieder live vsl. 11.07.", "Water damage bathroom · live again est. Jul 11"),
     image: "/units/studio.jpg",
     map: { x: 880, y: 620 },
     monthly: [
-      { label: "Mai", value: "€8.100", pct: 83 },
-      { label: "Juni", value: "€9.200", pct: 94 },
-      { label: "Juli", value: "€9.800", pct: 100 },
+      { label: t("Mai", "May"), value: "€8.100", pct: 83 },
+      { label: t("Juni", "Jun"), value: "€9.200", pct: 94 },
+      { label: t("Juli", "Jul"), value: "€9.800", pct: 100 },
     ],
     recommendations: [
-      { title: "Toaster ersetzen", price: "€35", note: "Von Gästen zweimal angefragt" },
+      { title: t("Toaster ersetzen", "Replace toaster"), price: "€35", note: t("Von Gästen zweimal angefragt", "Requested twice by guests") },
     ],
     tickets: [
-      { id: "#1038", title: "Wasserschaden Bad", status: "In Arbeit" },
-      { id: "#1039", title: "Zusatzreinigung nach Late-Checkout", status: "Offen" },
+      { id: "#1038", title: t("Wasserschaden Bad", "Water damage bathroom"), status: "In Arbeit" },
+      { id: "#1039", title: t("Zusatzreinigung nach Late-Checkout", "Extra cleaning after late check-out"), status: "Offen" },
     ],
   },
   {
@@ -102,18 +108,18 @@ const units: Unit[] = [
     image: "/units/garten.jpg",
     map: { x: 1230, y: 330 },
     monthly: [
-      { label: "Mai", value: "€9.700", pct: 75 },
-      { label: "Juni", value: "€11.400", pct: 88 },
-      { label: "Juli", value: "€12.900", pct: 100 },
+      { label: t("Mai", "May"), value: "€9.700", pct: 75 },
+      { label: t("Juni", "Jun"), value: "€11.400", pct: 88 },
+      { label: t("Juli", "Jul"), value: "€12.900", pct: 100 },
     ],
     recommendations: [
       {
-        title: "Verdunkelungsvorhänge",
+        title: t("Verdunkelungsvorhänge", "Blackout curtains"),
         price: "€180",
-        note: "Häufiges Bewertungsthema im Sommer — bessere Schlafqualität, bessere Reviews",
+        note: t("Häufiges Bewertungsthema im Sommer — bessere Schlafqualität, bessere Reviews", "Frequent review topic in summer — better sleep quality, better reviews"),
       },
     ],
-    tickets: [{ id: "#1041", title: "WLAN-Router austauschen", status: "In Arbeit" }],
+    tickets: [{ id: "#1041", title: t("WLAN-Router austauschen", "Replace WiFi router"), status: "In Arbeit" }],
   },
   {
     key: "eppendorf",
@@ -127,15 +133,15 @@ const units: Unit[] = [
     image: "/units/eppendorf.jpg",
     map: { x: 330, y: 780 },
     monthly: [
-      { label: "Mai", value: "€9.100", pct: 78 },
-      { label: "Juni", value: "€10.500", pct: 91 },
-      { label: "Juli", value: "€11.600", pct: 100 },
+      { label: t("Mai", "May"), value: "€9.100", pct: 78 },
+      { label: t("Juni", "Jun"), value: "€10.500", pct: 91 },
+      { label: t("Juli", "Jul"), value: "€11.600", pct: 100 },
     ],
     recommendations: [
       {
-        title: "Kaffeemaschine upgraden",
+        title: t("Kaffeemaschine upgraden", "Upgrade coffee machine"),
         price: "€120",
-        note: "Häufigster Gästewunsch in den Bewertungen — kleiner Invest, spürbarer Review-Effekt",
+        note: t("Häufigster Gästewunsch in den Bewertungen — kleiner Invest, spürbarer Review-Effekt", "Most common guest wish in reviews — small invest, noticeable review effect"),
       },
     ],
     tickets: [],
@@ -152,81 +158,93 @@ const units: Unit[] = [
     image: "/units/prenzlauer.jpg",
     map: { x: 1420, y: 700 },
     monthly: [
-      { label: "Mai", value: "€8.400", pct: 82 },
-      { label: "Juni", value: "€9.300", pct: 91 },
-      { label: "Juli", value: "€10.200", pct: 100 },
+      { label: t("Mai", "May"), value: "€8.400", pct: 82 },
+      { label: t("Juni", "Jun"), value: "€9.300", pct: 91 },
+      { label: t("Juli", "Jul"), value: "€10.200", pct: 100 },
     ],
     recommendations: [
       {
-        title: "Schallschutz-Vorhänge",
+        title: t("Schallschutz-Vorhänge", "Noise-reducing curtains"),
         price: "€150",
-        note: "Straßenlärm wird in 3 Bewertungen erwähnt — Vorhänge heben vsl. die Schlaf-Scores",
+        note: t("Straßenlärm wird in 3 Bewertungen erwähnt — Vorhänge heben vsl. die Schlaf-Scores", "Street noise mentioned in 3 reviews — curtains likely lift the sleep scores"),
       },
     ],
-    tickets: [{ id: "#1047", title: "Abfluss Küche läuft langsam ab", status: "Offen" }],
+    tickets: [{ id: "#1047", title: t("Abfluss Küche läuft langsam ab", "Kitchen drain slow"), status: "Offen" }],
   },
 ];
 
 type Popup = { unit: Unit; x: number; y: number };
 
-// Chat seed for "Mehr Einblicke": same info as the popup, richer detail,
+// Chat seed for "More insights": same info as the popup, richer detail,
 // plus interactive follow-ups (bars, timeline, approval) via inline chips.
-function insightSeed(u: Unit): Msg[] {
+function insightSeed(u: Unit, t: Tr): Msg[] {
   const rec = u.recommendations[0];
   const ticket = u.tickets[0];
   const chips: { label: string; answer: Msg[] }[] = [
     {
-      label: "Umsatz-Verlauf anzeigen",
+      label: t("Umsatz-Verlauf anzeigen", "Show revenue trend"),
       answer: [
-        { kind: "bars", title: `Umsatz ${u.name} · Mai – Juli 2026`, bars: u.monthly },
+        { kind: "bars", title: t(`Umsatz ${u.name} · Mai – Juli 2026`, `Revenue ${u.name} · May – Jul 2026`), bars: u.monthly },
         {
           kind: "bot",
-          text: `Der Trend zeigt klar nach oben: Juli ist mit ${u.revenue} der stärkste Monat — getragen von der Sommernachfrage und einer Rate von ${u.adr}. Die vollständige Historie findest du unter Umsatz.`,
+          text: t(
+            `Der Trend zeigt klar nach oben: Juli ist mit ${u.revenue} der stärkste Monat — getragen von der Sommernachfrage und einer Rate von ${u.adr}. Die vollständige Historie findest du unter Umsatz.`,
+            `The trend is clearly up: July is the strongest month at ${u.revenue} — driven by summer demand and a rate of ${u.adr}. You'll find the full history under Revenue.`
+          ),
         },
       ],
     },
     {
-      label: "Auslastung einordnen",
+      label: t("Auslastung einordnen", "Put occupancy in context"),
       answer: [
         {
           kind: "bot",
           text:
             u.status === "blocked"
-              ? `Die ${u.occ} Auslastung sind durch die Blockierung gedrückt — ohne die gesperrten Nächte läge die Einheit bei rund 85 %. Sobald sie wieder live ist, holt Arbio die Nachfrage über dynamische Preise und Min-Stay-Regeln direkt wieder rein.`
-              : `${u.occ} Auslastung bei ${u.adr} Durchschnittsrate ist ein bewusst gewählter Sweet Spot: Arbio verramscht keine Restnächte, sondern hält die Rate hoch — das maximiert deinen Ertrag pro Nacht. Kurzfristige Lücken öffnen wir gezielt für Kurzaufenthalte.`,
+              ? t(
+                  `Die ${u.occ} Auslastung sind durch die Blockierung gedrückt — ohne die gesperrten Nächte läge die Einheit bei rund 85 %. Sobald sie wieder live ist, holt Arbio die Nachfrage über dynamische Preise und Min-Stay-Regeln direkt wieder rein.`,
+                  `The ${u.occ} occupancy is depressed by the block — without the blocked nights the unit would be around 85%. Once it's live again, Arbio recovers demand via dynamic pricing and min-stay rules right away.`
+                )
+              : t(
+                  `${u.occ} Auslastung bei ${u.adr} Durchschnittsrate ist ein bewusst gewählter Sweet Spot: Arbio verramscht keine Restnächte, sondern hält die Rate hoch — das maximiert deinen Ertrag pro Nacht. Kurzfristige Lücken öffnen wir gezielt für Kurzaufenthalte.`,
+                  `${u.occ} occupancy at ${u.adr} average rate is a deliberately chosen sweet spot: Arbio doesn't dump leftover nights but keeps the rate high — maximizing your yield per night. We open short-term gaps specifically for short stays.`
+                ),
         },
       ],
     },
   ];
   if (ticket) {
     chips.push({
-      label: "Ticket-Status anzeigen",
+      label: t("Ticket-Status anzeigen", "Show ticket status"),
       answer: [
         {
           kind: "timeline",
           title: `Ticket ${ticket.id} · ${ticket.title}`,
           steps: [
-            { label: "Gemeldet", state: "done" },
+            { label: t("Gemeldet", "Reported"), state: "done" },
             {
-              label: ticket.status === "Geplant" ? "Termin geplant" : "In Bearbeitung",
-              meta: ticket.status,
+              label: ticket.status === "Geplant" ? t("Termin geplant", "Appointment planned") : t("In Bearbeitung", "In progress"),
+              meta: statusLabel(ticket.status, t),
               state: "current",
             },
-            { label: "Erledigt", state: "pending" },
+            { label: t("Erledigt", "Done"), state: "pending" },
           ],
         },
         {
           kind: "bot",
-          text: "Das Team kümmert sich — du musst nichts tun. Alle Details und weitere Tickets findest du unter Operations.",
+          text: t(
+            "Das Team kümmert sich — du musst nichts tun. Alle Details und weitere Tickets findest du unter Operations.",
+            "The team is on it — you don't need to do anything. All details and further tickets are under Operations."
+          ),
         },
       ],
     });
   }
   if (rec) {
     chips.push({
-      label: `Empfehlung freigeben: ${rec.title}`,
+      label: t(`Empfehlung freigeben: ${rec.title}`, `Approve recommendation: ${rec.title}`),
       answer: [
-        { kind: "bot", text: "Hier sind die Details — du kannst die Empfehlung direkt freigeben:" },
+        { kind: "bot", text: t("Hier sind die Details — du kannst die Empfehlung direkt freigeben:", "Here are the details — you can approve the recommendation directly:") },
         {
           kind: "approval",
           title: rec.title,
@@ -235,9 +253,14 @@ function insightSeed(u: Unit): Msg[] {
           photos: 1,
           cost: rec.price,
           status: "pending",
-          approveText: `Danke für die Freigabe! Wir kümmern uns um „${rec.title}“ (${rec.price}) — die Kosten erscheinen transparent in deiner P&L, und ich melde mich, sobald es umgesetzt ist.`,
-          declineText:
+          approveText: t(
+            `Danke für die Freigabe! Wir kümmern uns um „${rec.title}“ (${rec.price}) — die Kosten erscheinen transparent in deiner P&L, und ich melde mich, sobald es umgesetzt ist.`,
+            `Thanks for the approval! We'll take care of “${rec.title}” (${rec.price}) — the cost appears transparently in your P&L, and I'll get back to you once it's done.`
+          ),
+          declineText: t(
             "Alles klar — die Empfehlung bleibt gespeichert, du kannst sie jederzeit hier oder über deinen KAM freigeben.",
+            "Understood — the recommendation stays saved, you can approve it here or via your KAM anytime."
+          ),
         },
       ],
     });
@@ -251,20 +274,26 @@ function insightSeed(u: Unit): Msg[] {
       status: u.status,
       blockedNote: u.blockedNote,
       kpis: [
-        { label: "Umsatz Juli", value: u.revenue },
-        { label: "Auslastung", value: u.occ },
-        { label: "Ø Tagesrate", value: u.adr },
-        { label: "Bewertung", value: u.rating },
+        { label: t("Umsatz Juli", "Revenue July"), value: u.revenue },
+        { label: t("Auslastung", "Occupancy"), value: u.occ },
+        { label: t("Ø Tagesrate", "Avg. daily rate"), value: u.adr },
+        { label: t("Bewertung", "Rating"), value: u.rating },
       ],
       recommendations: u.recommendations,
-      tickets: u.tickets,
+      tickets: u.tickets.map((tk) => ({ ...tk, status: statusLabel(tk.status, t) })),
     },
     {
       kind: "bot",
       text:
         u.status === "blocked"
-          ? `Kurz eingeordnet: Die Einheit ist aktuell blockiert (${u.blockedNote}), das Team arbeitet an der Freigabe. Davon abgesehen steht sie stark da — ${u.rating} Bewertung und ${u.revenue} Juli-Umsatz. Tipp unten auf ein Thema oder frag frei drauflos.`
-          : `Kurz eingeordnet: Die Einheit läuft großartig — ${u.rating} Bewertung, ${u.occ} Auslastung und ${u.revenue} Umsatz im Juli. Arbio prüft Preise und Verfügbarkeiten täglich. Tipp unten auf ein Thema oder frag frei drauflos.`,
+          ? t(
+              `Kurz eingeordnet: Die Einheit ist aktuell blockiert (${u.blockedNote}), das Team arbeitet an der Freigabe. Davon abgesehen steht sie stark da — ${u.rating} Bewertung und ${u.revenue} Juli-Umsatz. Tipp unten auf ein Thema oder frag frei drauflos.`,
+              `In brief: the unit is currently blocked (${u.blockedNote}), the team is working on the release. Otherwise it's in great shape — ${u.rating} rating and ${u.revenue} July revenue. Tap a topic below or just ask.`
+            )
+          : t(
+              `Kurz eingeordnet: Die Einheit läuft großartig — ${u.rating} Bewertung, ${u.occ} Auslastung und ${u.revenue} Umsatz im Juli. Arbio prüft Preise und Verfügbarkeiten täglich. Tipp unten auf ein Thema oder frag frei drauflos.`,
+              `In brief: the unit is doing great — ${u.rating} rating, ${u.occ} occupancy and ${u.revenue} revenue in July. Arbio reviews prices and availability daily. Tap a topic below or just ask.`
+            ),
     },
     { kind: "chips", options: chips },
   ];
@@ -279,6 +308,7 @@ function UnitPopup({
   onClose: () => void;
   onMore: (u: Unit) => void;
 }) {
+  const { t } = useLang();
   const width = 360;
   const ref = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState<{ left: number; top: number } | null>(null);
@@ -326,12 +356,12 @@ function UnitPopup({
             {u.status === "live" ? (
               <span className="flex items-center gap-1.5 bg-[#eef5eb] text-accent-text rounded-full px-3 py-1 text-[13px]">
                 <span className="w-2 h-2 rounded-full bg-accent inline-block" />
-                Live
+                {t("Live", "Live")}
               </span>
             ) : (
               <span className="flex items-center gap-1.5 bg-[#fdecea] text-negative rounded-full px-3 py-1 text-[13px]">
                 <span className="w-2 h-2 rounded-full bg-negative inline-block" />
-                Blockiert
+                {t("Blockiert", "Blocked")}
               </span>
             )}
             <button
@@ -349,10 +379,10 @@ function UnitPopup({
         {/* KPIs */}
         <div className="grid grid-cols-2 gap-2.5 mt-4">
           {[
-            { label: "Umsatz Juli", value: u.revenue },
-            { label: "Auslastung", value: u.occ },
-            { label: "Ø Tagesrate", value: u.adr },
-            { label: "Bewertung", value: u.rating },
+            { label: t("Umsatz Juli", "Revenue July"), value: u.revenue },
+            { label: t("Auslastung", "Occupancy"), value: u.occ },
+            { label: t("Ø Tagesrate", "Avg. daily rate"), value: u.adr },
+            { label: t("Bewertung", "Rating"), value: u.rating },
           ].map(({ label, value }) => (
             <div key={label} className="bg-panel rounded-[14px] px-4 py-3">
               <div className="text-[12px] text-muted">{label}</div>
@@ -365,7 +395,7 @@ function UnitPopup({
         <div className="mt-4">
           <div className="flex items-center gap-1.5 text-[12px] tracking-[1.5px] uppercase text-muted">
             <Sparkles size={12} />
-            Empfehlungen von Arbio
+            {t("Empfehlungen von Arbio", "Recommendations from Arbio")}
           </div>
           <div className="flex flex-col mt-1">
             {u.recommendations.map(({ title, price, note }) => (
@@ -384,12 +414,12 @@ function UnitPopup({
         <div className="mt-4">
           <div className="flex items-center gap-1.5 text-[12px] tracking-[1.5px] uppercase text-muted">
             <Wrench size={12} />
-            Tickets
+            {t("Tickets", "Tickets")}
           </div>
           {u.tickets.length === 0 ? (
             <div className="flex items-center gap-2 text-[14px] text-muted mt-2">
               <CheckCircle2 size={14} className="text-accent-text" />
-              Keine offenen Tickets
+              {t("Keine offenen Tickets", "No open tickets")}
             </div>
           ) : (
             <div className="flex flex-col mt-1">
@@ -407,7 +437,7 @@ function UnitPopup({
                         : "bg-panel text-muted"
                     }`}
                   >
-                    {status}
+                    {statusLabel(status, t)}
                   </span>
                 </div>
               ))}
@@ -421,7 +451,7 @@ function UnitPopup({
           className="w-full flex items-center justify-center gap-2 bg-[#2a2a2a] text-white rounded-full px-5 py-3 text-[15px] mt-5 hover:bg-black transition-colors"
         >
           <MessageCircle size={15} />
-          Mehr Einblicke
+          {t("Mehr Einblicke", "More insights")}
         </button>
       </div>
     </>
@@ -429,6 +459,7 @@ function UnitPopup({
 }
 
 function CityMapSvg() {
+  const { t } = useLang();
   return (
     <svg width="1700" height="1100" className="absolute inset-0">
       {/* base block texture: subtle darker districts */}
@@ -532,8 +563,8 @@ function CityMapSvg() {
       <text x="1240" y="290" fill="#9aa39a" fontSize="15" letterSpacing="2">GARTENSTADT</text>
       <text x="230" y="720" fill="#9aa39a" fontSize="15" letterSpacing="2">EPPENDORF</text>
       <text x="1330" y="640" fill="#9aa39a" fontSize="15" letterSpacing="2">KIEZ</text>
-      <text x="360" y="345" fill="#a8b8a0" fontSize="13" letterSpacing="2">STADTPARK</text>
-      <text x="1265" y="790" fill="#a8b8a0" fontSize="13" letterSpacing="2">VOLKSPARK</text>
+      <text x="360" y="345" fill="#a8b8a0" fontSize="13" letterSpacing="2">{t("STADTPARK", "CITY PARK")}</text>
+      <text x="1265" y="790" fill="#a8b8a0" fontSize="13" letterSpacing="2">{t("VOLKSPARK", "PUBLIC PARK")}</text>
       <text x="1035" y="105" fill="#b3c6d1" fontSize="13" letterSpacing="2">ALSTER</text>
       <text x="1042" y="330" fill="#b3c6d1" fontSize="13" letterSpacing="2" transform="rotate(78 1042 330)">ELBE</text>
     </svg>
@@ -544,6 +575,8 @@ type View = "karte" | "uebersicht";
 
 export default function Einheiten() {
   const { openChat } = useArbioChat();
+  const { t } = useLang();
+  const units = buildUnits(t);
   const [view, setView] = useState<View>("karte");
   const [popup, setPopup] = useState<Popup | null>(null);
   const [active, setActive] = useState(1);
@@ -601,7 +634,7 @@ export default function Einheiten() {
         <div>
           <h1 className="text-[22px]">Portfolio</h1>
           <p className="text-[15px] text-muted mt-1">
-            Deine Einheiten auf der Karte und im Überblick
+            {t("Deine Einheiten auf der Karte und im Überblick", "Your units on the map and at a glance")}
           </p>
         </div>
         {/* View toggle — right margin keeps clear of the fixed notification bell */}
@@ -613,7 +646,7 @@ export default function Einheiten() {
             }`}
           >
             <MapIcon size={15} />
-            Karte
+            {t("Karte", "Map")}
           </button>
           <button
             onClick={() => setView("uebersicht")}
@@ -624,7 +657,7 @@ export default function Einheiten() {
             }`}
           >
             <LayoutGrid size={15} />
-            Übersicht
+            {t("Übersicht", "Overview")}
           </button>
         </div>
       </div>
@@ -708,12 +741,12 @@ export default function Einheiten() {
             {/* Legend */}
             <div className="absolute left-4 bottom-4 flex gap-4 bg-white/90 border border-line rounded-full px-4 py-2 text-[12px] text-muted">
               <span className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-accent inline-block" /> Live
+                <span className="w-2.5 h-2.5 rounded-full bg-accent inline-block" /> {t("Live", "Live")}
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-negative inline-block" /> Blockiert
+                <span className="w-2.5 h-2.5 rounded-full bg-negative inline-block" /> {t("Blockiert", "Blocked")}
               </span>
-              <span>Karte ziehen zum Bewegen</span>
+              <span>{t("Karte ziehen zum Bewegen", "Drag the map to move")}</span>
             </div>
           </div>
         </div>
@@ -721,7 +754,7 @@ export default function Einheiten() {
         /* ---------------- Carousel view ---------------- */
         <div className="mt-8">
           <div className="flex items-center justify-between">
-            <h2 className="text-[18px] tracking-[3px] uppercase">Übersicht deiner Apartments</h2>
+            <h2 className="text-[18px] tracking-[3px] uppercase">{t("Übersicht deiner Apartments", "Overview of your apartments")}</h2>
             <div className="flex gap-2">
               <button
                 onClick={() => setActive((a) => Math.max(0, a - 1))}
@@ -792,7 +825,7 @@ export default function Einheiten() {
                     />
                     {u.status === "blocked" && (
                       <span className="absolute top-3 right-3 bg-white/90 text-negative rounded-full px-3 py-1 text-[12px]">
-                        Blockiert
+                        {t("Blockiert", "Blocked")}
                       </span>
                     )}
                   </div>
@@ -808,12 +841,12 @@ export default function Einheiten() {
                         {u.adr} <span className="text-muted">ADR</span>
                       </div>
                       <div className="text-[15px]">
-                        {u.occ} <span className="text-muted">occupancy</span>
+                        {u.occ} <span className="text-muted">{t("Auslastung", "occupancy")}</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-1.5 text-[13px] text-muted mt-3">
                       <Star size={13} className="text-accent-text" />
-                      {u.rating} · Details anzeigen
+                      {u.rating} · {t("Details anzeigen", "Show details")}
                     </div>
                   </div>
                 </button>
@@ -840,7 +873,7 @@ export default function Einheiten() {
           onClose={() => setPopup(null)}
           onMore={(u) => {
             setPopup(null);
-            openChat(insightSeed(u));
+            openChat(insightSeed(u, t));
           }}
         />
       )}
@@ -848,7 +881,7 @@ export default function Einheiten() {
       {/* Floating chat */}
       <div className="fixed bottom-6 left-[290px] right-0 flex justify-center px-8 pointer-events-none">
         <ChatInput
-          placeholder="Frag alles über deine Einheiten..."
+          placeholder={t("Frag alles über deine Einheiten...", "Ask anything about your units...")}
           className="w-full max-w-[620px] pointer-events-auto"
         />
       </div>

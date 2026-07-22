@@ -16,127 +16,152 @@ import { FilterBar } from "@/components/filter-bar";
 import { ProfitChart, PayoutChart } from "@/components/charts";
 import { PnlTable } from "@/components/pnl-table";
 import { OwnerCosts } from "@/components/owner-costs";
-import { useArbioChat, costExplainSeed, type Msg } from "@/components/arbio-chat";
+import { useArbioChat, costExplainSeed, type Msg, type Tr } from "@/components/arbio-chat";
+import { useLang } from "@/components/lang";
 
-const payoutTrackers: {
+const buildPayoutTrackers = (t: Tr): {
   title: string;
   amount: string;
   steps: { label: string; meta?: string; state: "done" | "current" | "pending" }[];
   seed: Msg[];
-}[] = [
+}[] => [
   {
-    title: "Auszahlung Juni 2026",
+    title: t("Auszahlung Juni 2026", "Payout June 2026"),
     amount: "€34.900",
     steps: [
-      { label: "Abrechnung erstellt", meta: "01.07.", state: "done" },
-      { label: "Freigegeben", meta: "03.07.", state: "done" },
-      { label: "Überwiesen", meta: "05.07.", state: "done" },
-      { label: "Eingang", meta: "vsl. 07.07.", state: "current" },
+      { label: t("Abrechnung erstellt", "Statement created"), meta: "01.07.", state: "done" },
+      { label: t("Freigegeben", "Released"), meta: "03.07.", state: "done" },
+      { label: t("Überwiesen", "Transferred"), meta: "05.07.", state: "done" },
+      { label: t("Eingang", "Arrival"), meta: t("vsl. 07.07.", "est. Jul 7"), state: "current" },
     ],
     seed: [
-      { kind: "user", text: "Wo steht meine Juni-Auszahlung gerade?" },
+      { kind: "user", text: t("Wo steht meine Juni-Auszahlung gerade?", "Where does my June payout stand right now?") },
       {
         kind: "bot",
-        text: "Deine Juni-Auszahlung über €34.900 ist unterwegs: Abrechnung erstellt am 01.07., freigegeben am 03.07., überwiesen am 05.07. per SEPA. Der Eingang auf deinem Konto ist voraussichtlich am 07.07. (1–2 Bankarbeitstage). Sag Bescheid, falls sie bis 08.07. nicht angekommen ist — dann prüfe ich die Überweisung direkt.",
+        text: t(
+          "Deine Juni-Auszahlung über €34.900 ist unterwegs: Abrechnung erstellt am 01.07., freigegeben am 03.07., überwiesen am 05.07. per SEPA. Der Eingang auf deinem Konto ist voraussichtlich am 07.07. (1–2 Bankarbeitstage). Sag Bescheid, falls sie bis 08.07. nicht angekommen ist — dann prüfe ich die Überweisung direkt.",
+          "Your June payout of €34,900 is on its way: statement created Jul 1, released Jul 3, transferred Jul 5 via SEPA. Arrival in your account is expected on Jul 7 (1–2 banking days). Let me know if it hasn't arrived by Jul 8 — then I'll check the transfer directly."
+        ),
       },
     ],
   },
   {
-    title: "Auszahlung Juli 2026",
-    amount: "€18.450 aufgelaufen",
+    title: t("Auszahlung Juli 2026", "Payout July 2026"),
+    amount: t("€18.450 aufgelaufen", "€18,450 accrued"),
     steps: [
-      { label: "Läuft auf", meta: "bis 31.07.", state: "current" },
-      { label: "Abrechnung", meta: "01.08.", state: "pending" },
-      { label: "Freigabe", meta: "03.08.", state: "pending" },
-      { label: "Auszahlung", meta: "05.08.", state: "pending" },
+      { label: t("Läuft auf", "Accruing"), meta: t("bis 31.07.", "until Jul 31"), state: "current" },
+      { label: t("Abrechnung", "Statement"), meta: "01.08.", state: "pending" },
+      { label: t("Freigabe", "Release"), meta: "03.08.", state: "pending" },
+      { label: t("Auszahlung", "Payout"), meta: "05.08.", state: "pending" },
     ],
     seed: [
-      { kind: "user", text: "Wann kommt meine Juli-Auszahlung?" },
+      { kind: "user", text: t("Wann kommt meine Juli-Auszahlung?", "When is my July payout coming?") },
       {
         kind: "bot",
-        text: "Für Juli sind bisher €18.450 aufgelaufen — der Monat läuft noch bis 31.07. Danach läuft alles automatisch: Abrechnung am 01.08., Freigabe am 03.08., Auszahlung am 05.08. (kostenlos), du musst nichts tun. Falls du den Betrag früher benötigst, steht dir jederzeit die Sofortauszahlung zur Verfügung (2% Gebühr, €369).",
+        text: t(
+          "Für Juli sind bisher €18.450 aufgelaufen — der Monat läuft noch bis 31.07. Danach läuft alles automatisch: Abrechnung am 01.08., Freigabe am 03.08., Auszahlung am 05.08. (kostenlos), du musst nichts tun. Falls du den Betrag früher benötigst, steht dir jederzeit die Sofortauszahlung zur Verfügung (2% Gebühr, €369).",
+          "€18,450 have accrued for July so far — the month runs until Jul 31. After that everything is automatic: statement Aug 1, release Aug 3, payout Aug 5 (free), you don't need to do anything. If you need the amount sooner, instant payout is available anytime (2% fee, €369)."
+        ),
       },
     ],
   },
 ];
 
-const costs = [
-  { label: "OTA-Provision", pct: "13,0%", width: "72%" },
-  { label: "Reinigung", pct: "0,5%", width: "6%" },
+const buildCosts = (t: Tr) => [
+  { label: t("OTA-Provision", "OTA commission"), key: "OTA-Provision", pct: "13,0%", width: "72%" },
+  { label: t("Reinigung", "Cleaning"), key: "Reinigung · Test", pct: "0,5%", width: "6%" },
 ];
 
-const statements = [
-  { month: "Juni 2026", period: "01.06. – 30.06.2026", amount: "€34.900,00" },
-  { month: "Mai 2026", period: "01.05. – 31.05.2026", amount: "€30.400,00" },
-  { month: "April 2026", period: "01.04. – 30.04.2026", amount: "€26.800,00" },
-  { month: "März 2026", period: "01.03. – 31.03.2026", amount: "€21.500,00" },
-  { month: "Februar 2026", period: "01.02. – 28.02.2026", amount: "€11.600,00" },
-  { month: "Januar 2026", period: "01.01. – 31.01.2026", amount: "€8.100,00" },
-  { month: "Dezember 2025", period: "01.12. – 31.12.2025", amount: "€9.400,00" },
-  { month: "November 2025", period: "01.11. – 30.11.2025", amount: "€8.200,00" },
+const buildStatements = (t: Tr) => [
+  { month: t("Juni 2026", "June 2026"), period: "01.06. – 30.06.2026", amount: "€34.900,00" },
+  { month: t("Mai 2026", "May 2026"), period: "01.05. – 31.05.2026", amount: "€30.400,00" },
+  { month: t("April 2026", "April 2026"), period: "01.04. – 30.04.2026", amount: "€26.800,00" },
+  { month: t("März 2026", "March 2026"), period: "01.03. – 31.03.2026", amount: "€21.500,00" },
+  { month: t("Februar 2026", "February 2026"), period: "01.02. – 28.02.2026", amount: "€11.600,00" },
+  { month: t("Januar 2026", "January 2026"), period: "01.01. – 31.01.2026", amount: "€8.100,00" },
+  { month: t("Dezember 2025", "December 2025"), period: "01.12. – 31.12.2025", amount: "€9.400,00" },
+  { month: t("November 2025", "November 2025"), period: "01.11. – 30.11.2025", amount: "€8.200,00" },
 ];
 
-const tabs = ["Profitabilität", "Auszahlungen", "Kosten"] as const;
-type Tab = (typeof tabs)[number];
+type Tab = "profit" | "payouts" | "costs";
 
 export default function Finanzen() {
-  const [tab, setTab] = useState<Tab>("Profitabilität");
+  const [tab, setTab] = useState<Tab>("profit");
   const { openChat } = useArbioChat();
+  const { t } = useLang();
+
+  const tabs: { key: Tab; label: string }[] = [
+    { key: "profit", label: t("Profitabilität", "Profitability") },
+    { key: "payouts", label: t("Auszahlungen", "Payouts") },
+    { key: "costs", label: t("Kosten", "Costs") },
+  ];
+  const payoutTrackers = buildPayoutTrackers(t);
+  const costs = buildCosts(t);
+  const statements = buildStatements(t);
 
   return (
     <div className="relative min-h-screen px-8 py-6 pb-32">
-      <h1 className="text-[22px]">Finanzen</h1>
+      <h1 className="text-[22px]">{t("Finanzen", "Finance")}</h1>
       <p className="text-[15px] text-muted mt-1">
-        Dein P&L, deine Auszahlungen und Abrechnungen im Überblick
+        {t("Dein P&L, deine Auszahlungen und Abrechnungen im Überblick", "Your P&L, payouts and statements at a glance")}
       </p>
 
       {/* Tabs + filters */}
       <div className="flex items-center gap-3 mt-5 mb-6 flex-wrap">
         <div className="flex items-center border border-line rounded-full p-1">
-          {tabs.map((t) => (
+          {tabs.map(({ key, label }) => (
             <button
-              key={t}
-              onClick={() => setTab(t)}
+              key={key}
+              onClick={() => setTab(key)}
               className={`rounded-full px-5 py-1.5 text-[15px] ${
-                tab === t
+                tab === key
                   ? "bg-white border border-line shadow-[0_1px_3px_rgba(0,0,0,0.05)]"
                   : "text-muted"
               }`}
             >
-              {t}
+              {label}
             </button>
           ))}
         </div>
         <FilterBar showStepper={false} />
       </div>
 
-      {tab === "Profitabilität" ? (
+      {tab === "profit" ? (
         <>
           {/* KPI grid + AI card */}
           <div className="grid grid-cols-1 xl:grid-cols-[1fr_1.15fr] gap-4">
             <div className="grid grid-cols-2 gap-4">
-              <KpiCard label="Bruttoumsatz (GBV)" value="€41,5k" delta="7,6% vs. Vorjahr" deltaDirection="up" />
-              <KpiCard label="Nettoumsatz" value="€38,7k" subline="nach USt. + Beh.steuer" />
-              <KpiCard label="Contribution Margin" value="86,0%" subline="vom Nettoumsatz" />
-              <KpiCard label="Operativer Gewinn" value="€33,1k" subline="nach allen Kosten" />
+              <KpiCard label={t("Bruttoumsatz (GBV)", "Gross Booking Value")} value="€41,5k" delta={t("7,6% vs. Vorjahr", "7.6% vs. last year")} deltaDirection="up" />
+              <KpiCard label={t("Nettoumsatz", "Net revenue")} value="€38,7k" subline={t("nach USt. + Beh.steuer", "after VAT + accom. tax")} />
+              <KpiCard label={t("Contribution Margin", "Contribution margin")} value="86,0%" subline={t("vom Nettoumsatz", "of net revenue")} />
+              <KpiCard label={t("Operativer Gewinn", "Operating profit")} value="€33,1k" subline={t("nach allen Kosten", "after all costs")} />
             </div>
             <AiCard
-              title="Arbio Zusammenfassung"
+              title={t("Arbio Zusammenfassung", "Arbio summary")}
               rows={[
                 {
-                  label: "Ergebnis",
-                  text: "Deine operative Marge liegt bei starken 85 % — deine Immobilien wirtschaften hervorragend mit Arbio.",
+                  label: t("Ergebnis", "Result"),
+                  text: t(
+                    "Deine operative Marge liegt bei starken 85 % — deine Immobilien wirtschaften hervorragend mit Arbio.",
+                    "Your operating margin is a strong 85% — your properties are performing excellently with Arbio."
+                  ),
                 },
                 {
-                  label: "Warum",
-                  text: "Die Gesamtkosten stiegen saisonal bedingt auf 5.628 € (davon 5.407 € OTA-Provision) — dein Umsatz wuchs schneller als die Kosten.",
+                  label: t("Warum", "Why"),
+                  text: t(
+                    "Die Gesamtkosten stiegen saisonal bedingt auf 5.628 € (davon 5.407 € OTA-Provision) — dein Umsatz wuchs schneller als die Kosten.",
+                    "Total costs rose seasonally to €5,628 (of which €5,407 OTA commission) — your revenue grew faster than costs."
+                  ),
                 },
                 {
-                  label: "Arbio kümmert sich",
-                  text: "Wir prüfen gerade die Reinigungsbelege für Juli auf Vollständigkeit — du bekommst eine Nachricht, sobald alle erfasst sind.",
+                  label: t("Arbio kümmert sich", "Arbio takes care of it"),
+                  text: t(
+                    "Wir prüfen gerade die Reinigungsbelege für Juli auf Vollständigkeit — du bekommst eine Nachricht, sobald alle erfasst sind.",
+                    "We're currently checking the July cleaning receipts for completeness — you'll get a message once they're all captured."
+                  ),
                 },
               ]}
-              chatHint="Details im Chat fragen"
+              chatHint={t("Details im Chat fragen", "Ask for details in chat")}
             />
           </div>
 
@@ -144,9 +169,9 @@ export default function Finanzen() {
           <div className="grid grid-cols-1 xl:grid-cols-[1.6fr_1fr] gap-4 mt-5">
             <div className="bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
               <div className="flex items-start justify-between">
-                <h3 className="text-[16px]">Gewinn über Zeit</h3>
+                <h3 className="text-[16px]">{t("Gewinn über Zeit", "Profit over time")}</h3>
                 <span className="flex items-center gap-2 text-[13px] text-muted">
-                  <span className="w-4 h-[3px] bg-accent inline-block rounded" /> Operativer Gewinn
+                  <span className="w-4 h-[3px] bg-accent inline-block rounded" /> {t("Operativer Gewinn", "Operating profit")}
                 </span>
               </div>
               <div className="mt-4">
@@ -155,19 +180,17 @@ export default function Finanzen() {
             </div>
             <div className="bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
               <div className="flex items-start justify-between">
-                <h3 className="text-[16px]">Kostenstruktur</h3>
+                <h3 className="text-[16px]">{t("Kostenstruktur", "Cost structure")}</h3>
                 <span className="flex items-center gap-1.5 text-[13px] text-muted">
                   <MessageCircle size={13} />
-                  % vom GBV
+                  {t("% vom GBV", "% of GBV")}
                 </span>
               </div>
               <div className="flex flex-col gap-2 mt-5">
-                {costs.map(({ label, pct, width }) => (
+                {costs.map(({ label, key, pct, width }) => (
                   <button
-                    key={label}
-                    onClick={() =>
-                      openChat(costExplainSeed(label === "Reinigung" ? "Reinigung · Test" : label))
-                    }
+                    key={key}
+                    onClick={() => openChat(costExplainSeed(key, t))}
                     className="flex items-center gap-4 px-2 py-2.5 -mx-2 rounded-[12px] hover:bg-panel transition-colors text-left"
                   >
                     <span className="w-[130px] shrink-0 text-[15px]">{label}</span>
@@ -178,9 +201,9 @@ export default function Finanzen() {
                   </button>
                 ))}
                 <div className="border-t border-line pt-4 flex items-center justify-between">
-                  <span className="text-[15px]">Gesamt</span>
+                  <span className="text-[15px]">{t("Gesamt", "Total")}</span>
                   <span className="text-[15px]">
-                    <b>13,6%</b> <span className="text-muted">vom GBV</span>
+                    <b>13,6%</b> <span className="text-muted">{t("vom GBV", "of GBV")}</span>
                   </span>
                 </div>
               </div>
@@ -192,54 +215,63 @@ export default function Finanzen() {
             <PnlTable />
           </div>
         </>
-      ) : tab === "Auszahlungen" ? (
+      ) : tab === "payouts" ? (
         <>
           {/* Accumulated payout + AI card */}
           <div className="grid grid-cols-1 xl:grid-cols-[1fr_1.15fr] gap-4">
             <div className="bg-panel rounded-[24px] px-8 py-7 flex flex-col">
-              <span className="text-[15px]">Aufgelaufene Auszahlung · Juli 2026</span>
+              <span className="text-[15px]">{t("Aufgelaufene Auszahlung · Juli 2026", "Accrued payout · July 2026")}</span>
               <span className="text-[52px] leading-none tracking-[-1px] mt-3">€18.450</span>
               <span className="flex items-center gap-2 text-[14px] text-muted mt-3">
                 <Calendar size={14} />
-                Reguläre Auszahlung am 05.08.2026 · kostenlos
+                {t("Reguläre Auszahlung am 05.08.2026 · kostenlos", "Regular payout on Aug 5, 2026 · free")}
               </span>
               <div className="mt-auto pt-6">
                 <button className="w-full flex items-center justify-center gap-2.5 bg-[#2a2a2a] text-white rounded-full px-6 py-4 text-[16px] hover:bg-black transition-colors">
                   <Zap size={17} />
-                  Sofort auszahlen · 2% Gebühr
+                  {t("Sofort auszahlen · 2% Gebühr", "Pay out instantly · 2% fee")}
                 </button>
                 <p className="text-[13px] text-muted text-center mt-2.5">
-                  Du erhältst €18.081,00 sofort auf dein Konto (Gebühr: €369,00)
+                  {t("Du erhältst €18.081,00 sofort auf dein Konto (Gebühr: €369,00)", "You receive €18,081.00 instantly to your account (fee: €369.00)")}
                 </p>
               </div>
             </div>
             <AiCard
-              title="Deine Auszahlungen. Auf einen Blick."
+              title={t("Deine Auszahlungen. Auf einen Blick.", "Your payouts. At a glance.")}
               rows={[
                 {
-                  label: "Ergebnis",
-                  text: "Bereits 18.450 € für Juli aufgelaufen — 12 % über dem Vormonat zum gleichen Stichtag.",
+                  label: t("Ergebnis", "Result"),
+                  text: t(
+                    "Bereits 18.450 € für Juli aufgelaufen — 12 % über dem Vormonat zum gleichen Stichtag.",
+                    "Already €18,450 accrued for July — 12% above the previous month at the same date."
+                  ),
                 },
                 {
-                  label: "Warum",
-                  text: "Starke Sommerbelegung und eine höhere Durchschnittsrate treiben deine Auszahlung.",
+                  label: t("Warum", "Why"),
+                  text: t(
+                    "Starke Sommerbelegung und eine höhere Durchschnittsrate treiben deine Auszahlung.",
+                    "Strong summer occupancy and a higher average rate are driving your payout."
+                  ),
                 },
                 {
-                  label: "Arbio kümmert sich",
-                  text: "Deine Juni-Auszahlung (34.900 €) ist unterwegs — Eingang vsl. 07.07. Alles läuft planmäßig, du musst nichts tun.",
+                  label: t("Arbio kümmert sich", "Arbio takes care of it"),
+                  text: t(
+                    "Deine Juni-Auszahlung (34.900 €) ist unterwegs — Eingang vsl. 07.07. Alles läuft planmäßig, du musst nichts tun.",
+                    "Your June payout (€34,900) is on its way — arrival est. Jul 7. Everything is on schedule, you don't need to do anything."
+                  ),
                 },
               ]}
-              chatHint="Details im Chat fragen"
+              chatHint={t("Details im Chat fragen", "Ask for details in chat")}
             />
           </div>
 
           {/* Payout status tracker */}
           <div className="bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
             <div className="flex items-start justify-between">
-              <h3 className="text-[16px]">Auszahlungs-Status</h3>
+              <h3 className="text-[16px]">{t("Auszahlungs-Status", "Payout status")}</h3>
               <span className="flex items-center gap-1.5 text-[13px] text-muted">
                 <MessageCircle size={13} />
-                Klick öffnet Details im Chat
+                {t("Klick öffnet Details im Chat", "Click opens details in chat")}
               </span>
             </div>
             <div className="flex flex-col mt-2">
@@ -304,15 +336,15 @@ export default function Finanzen() {
           <div className="bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-[16px]">Auszahlungen der letzten Monate</h3>
+                <h3 className="text-[16px]">{t("Auszahlungen der letzten Monate", "Payouts of recent months")}</h3>
                 <p className="text-[13px] text-muted mt-0.5">Aug 2025 – Jul 2026</p>
               </div>
               <div className="flex gap-5 text-[13px] text-muted">
                 <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#b9d9ae] inline-block" /> Ausgezahlt
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#b9d9ae] inline-block" /> {t("Ausgezahlt", "Paid out")}
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-accent inline-block" /> Aufgelaufen (Juli)
+                  <span className="w-2.5 h-2.5 rounded-full bg-accent inline-block" /> {t("Aufgelaufen (Juli)", "Accrued (July)")}
                 </span>
               </div>
             </div>
@@ -324,8 +356,8 @@ export default function Finanzen() {
           {/* Owner statements */}
           <div className="bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
             <div className="flex items-start justify-between">
-              <h3 className="text-[16px]">Owner Statements</h3>
-              <span className="text-[13px] text-muted">PDF-Download</span>
+              <h3 className="text-[16px]">{t("Owner Statements", "Owner statements")}</h3>
+              <span className="text-[13px] text-muted">{t("PDF-Download", "PDF download")}</span>
             </div>
             <div className="mt-4 flex flex-col">
               {statements.map(({ month, period, amount }, i) => (
@@ -339,7 +371,7 @@ export default function Finanzen() {
                     <FileText size={16} />
                   </span>
                   <div className="flex-1 min-w-0">
-                    <div className="text-[15px]">Owner Statement · {month}</div>
+                    <div className="text-[15px]">{t("Owner Statement", "Owner statement")} · {month}</div>
                     <div className="text-[13px] text-muted">{period}</div>
                   </div>
                   <span className="text-[15px] w-[110px] text-right">{amount}</span>
@@ -360,11 +392,11 @@ export default function Finanzen() {
       <div className="fixed bottom-6 left-[290px] right-0 flex justify-center px-8 pointer-events-none">
         <ChatInput
           placeholder={
-            tab === "Profitabilität"
-              ? "Frag alles über deine Profitabilität..."
-              : tab === "Auszahlungen"
-                ? "Frag alles über deine Auszahlungen..."
-                : "Frag alles über deine Kosten..."
+            tab === "profit"
+              ? t("Frag alles über deine Profitabilität...", "Ask anything about your profitability...")
+              : tab === "payouts"
+                ? t("Frag alles über deine Auszahlungen...", "Ask anything about your payouts...")
+                : t("Frag alles über deine Kosten...", "Ask anything about your costs...")
           }
           className="w-full max-w-[620px] pointer-events-auto"
         />

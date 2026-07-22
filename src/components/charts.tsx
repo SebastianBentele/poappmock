@@ -15,10 +15,23 @@ import {
   PieChart,
   Pie,
 } from "recharts";
+import { useLang, type Lang } from "@/components/lang";
 
 const GREEN = "#7db86c";
 const GREEN_LIGHT = "#b9d9ae";
 const GRAY = "#9a9a9a";
+
+// Month axis labels are stored canonically in English (e.g. "Mar", "Aug '25").
+// For German we map the month part back; the year suffix is preserved.
+const MONTH_DE: Record<string, string> = {
+  Jan: "Jan", Feb: "Feb", Mar: "Mär", Apr: "Apr", May: "Mai", Jun: "Jun",
+  Jul: "Jul", Aug: "Aug", Sep: "Sep", Oct: "Okt", Nov: "Nov", Dec: "Dez",
+};
+const monthTick = (lang: Lang) => (m: string) => {
+  if (lang === "en") return m;
+  const [mon, ...rest] = m.split(" ");
+  return [MONTH_DE[mon] ?? mon, ...rest].join(" ");
+};
 
 const rollingRevenue = [
   { m: "Apr", dj: 21000, fc: null, lj: 6200, vj: 5800 },
@@ -36,6 +49,7 @@ const rollingRevenue = [
 ];
 
 export function RollingRevenueChart() {
+  const { lang, t } = useLang();
   return (
     <div className="h-[360px]">
       <ResponsiveContainer width="100%" height="100%">
@@ -46,6 +60,7 @@ export function RollingRevenueChart() {
             axisLine={false}
             tickLine={false}
             tick={{ fill: "#717171", fontSize: 13 }}
+            tickFormatter={monthTick(lang)}
             dy={8}
           />
           <YAxis
@@ -58,7 +73,7 @@ export function RollingRevenueChart() {
           <ReferenceLine
             x="Jul"
             stroke="#c5c5c5"
-            label={{ value: "Today", position: "top", fill: "#717171", fontSize: 12 }}
+            label={{ value: t("Heute", "Today"), position: "top", fill: "#717171", fontSize: 12 }}
           />
           <Area type="monotone" dataKey="dj" fill="url(#greenFade)" stroke="none" />
           <Line type="monotone" dataKey="dj" stroke={GREEN} strokeWidth={2.5} dot={{ r: 3.5, fill: GREEN }} />
@@ -111,19 +126,20 @@ export function DailyRevenueChart() {
 const payouts = [
   { m: "Aug '25", v: 31200, current: false },
   { m: "Sep", v: 27400, current: false },
-  { m: "Okt", v: 19800, current: false },
+  { m: "Oct", v: 19800, current: false },
   { m: "Nov", v: 8200, current: false },
-  { m: "Dez", v: 9400, current: false },
+  { m: "Dec", v: 9400, current: false },
   { m: "Jan '26", v: 8100, current: false },
   { m: "Feb", v: 11600, current: false },
   { m: "Mar", v: 21500, current: false },
   { m: "Apr", v: 26800, current: false },
-  { m: "Mai", v: 30400, current: false },
+  { m: "May", v: 30400, current: false },
   { m: "Jun", v: 34900, current: false },
   { m: "Jul", v: 18450, current: true },
 ];
 
 export function PayoutChart() {
+  const { lang } = useLang();
   return (
     <div className="h-[300px]">
       <ResponsiveContainer width="100%" height="100%">
@@ -133,6 +149,7 @@ export function PayoutChart() {
             axisLine={false}
             tickLine={false}
             tick={{ fill: "#717171", fontSize: 13 }}
+            tickFormatter={monthTick(lang)}
             dy={8}
           />
           <YAxis
@@ -286,12 +303,13 @@ const tickets = [
   { m: "Feb", gelöst: 28, offen: 2 },
   { m: "Mar", gelöst: 34, offen: 3 },
   { m: "Apr", gelöst: 31, offen: 2 },
-  { m: "Mai", gelöst: 38, offen: 4 },
+  { m: "May", gelöst: 38, offen: 4 },
   { m: "Jun", gelöst: 44, offen: 2 },
   { m: "Jul", gelöst: 41, offen: 3 },
 ];
 
 export function TicketsChart() {
+  const { lang } = useLang();
   return (
     <div className="h-[260px]">
       <ResponsiveContainer width="100%" height="100%">
@@ -301,6 +319,7 @@ export function TicketsChart() {
             axisLine={false}
             tickLine={false}
             tick={{ fill: "#717171", fontSize: 13 }}
+            tickFormatter={monthTick(lang)}
             dy={8}
           />
           <YAxis
@@ -320,19 +339,20 @@ export function TicketsChart() {
 const profitOverTime = [
   { m: "Aug '25", v: 3200 },
   { m: "Sep", v: 2600 },
-  { m: "Okt", v: 1400 },
+  { m: "Oct", v: 1400 },
   { m: "Nov", v: 250 },
-  { m: "Dez", v: 480 },
+  { m: "Dec", v: 480 },
   { m: "Jan '26", v: 380 },
   { m: "Feb", v: 900 },
   { m: "Mar", v: 2100 },
   { m: "Apr", v: 2400 },
-  { m: "Mai", v: 2800 },
+  { m: "May", v: 2800 },
   { m: "Jun", v: 3300 },
   { m: "Jul", v: 4300 },
 ];
 
 export function ProfitChart() {
+  const { lang } = useLang();
   return (
     <div className="h-[280px]">
       <ResponsiveContainer width="100%" height="100%">
@@ -342,6 +362,7 @@ export function ProfitChart() {
             axisLine={false}
             tickLine={false}
             tick={{ fill: "#717171", fontSize: 13 }}
+            tickFormatter={monthTick(lang)}
             dy={8}
           />
           <YAxis hide />
@@ -392,14 +413,16 @@ export function GrowthChart() {
 }
 
 // Length-of-stay distribution
-const losBuckets = [
-  { b: "1 Nacht", share: 8 },
-  { b: "2–3 Nächte", share: 34 },
-  { b: "4–6 Nächte", share: 39 },
-  { b: "7+ Nächte", share: 19 },
-];
+const losShares = [8, 34, 39, 19];
 
 export function LosChart() {
+  const { t } = useLang();
+  const losBuckets = [
+    { b: t("1 Nacht", "1 night"), share: losShares[0] },
+    { b: t("2–3 Nächte", "2–3 nights"), share: losShares[1] },
+    { b: t("4–6 Nächte", "4–6 nights"), share: losShares[2] },
+    { b: t("7+ Nächte", "7+ nights"), share: losShares[3] },
+  ];
   return (
     <div className="h-[220px]">
       <ResponsiveContainer width="100%" height="100%">

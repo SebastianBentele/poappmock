@@ -29,8 +29,10 @@ import {
   Wrench,
   Box,
 } from "lucide-react";
+import { useLang, type Lang } from "@/components/lang";
 
-type Rhythm = "pro Monat" | "pro Woche" | "einmalig";
+// Rhythm stored as stable keys, displayed via rhythmLabel
+type Rhythm = "monthly" | "weekly" | "once";
 
 type Entry = { name: string; amount: number; rhythm: Rhythm; since: string };
 
@@ -41,60 +43,67 @@ type Category = {
   entries: Entry[];
 };
 
-const lockedCategories = [
-  { label: "Reinigung", icon: Sparkles, value: "€221", note: "Zusatz- & Grundreinigungen Juli" },
-  { label: "Wäsche", icon: Shirt, value: "€96", note: "Wäscheservice Juli" },
-  { label: "OTA-Gebühren", icon: Percent, value: "€5.407", note: "Booking.com & Airbnb Provision" },
-  { label: "Arbio-Gebühren", icon: BadgePercent, value: "15%", note: "Management-Gebühr lt. Vertrag" },
-  { label: "Beherbergungssteuer / Kurtaxe", icon: Landmark, value: "€912", note: "Wird von Arbio abgeführt" },
+const rhythmLabel = (r: Rhythm, lang: Lang) =>
+  lang === "de"
+    ? { monthly: "pro Monat", weekly: "pro Woche", once: "einmalig" }[r]
+    : { monthly: "per month", weekly: "per week", once: "one-time" }[r];
+
+const buildLocked = (t: (de: string, en: string) => string) => [
+  { label: t("Reinigung", "Cleaning"), icon: Sparkles, value: "€221", note: t("Zusatz- & Grundreinigungen Juli", "Extra & deep cleanings July") },
+  { label: t("Wäsche", "Laundry"), icon: Shirt, value: "€96", note: t("Wäscheservice Juli", "Laundry service July") },
+  { label: t("OTA-Gebühren", "OTA fees"), icon: Percent, value: "€5.407", note: t("Booking.com & Airbnb Provision", "Booking.com & Airbnb commission") },
+  { label: t("Arbio-Gebühren", "Arbio fees"), icon: BadgePercent, value: "15%", note: t("Management-Gebühr lt. Vertrag", "Management fee per contract") },
+  { label: t("Beherbergungssteuer / Kurtaxe", "Accommodation / city tax"), icon: Landmark, value: "€912", note: t("Wird von Arbio abgeführt", "Remitted by Arbio") },
 ];
 
-const initialCategories: Category[] = [
-  { key: "verbrauch", label: "Verbrauchsmaterial", icon: Package, entries: [] },
-  { key: "marketing", label: "Marketing", icon: TrendingUp, entries: [] },
+const buildInitial = (t: (de: string, en: string) => string): Category[] => [
+  { key: "verbrauch", label: t("Verbrauchsmaterial", "Consumables"), icon: Package, entries: [] },
+  { key: "marketing", label: t("Marketing", "Marketing"), icon: TrendingUp, entries: [] },
   {
     key: "nebenkosten",
-    label: "Nebenkosten",
+    label: t("Nebenkosten", "Utilities"),
     icon: Zap,
-    entries: [{ name: "Strom & Gas Abschlag", amount: 200, rhythm: "pro Monat", since: "01.01.2026" }],
+    entries: [{ name: t("Strom & Gas Abschlag", "Electricity & gas prepayment"), amount: 200, rhythm: "monthly", since: "01.01.2026" }],
   },
   {
     key: "internet",
-    label: "Internet",
+    label: t("Internet", "Internet"),
     icon: Wifi,
-    entries: [{ name: "Glasfaser (3 Einheiten)", amount: 90, rhythm: "pro Monat", since: "01.01.2026" }],
+    entries: [{ name: t("Glasfaser (3 Einheiten)", "Fiber (3 units)"), amount: 90, rhythm: "monthly", since: "01.01.2026" }],
   },
   {
     key: "miete",
-    label: "Miete / Finanzierung",
+    label: t("Miete / Finanzierung", "Rent / financing"),
     icon: Home,
-    entries: [{ name: "Kredit Altstadt Apartment", amount: 2100, rhythm: "pro Monat", since: "01.01.2026" }],
+    entries: [{ name: t("Kredit Altstadt Apartment", "Loan Altstadt Apartment"), amount: 2100, rhythm: "monthly", since: "01.01.2026" }],
   },
   {
     key: "versicherung",
-    label: "Versicherung",
+    label: t("Versicherung", "Insurance"),
     icon: Shield,
-    entries: [{ name: "Gebäudeversicherung", amount: 245, rhythm: "pro Monat", since: "01.01.2026" }],
+    entries: [{ name: t("Gebäudeversicherung", "Building insurance"), amount: 245, rhythm: "monthly", since: "01.01.2026" }],
   },
-  { key: "grundsteuer", label: "Grundsteuer", icon: Receipt, entries: [] },
-  { key: "hausgeld", label: "Hausgeld", icon: Building2, entries: [] },
-  { key: "software", label: "Software", icon: Monitor, entries: [] },
-  { key: "buchhaltung", label: "Buchhaltung / Steuerberatung", icon: Calculator, entries: [] },
-  { key: "mitarbeiter", label: "Mitarbeiter / Gehälter", icon: Users, entries: [] },
-  { key: "instandhaltung", label: "Instandhaltung & Reparaturen", icon: Wrench, entries: [] },
-  { key: "sonstiges", label: "Sonstiges", icon: Box, entries: [] },
+  { key: "grundsteuer", label: t("Grundsteuer", "Property tax"), icon: Receipt, entries: [] },
+  { key: "hausgeld", label: t("Hausgeld", "HOA fees"), icon: Building2, entries: [] },
+  { key: "software", label: t("Software", "Software"), icon: Monitor, entries: [] },
+  { key: "buchhaltung", label: t("Buchhaltung / Steuerberatung", "Accounting / tax advice"), icon: Calculator, entries: [] },
+  { key: "mitarbeiter", label: t("Mitarbeiter / Gehälter", "Staff / salaries"), icon: Users, entries: [] },
+  { key: "instandhaltung", label: t("Instandhaltung & Reparaturen", "Maintenance & repairs"), icon: Wrench, entries: [] },
+  { key: "sonstiges", label: t("Sonstiges", "Other"), icon: Box, entries: [] },
 ];
 
 const monthly = (e: Entry) =>
-  e.rhythm === "pro Monat" ? e.amount : e.rhythm === "pro Woche" ? Math.round(e.amount * 4.42) : 0;
+  e.rhythm === "monthly" ? e.amount : e.rhythm === "weekly" ? Math.round(e.amount * 4.42) : 0;
 
 const fmt = (n: number) => `€${n.toLocaleString("de-DE")}`;
 
 export function OwnerCosts() {
-  const [categories, setCategories] = useState(initialCategories);
+  const { lang, t } = useLang();
+  const lockedCategories = buildLocked(t);
+  const [categories, setCategories] = useState(() => buildInitial(t));
   const [expanded, setExpanded] = useState<string | null>("miete");
   const [addingFor, setAddingFor] = useState<string | null>(null);
-  const [form, setForm] = useState({ name: "", amount: "", rhythm: "pro Monat" as Rhythm });
+  const [form, setForm] = useState({ name: "", amount: "", rhythm: "monthly" as Rhythm });
   const [addingCategory, setAddingCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
 
@@ -106,7 +115,7 @@ export function OwnerCosts() {
   const startAdd = (key: string) => {
     setExpanded(key);
     setAddingFor(key);
-    setForm({ name: "", amount: "", rhythm: "pro Monat" });
+    setForm({ name: "", amount: "", rhythm: "monthly" });
   };
 
   const saveEntry = (key: string) => {
@@ -153,14 +162,16 @@ export function OwnerCosts() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h3 className="text-[16px] font-medium">Deine Kostenpositionen</h3>
+          <h3 className="text-[16px] font-medium">{t("Deine Kostenpositionen", "Your cost items")}</h3>
           <p className="text-[14px] text-muted mt-1">
-            Jede Position ist ein Kostenpunkt: fix pro Monat, pro Woche oder einmalig. Alles
-            fließt in deinen echten Netto-Gewinn ein.
+            {t(
+              "Jede Position ist ein Kostenpunkt: fix pro Monat, pro Woche oder einmalig. Alles fließt in deinen echten Netto-Gewinn ein.",
+              "Each item is a cost point: fixed per month, per week or one-time. Everything feeds into your true net profit."
+            )}
           </p>
         </div>
         <div className="text-right shrink-0 ml-6">
-          <div className="text-[12px] tracking-[1.5px] uppercase text-muted">Kosten / Monat</div>
+          <div className="text-[12px] tracking-[1.5px] uppercase text-muted">{t("Kosten / Monat", "Cost / month")}</div>
           <div className="text-[30px] tracking-[-0.5px]">{fmt(total)}</div>
         </div>
       </div>
@@ -168,17 +179,19 @@ export function OwnerCosts() {
       {/* Unit selector */}
       <div className="bg-panel rounded-[18px] px-5 py-4 mt-5 flex items-center gap-5 flex-wrap">
         <div>
-          <div className="text-[13px] text-muted mb-1.5">Kosten bearbeiten für</div>
+          <div className="text-[13px] text-muted mb-1.5">{t("Kosten bearbeiten für", "Edit costs for")}</div>
           <button className="flex items-center gap-2 bg-white border border-line rounded-full px-5 py-2.5 text-[15px]">
             <Building size={15} />
-            Alle Einheiten
+            {t("Alle Einheiten", "All units")}
             <ChevronDown size={15} className="text-muted" />
           </button>
         </div>
         <p className="flex items-center gap-2 text-[13px] text-muted flex-1 min-w-[280px]">
           <Info size={14} className="shrink-0" />
-          Diese Beträge gelten für jede Einheit. Wähle eine Einheit, um einen abweichenden Wert
-          nur für sie festzulegen.
+          {t(
+            "Diese Beträge gelten für jede Einheit. Wähle eine Einheit, um einen abweichenden Wert nur für sie festzulegen.",
+            "These amounts apply to every unit. Select a unit to set a different value just for it."
+          )}
         </p>
       </div>
 
@@ -186,7 +199,7 @@ export function OwnerCosts() {
       <div className="mt-7">
         <div className="flex items-center gap-2 text-[12px] tracking-[1.5px] uppercase text-muted">
           <Lock size={12} />
-          Von Arbio erfasst
+          {t("Von Arbio erfasst", "Captured by Arbio")}
         </div>
         <div className="flex flex-col mt-2">
           {lockedCategories.map(({ label, icon: Icon, value, note }, i) => (
@@ -204,21 +217,23 @@ export function OwnerCosts() {
               <span className="text-[15px]">{value}</span>
               <span className="flex items-center gap-1.5 bg-panel rounded-full px-3 py-1 text-[12px] text-muted">
                 <Lock size={11} />
-                automatisch
+                {t("automatisch", "automatic")}
               </span>
             </div>
           ))}
         </div>
         <p className="text-[13px] text-muted mt-2">
-          Diese Kosten entstehen durch Arbio-Services und fließen automatisch in deine P&L ein —
-          du musst hier nichts pflegen.
+          {t(
+            "Diese Kosten entstehen durch Arbio-Services und fließen automatisch in deine P&L ein — du musst hier nichts pflegen.",
+            "These costs arise from Arbio services and flow into your P&L automatically — nothing to maintain here."
+          )}
         </p>
       </div>
 
       {/* Editable categories */}
       <div className="mt-7">
         <div className="text-[12px] tracking-[1.5px] uppercase text-muted">
-          Deine eigenen Kosten
+          {t("Deine eigenen Kosten", "Your own costs")}
         </div>
         <div className="flex flex-col gap-2.5 mt-3">
           {categories.map(({ key, label, icon: Icon, entries }) => {
@@ -237,8 +252,11 @@ export function OwnerCosts() {
                     <span className="text-[15px]">{label}</span>
                     <span className="text-[14px] text-muted ml-3">
                       {entries.length === 0
-                        ? "Noch nicht eingetragen"
-                        : `${entries.length} Position${entries.length > 1 ? "en" : ""} · ${fmt(catTotal)}/Monat`}
+                        ? t("Noch nicht eingetragen", "Not entered yet")
+                        : t(
+                            `${entries.length} Position${entries.length > 1 ? "en" : ""} · ${fmt(catTotal)}/Monat`,
+                            `${entries.length} item${entries.length > 1 ? "s" : ""} · ${fmt(catTotal)}/month`
+                          )}
                     </span>
                   </div>
                   {entries.length > 0 && <span className="text-[15px]">{fmt(catTotal)}</span>}
@@ -250,7 +268,7 @@ export function OwnerCosts() {
                       }}
                       className="border border-line rounded-full px-4 py-1.5 text-[13px] text-muted hover:bg-white"
                     >
-                      + Eintragen
+                      {t("+ Eintragen", "+ Add")}
                     </span>
                   )}
                   {isOpen ? (
@@ -270,7 +288,7 @@ export function OwnerCosts() {
                         <div className="flex-1 min-w-0">
                           <div className="text-[15px]">{e.name}</div>
                           <div className="text-[13px] text-muted mt-0.5">
-                            €{e.amount.toLocaleString("de-DE")} {e.rhythm} · ab {e.since}
+                            €{e.amount.toLocaleString("de-DE")} {rhythmLabel(e.rhythm, lang)} · {t("ab", "from")} {e.since}
                           </div>
                         </div>
                         <button className="w-8 h-8 rounded-full flex items-center justify-center text-muted hover:bg-panel">
@@ -288,17 +306,17 @@ export function OwnerCosts() {
                     {addingFor === key ? (
                       <div className="flex items-end gap-3 flex-wrap pt-3">
                         <div className="flex-1 min-w-[180px]">
-                          <label className="block text-[13px] text-muted mb-1">Bezeichnung</label>
+                          <label className="block text-[13px] text-muted mb-1">{t("Bezeichnung", "Label")}</label>
                           <input
                             autoFocus
                             value={form.name}
                             onChange={(e) => setForm({ ...form, name: e.target.value })}
-                            placeholder="z.B. Kreditrate"
+                            placeholder={t("z.B. Kreditrate", "e.g. loan instalment")}
                             className="w-full bg-white border border-line rounded-[14px] px-4 py-2.5 text-[15px] outline-none focus:border-[#c9c9c9]"
                           />
                         </div>
                         <div className="w-[120px]">
-                          <label className="block text-[13px] text-muted mb-1">Betrag (€)</label>
+                          <label className="block text-[13px] text-muted mb-1">{t("Betrag (€)", "Amount (€)")}</label>
                           <input
                             value={form.amount}
                             onChange={(e) => setForm({ ...form, amount: e.target.value })}
@@ -307,7 +325,7 @@ export function OwnerCosts() {
                           />
                         </div>
                         <div>
-                          <label className="block text-[13px] text-muted mb-1">Rhythmus</label>
+                          <label className="block text-[13px] text-muted mb-1">{t("Rhythmus", "Cadence")}</label>
                           <select
                             value={form.rhythm}
                             onChange={(e) =>
@@ -315,22 +333,22 @@ export function OwnerCosts() {
                             }
                             className="bg-white border border-line rounded-[14px] px-4 py-2.5 text-[15px] outline-none"
                           >
-                            <option>pro Monat</option>
-                            <option>pro Woche</option>
-                            <option>einmalig</option>
+                            <option value="monthly">{rhythmLabel("monthly", lang)}</option>
+                            <option value="weekly">{rhythmLabel("weekly", lang)}</option>
+                            <option value="once">{rhythmLabel("once", lang)}</option>
                           </select>
                         </div>
                         <button
                           onClick={() => saveEntry(key)}
                           className="bg-[#2a2a2a] text-white rounded-full px-5 py-2.5 text-[14px] hover:bg-black"
                         >
-                          Speichern
+                          {t("Speichern", "Save")}
                         </button>
                         <button
                           onClick={() => setAddingFor(null)}
                           className="border border-line rounded-full px-4 py-2.5 text-[14px] text-muted hover:bg-panel"
                         >
-                          Abbrechen
+                          {t("Abbrechen", "Cancel")}
                         </button>
                       </div>
                     ) : (
@@ -339,7 +357,7 @@ export function OwnerCosts() {
                         className="flex items-center gap-2 text-[14px] text-muted hover:text-foreground pt-3"
                       >
                         <Plus size={14} />
-                        {label}-Kosten hinzufügen
+                        {t(`${label}-Kosten hinzufügen`, `Add ${label} cost`)}
                       </button>
                     )}
                   </div>
@@ -356,20 +374,20 @@ export function OwnerCosts() {
                 value={newCategoryName}
                 onChange={(e) => setNewCategoryName(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && addCategory()}
-                placeholder="Name der Kostenart, z.B. Gartenpflege"
+                placeholder={t("Name der Kostenart, z.B. Gartenpflege", "Name of cost type, e.g. gardening")}
                 className="flex-1 bg-white border border-line rounded-[14px] px-4 py-2.5 text-[15px] outline-none focus:border-[#c9c9c9]"
               />
               <button
                 onClick={addCategory}
                 className="bg-[#2a2a2a] text-white rounded-full px-5 py-2.5 text-[14px] hover:bg-black"
               >
-                Anlegen
+                {t("Anlegen", "Create")}
               </button>
               <button
                 onClick={() => setAddingCategory(false)}
                 className="border border-line rounded-full px-4 py-2.5 text-[14px] text-muted hover:bg-panel"
               >
-                Abbrechen
+                {t("Abbrechen", "Cancel")}
               </button>
             </div>
           ) : (
@@ -378,7 +396,7 @@ export function OwnerCosts() {
               className="border border-line rounded-[20px] px-5 py-4 flex items-center justify-center gap-2 text-[15px] text-muted hover:bg-panel transition-colors"
             >
               <Plus size={15} />
-              Eigene Kostenart hinzufügen
+              {t("Eigene Kostenart hinzufügen", "Add custom cost type")}
             </button>
           )}
         </div>

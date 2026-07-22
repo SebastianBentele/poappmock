@@ -2,86 +2,98 @@
 
 import { ChevronLeft, ChevronRight, MessageCircle } from "lucide-react";
 import { useArbioChat, costExplainSeed } from "@/components/arbio-chat";
-
-const months = ["Jan '26", "Feb '26", "Mär '26", "Apr '26", "Mai '26", "Jun '26", "Jul '26"];
+import { useLang, type Lang } from "@/components/lang";
 
 type Row =
   | { type: "section"; label: string }
   | {
       type: "line" | "total";
       label: string;
+      key?: string;
       sub?: string;
       values: (string | null)[];
       negative?: boolean;
       signed?: boolean;
     };
 
-const rows: Row[] = [
-  { type: "section", label: "Erlöse" },
+const buildMonths = (lang: Lang) =>
+  lang === "de"
+    ? ["Jan '26", "Feb '26", "Mär '26", "Apr '26", "Mai '26", "Jun '26", "Jul '26"]
+    : ["Jan '26", "Feb '26", "Mar '26", "Apr '26", "May '26", "Jun '26", "Jul '26"];
+
+const buildRows = (t: (de: string, en: string) => string): Row[] => [
+  { type: "section", label: t("Erlöse", "Revenue") },
   {
     type: "line",
-    label: "Bruttoumsatz (GBV)",
+    label: t("Bruttoumsatz (GBV)", "Gross Booking Value (GBV)"),
+    key: "Bruttoumsatz (GBV)",
     values: ["€1.435", "€1.551", "€3.786", "€22.254", "€25.588", "€28.563", "€41.451"],
   },
   {
     type: "line",
-    label: "Umsatzsteuer",
+    label: t("Umsatzsteuer", "VAT"),
+    key: "Umsatzsteuer",
     negative: true,
     values: ["–€94", "–€101", "–€248", "–€1.456", "–€1.674", "–€1.869", "–€2.712"],
   },
   {
     type: "total",
-    label: "Nettoumsatz",
+    label: t("Nettoumsatz", "Net revenue"),
     values: ["€1.342", "€1.450", "€3.538", "€20.798", "€23.914", "€26.694", "€38.739"],
   },
-  { type: "section", label: "Variable Kosten" },
+  { type: "section", label: t("Variable Kosten", "Variable costs") },
   {
     type: "line",
-    label: "OTA-Provision",
+    label: t("OTA-Provision", "OTA commission"),
+    key: "OTA-Provision",
     negative: true,
     values: ["–€136", "–€220", "–€545", "–€2.658", "–€3.757", "–€3.974", "–€5.407"],
   },
   {
     type: "total",
-    label: "Contribution Margin",
-    sub: "86,0% vom Nettoumsatz",
+    label: t("Contribution Margin", "Contribution margin"),
+    sub: t("86,0% vom Nettoumsatz", "86.0% of net revenue"),
     values: ["€1.206", "€1.230", "€2.993", "€18.140", "€20.157", "€22.720", "€33.332"],
   },
-  { type: "section", label: "Fixe Kosten" },
+  { type: "section", label: t("Fixe Kosten", "Fixed costs") },
   {
     type: "line",
-    label: "Reinigung · Test",
+    label: t("Reinigung · Test", "Cleaning · Test"),
+    key: "Reinigung · Test",
     negative: true,
     values: [null, null, null, null, null, null, "–€221"],
   },
   {
     type: "total",
-    label: "Operativer Gewinn",
+    label: t("Operativer Gewinn", "Operating profit"),
     values: ["€1.206", "€1.230", "€2.993", "€18.140", "€20.157", "€22.720", "€33.111"],
   },
-  { type: "section", label: "Eigene Kosten · von dir gepflegt" },
+  { type: "section", label: t("Eigene Kosten · von dir gepflegt", "Own costs · maintained by you") },
   {
     type: "line",
-    label: "Miete / Finanzierung",
+    label: t("Miete / Finanzierung", "Rent / financing"),
+    key: "Miete / Finanzierung",
     negative: true,
     values: ["–€2.100", "–€2.100", "–€2.100", "–€2.100", "–€2.100", "–€2.100", "–€2.100"],
   },
   {
     type: "line",
-    label: "Versicherung",
+    label: t("Versicherung", "Insurance"),
+    key: "Versicherung",
     negative: true,
     values: ["–€245", "–€245", "–€245", "–€245", "–€245", "–€245", "–€245"],
   },
   {
     type: "line",
-    label: "Nebenkosten & Internet",
+    label: t("Nebenkosten & Internet", "Utilities & internet"),
+    key: "Nebenkosten & Internet",
     negative: true,
     values: ["–€290", "–€290", "–€290", "–€290", "–€290", "–€290", "–€290"],
   },
   {
     type: "total",
-    label: "Echter Netto-Gewinn",
-    sub: "nach deinen Kosten",
+    label: t("Echter Netto-Gewinn", "True net profit"),
+    sub: t("nach deinen Kosten", "after your costs"),
     signed: true,
     values: ["–€1.429", "–€1.405", "€358", "€15.505", "€17.522", "€20.085", "€30.476"],
   },
@@ -89,17 +101,20 @@ const rows: Row[] = [
 
 export function PnlTable() {
   const { openChat } = useArbioChat();
+  const { lang, t } = useLang();
+  const months = buildMonths(lang);
+  const rows = buildRows(t);
 
   return (
     <div className="bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
       <div className="flex items-center justify-between">
-        <h3 className="text-[16px] font-medium">P&L Übersicht</h3>
+        <h3 className="text-[16px] font-medium">{t("P&L Übersicht", "P&L overview")}</h3>
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1.5 text-[13px] text-muted">
             <MessageCircle size={13} />
-            Position anklicken für Erklärung im Chat
+            {t("Position anklicken für Erklärung im Chat", "Click a line for an explanation in chat")}
           </span>
-          <span className="text-[14px] text-muted">28 Buchungen · 172 belegte Nächte</span>
+          <span className="text-[14px] text-muted">{t("28 Buchungen · 172 belegte Nächte", "28 bookings · 172 booked nights")}</span>
           <button className="w-9 h-9 rounded-full border border-line flex items-center justify-center text-muted hover:bg-panel">
             <ChevronLeft size={15} />
           </button>
@@ -123,7 +138,7 @@ export function PnlTable() {
                     <span className="text-foreground">
                       {m}{" "}
                       <span className="bg-[#d3f2a3] text-[#3c5f33] rounded-md px-1.5 py-0.5 text-[10px] tracking-[1px]">
-                        Jetzt
+                        {t("Jetzt", "Now")}
                       </span>
                     </span>
                   ) : (
@@ -147,7 +162,7 @@ export function PnlTable() {
               ) : (
                 <tr
                   key={ri}
-                  onClick={row.type === "line" ? () => openChat(costExplainSeed(row.label)) : undefined}
+                  onClick={row.type === "line" ? () => openChat(costExplainSeed(row.key ?? row.label, t)) : undefined}
                   className={`${row.type === "total" ? "border-t border-line" : ""} ${
                     row.type === "line" ? "cursor-pointer hover:bg-panel transition-colors" : ""
                   }`}

@@ -1,4 +1,7 @@
+"use client";
+
 import { Mic, ArrowUp, LifeBuoy } from "lucide-react";
+import { useLang } from "@/components/lang";
 
 export function ChatInput({
   placeholder,
@@ -9,6 +12,7 @@ export function ChatInput({
   className?: string;
   onRequest?: () => void;
 }) {
+  const { t } = useLang();
   return (
     <div
       className={`flex items-center gap-2 bg-white border border-line rounded-[30px] shadow-[0_2px_12px_rgba(0,0,0,0.06)] ${
@@ -21,7 +25,7 @@ export function ChatInput({
           className="flex items-center gap-2 shrink-0 rounded-full bg-panel hover:bg-line text-foreground pl-3 pr-4 py-2 text-[15px]"
         >
           <LifeBuoy size={16} />
-          Anfrage
+          {t("Anfrage", "Request")}
         </button>
       )}
       <input

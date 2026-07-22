@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Calendar, MapPin, Building2, ChevronDown, Check, ChevronLeft, ChevronRight } from "lucide-react";
+import { useLang } from "@/components/lang";
 
 const ALL_UNITS = [
   { name: "Altstadt Apartment", city: "Hamburg" },
@@ -13,29 +14,31 @@ const ALL_UNITS = [
 
 const CITIES = ["Hamburg"];
 
-const periodPresets = [
-  "Dieser Monat",
-  "Letzter Monat",
-  "Dieses Quartal",
-  "Dieses Jahr",
-  "Letzte 12 Monate",
-];
-
 type Open = "period" | "units" | "city" | null;
 
 export function FilterBar({ showStepper = true }: { showStepper?: boolean }) {
+  const { t } = useLang();
   const [open, setOpen] = useState<Open>(null);
-  const [period, setPeriod] = useState("Dieser Monat");
+  const [periodIdx, setPeriodIdx] = useState(0);
   const [custom, setCustom] = useState(false);
   const [units, setUnits] = useState<string[]>([]); // empty = all
   const [city, setCity] = useState<string | null>(null);
 
+  const periodPresets = [
+    t("Dieser Monat", "This month"),
+    t("Letzter Monat", "Last month"),
+    t("Dieses Quartal", "This quarter"),
+    t("Dieses Jahr", "This year"),
+    t("Letzte 12 Monate", "Last 12 months"),
+  ];
+  const period = custom ? "01.04. – 30.06.2026" : periodPresets[periodIdx];
+
   const unitLabel =
     units.length === 0
-      ? "Alle Einheiten"
+      ? t("Alle Einheiten", "All units")
       : units.length === 1
         ? units[0]
-        : `${units.length} Einheiten`;
+        : t(`${units.length} Einheiten`, `${units.length} units`);
 
   const toggleUnit = (name: string) =>
     setUnits((u) => (u.includes(name) ? u.filter((x) => x !== name) : [...u, name]));
@@ -74,18 +77,18 @@ export function FilterBar({ showStepper = true }: { showStepper?: boolean }) {
         </div>
         {open === "period" && (
           <div className="absolute left-0 top-12 w-[300px] bg-white border border-line rounded-[20px] shadow-[0_16px_50px_rgba(0,0,0,0.14)] p-2 z-40">
-            {periodPresets.map((p) => (
+            {periodPresets.map((p, pi) => (
               <button
                 key={p}
                 onClick={() => {
-                  setPeriod(p);
+                  setPeriodIdx(pi);
                   setCustom(false);
                   close();
                 }}
                 className="w-full flex items-center justify-between rounded-[12px] px-4 py-2.5 text-[15px] text-left hover:bg-panel"
               >
                 {p}
-                {period === p && !custom && <Check size={15} className="text-accent-text" />}
+                {periodIdx === pi && !custom && <Check size={15} className="text-accent-text" />}
               </button>
             ))}
             <div className="border-t border-line mt-2 pt-2">
@@ -93,14 +96,14 @@ export function FilterBar({ showStepper = true }: { showStepper?: boolean }) {
                 onClick={() => setCustom(true)}
                 className="w-full flex items-center justify-between rounded-[12px] px-4 py-2.5 text-[15px] text-left hover:bg-panel"
               >
-                Eigener Zeitraum
+                {t("Eigener Zeitraum", "Custom period")}
                 {custom && <Check size={15} className="text-accent-text" />}
               </button>
               {custom && (
                 <div className="px-2 pt-2">
                   <div className="grid grid-cols-2 gap-2">
                     <div className="border border-line rounded-[12px] px-3 py-2">
-                      <div className="text-[11px] text-muted">Von</div>
+                      <div className="text-[11px] text-muted">{t("Von", "From")}</div>
                       <input
                         type="text"
                         defaultValue="01.04.2026"
@@ -108,7 +111,7 @@ export function FilterBar({ showStepper = true }: { showStepper?: boolean }) {
                       />
                     </div>
                     <div className="border border-line rounded-[12px] px-3 py-2">
-                      <div className="text-[11px] text-muted">Bis</div>
+                      <div className="text-[11px] text-muted">{t("Bis", "To")}</div>
                       <input
                         type="text"
                         defaultValue="30.06.2026"
@@ -117,13 +120,10 @@ export function FilterBar({ showStepper = true }: { showStepper?: boolean }) {
                     </div>
                   </div>
                   <button
-                    onClick={() => {
-                      setPeriod("01.04. – 30.06.2026");
-                      close();
-                    }}
+                    onClick={() => close()}
                     className="w-full mt-2 bg-[#2a2a2a] text-white rounded-full py-2.5 text-[14px] hover:bg-black"
                   >
-                    Anwenden
+                    {t("Anwenden", "Apply")}
                   </button>
                 </div>
               )}
@@ -145,7 +145,7 @@ export function FilterBar({ showStepper = true }: { showStepper?: boolean }) {
               onClick={() => setUnits([])}
               className="w-full flex items-center justify-between rounded-[12px] px-4 py-2.5 text-[15px] text-left hover:bg-panel"
             >
-              Alle Einheiten
+              {t("Alle Einheiten", "All units")}
               {units.length === 0 && <Check size={15} className="text-accent-text" />}
             </button>
             <div className="border-t border-line mt-1 pt-1">
@@ -177,7 +177,7 @@ export function FilterBar({ showStepper = true }: { showStepper?: boolean }) {
       <div className="relative z-40">
         <button onClick={() => setOpen(open === "city" ? null : "city")} className={btn}>
           <Building2 size={15} />
-          {city ?? "Alle Städte"}
+          {city ?? t("Alle Städte", "All cities")}
           <ChevronDown size={15} className="text-muted" />
         </button>
         {open === "city" && (
@@ -189,7 +189,7 @@ export function FilterBar({ showStepper = true }: { showStepper?: boolean }) {
               }}
               className="w-full flex items-center justify-between rounded-[12px] px-4 py-2.5 text-[15px] text-left hover:bg-panel"
             >
-              Alle Städte
+              {t("Alle Städte", "All cities")}
               {city === null && <Check size={15} className="text-accent-text" />}
             </button>
             {CITIES.map((c) => (

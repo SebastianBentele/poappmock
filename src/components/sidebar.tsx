@@ -14,18 +14,20 @@ import {
   Settings,
   PanelLeft,
 } from "lucide-react";
-
-const navItems = [
-  { href: "/", label: "Frag Arbio", icon: MessageCircle },
-  { href: "/einheiten", label: "Portfolio", icon: LayoutGrid },
-  { href: "/portfolio", label: "Umsatz", icon: BarChart3 },
-  { href: "/finanzen", label: "Finanzen", icon: Wallet },
-  { href: "/operativ", label: "Operations", icon: ClipboardList },
-  { href: "/kalender", label: "Kalender", icon: CalendarDays },
-];
+import { useLang } from "@/components/lang";
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { t } = useLang();
+
+  const navItems = [
+    { href: "/", label: t("Frag Arbio", "Ask Arbio"), icon: MessageCircle },
+    { href: "/einheiten", label: t("Portfolio", "Portfolio"), icon: LayoutGrid },
+    { href: "/portfolio", label: t("Umsatz", "Revenue"), icon: BarChart3 },
+    { href: "/finanzen", label: t("Finanzen", "Finance"), icon: Wallet },
+    { href: "/operativ", label: t("Operations", "Operations"), icon: ClipboardList },
+    { href: "/kalender", label: t("Kalender", "Calendar"), icon: CalendarDays },
+  ];
 
   return (
     <aside className="w-[290px] shrink-0 bg-[#fafafa] border-r border-line flex flex-col px-4 py-5">
@@ -69,7 +71,7 @@ export function Sidebar() {
       </nav>
 
       <button className="flex items-center justify-between px-3 py-3 mt-4 text-[14px] text-muted hover:text-foreground">
-        <span>Vergangene Chats</span>
+        <span>{t("Vergangene Chats", "Past chats")}</span>
         <ChevronRight size={16} />
       </button>
 
@@ -78,7 +80,7 @@ export function Sidebar() {
           <span className="w-9 h-9 rounded-full bg-panel flex items-center justify-center">
             <MessageSquarePlus size={16} />
           </span>
-          <span className="font-medium">Feedback geben</span>
+          <span className="font-medium">{t("Feedback geben", "Give feedback")}</span>
         </button>
 
         <Link
@@ -94,7 +96,7 @@ export function Sidebar() {
           </span>
           <div className="flex-1 leading-tight">
             <div className="text-[15px] font-medium">Sebastian</div>
-            <div className="text-[11px] tracking-[1px] text-muted">PROFIL</div>
+            <div className="text-[11px] tracking-[1px] text-muted">{t("PROFIL", "PROFILE")}</div>
           </div>
           <span className="w-9 h-9 rounded-full bg-panel flex items-center justify-center text-muted">
             <Settings size={15} />

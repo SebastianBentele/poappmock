@@ -12,7 +12,8 @@ import {
 } from "lucide-react";
 import { ChatInput } from "@/components/chat-input";
 import { FilterBar } from "@/components/filter-bar";
-import { useArbioChat, type Msg } from "@/components/arbio-chat";
+import { useArbioChat, type Msg, type Tr } from "@/components/arbio-chat";
+import { useLang } from "@/components/lang";
 
 const DAYS = 31;
 
@@ -32,71 +33,89 @@ type Booking = {
   seed?: Msg[];
 };
 
-const wasserschadenSeed: Msg[] = [
-  { kind: "user", text: "Wie ist der Status beim Wasserschaden im Studio Universität?" },
+const wasserschadenSeed = (t: Tr): Msg[] => [
+  { kind: "user", text: t("Wie ist der Status beim Wasserschaden im Studio Universität?", "What's the status of the water damage in Studio University?") },
   {
     kind: "bot",
-    text: "Das Studio Universität ist seit dem 04.07. wegen eines Wasserschadens im Bad blockiert (Ticket #1038, undichte Silikonfuge an der Dusche). Der Zeitraum ist auf allen Kanälen gesperrt, damit keine Gäste betroffen sind — die Freigabe ist für den 11.07. geplant.",
+    text: t(
+      "Das Studio Universität ist seit dem 04.07. wegen eines Wasserschadens im Bad blockiert (Ticket #1038, undichte Silikonfuge an der Dusche). Der Zeitraum ist auf allen Kanälen gesperrt, damit keine Gäste betroffen sind — die Freigabe ist für den 11.07. geplant.",
+      "Studio University has been blocked since 04 Jul due to water damage in the bathroom (ticket #1038, a leaking silicone joint in the shower). The period is blocked across all channels so no guests are affected — it's scheduled to go live again on 11 Jul."
+    ),
   },
   {
     kind: "timeline",
-    title: "Ticket #1038 · Wasserschaden Bad · Studio Universität",
+    title: t("Ticket #1038 · Wasserschaden Bad · Studio Universität", "Ticket #1038 · Bathroom water damage · Studio University"),
     steps: [
-      { label: "Schaden festgestellt & blockiert", meta: "04.07.", state: "done" },
-      { label: "Trocknung läuft", meta: "05.–09.07.", state: "current" },
-      { label: "Reparatur & Endkontrolle", meta: "10.07.", state: "pending" },
-      { label: "Einheit wieder live", meta: "vsl. 11.07.", state: "pending" },
+      { label: t("Schaden festgestellt & blockiert", "Damage detected & blocked"), meta: "04.07.", state: "done" },
+      { label: t("Trocknung läuft", "Drying in progress"), meta: "05.–09.07.", state: "current" },
+      { label: t("Reparatur & Endkontrolle", "Repair & final check"), meta: "10.07.", state: "pending" },
+      { label: t("Einheit wieder live", "Unit live again"), meta: t("vsl. 11.07.", "est. 11 Jul"), state: "pending" },
     ],
   },
   {
     kind: "bot",
-    text: "Volle Transparenz: Entgangener Umsatz bisher ca. €610 (5 blockierte Nächte à ~€122). Das Team erneuert im Zuge der Reparatur direkt alle Silikonfugen im Bad — so senken wir das Risiko eines erneuten Ausfalls. Du musst nichts tun, wir halten dich auf dem Laufenden.",
+    text: t(
+      "Volle Transparenz: Entgangener Umsatz bisher ca. €610 (5 blockierte Nächte à ~€122). Das Team erneuert im Zuge der Reparatur direkt alle Silikonfugen im Bad — so senken wir das Risiko eines erneuten Ausfalls. Du musst nichts tun, wir halten dich auf dem Laufenden.",
+      "Full transparency: lost revenue so far is approx. €610 (5 blocked nights at ~€122). While repairing, the team is renewing all silicone joints in the bathroom — reducing the risk of another outage. You don't need to do anything, we'll keep you posted."
+    ),
   },
 ];
 
-const thermeSeed: Msg[] = [
-  { kind: "user", text: "Was ist zur Therme-Wartung im Altstadt Apartment geplant?" },
+const thermeSeed = (t: Tr): Msg[] => [
+  { kind: "user", text: t("Was ist zur Therme-Wartung im Altstadt Apartment geplant?", "What's planned for the boiler service in Altstadt Apartment?") },
   {
     kind: "bot",
-    text: "Die jährliche Thermenwartung im Altstadt Apartment ist für den 13.–14.07. eingeplant (Ticket #1046, Drittanbieter). Der Zeitraum liegt in einer Buchungslücke — kein Gast ist betroffen. Der Zugang erfolgt über die Schlüsselbox.",
+    text: t(
+      "Die jährliche Thermenwartung im Altstadt Apartment ist für den 13.–14.07. eingeplant (Ticket #1046, Drittanbieter). Der Zeitraum liegt in einer Buchungslücke — kein Gast ist betroffen. Der Zugang erfolgt über die Schlüsselbox.",
+      "The annual boiler service in Altstadt Apartment is scheduled for 13–14 Jul (ticket #1046, third-party provider). It falls within a booking gap — no guest is affected. Access is via the key box."
+    ),
   },
   {
     kind: "timeline",
-    title: "Ticket #1046 · Therme-Wartung · Altstadt Apartment",
+    title: t("Ticket #1046 · Therme-Wartung · Altstadt Apartment", "Ticket #1046 · Boiler service · Altstadt Apartment"),
     steps: [
-      { label: "Termin vereinbart", meta: "01.07.", state: "done" },
-      { label: "Zeitraum blockiert", meta: "13.–14.07.", state: "current" },
-      { label: "Wartung durchgeführt", state: "pending" },
+      { label: t("Termin vereinbart", "Appointment arranged"), meta: "01.07.", state: "done" },
+      { label: t("Zeitraum blockiert", "Period blocked"), meta: "13.–14.07.", state: "current" },
+      { label: t("Wartung durchgeführt", "Service completed"), state: "pending" },
     ],
   },
   {
     kind: "bot",
-    text: "Kosten: ca. €140 (Drittanbieter) — erscheint danach als Position in deiner Juli-P&L. Ich melde mich, sobald die Wartung abgeschlossen ist.",
+    text: t(
+      "Kosten: ca. €140 (Drittanbieter) — erscheint danach als Position in deiner Juli-P&L. Ich melde mich, sobald die Wartung abgeschlossen ist.",
+      "Cost: approx. €140 (third-party) — it'll appear afterwards as a line item in your July P&L. I'll let you know once the service is done."
+    ),
   },
 ];
 
-const abflussSeed: Msg[] = [
-  { kind: "user", text: "Was ist zum Abfluss im Kiez Apartment geplant?" },
+const abflussSeed = (t: Tr): Msg[] => [
+  { kind: "user", text: t("Was ist zum Abfluss im Kiez Apartment geplant?", "What's planned for the drain in Kiez Apartment?") },
   {
     kind: "bot",
-    text: "Zu Ticket #1047 (Abfluss Küche läuft langsam ab, Kiez Apartment Prenzlauer Berg): Die Meldung kam über die Reinigungskraft. Unser Hausmeister prüft es beim Turnover am 12.07. — die kurze Buchungslücke reicht dafür aus, kein Gast ist betroffen.",
+    text: t(
+      "Zu Ticket #1047 (Abfluss Küche läuft langsam ab, Kiez Apartment Prenzlauer Berg): Die Meldung kam über die Reinigungskraft. Unser Hausmeister prüft es beim Turnover am 12.07. — die kurze Buchungslücke reicht dafür aus, kein Gast ist betroffen.",
+      "On ticket #1047 (kitchen drain draining slowly, Kiez Apartment Prenzlauer Berg): the report came in via the cleaner. Our caretaker will check it during turnover on 12 Jul — the short booking gap is enough for that, no guest is affected."
+    ),
   },
   {
     kind: "timeline",
-    title: "Ticket #1047 · Abfluss Küche · Kiez Apartment",
+    title: t("Ticket #1047 · Abfluss Küche · Kiez Apartment", "Ticket #1047 · Kitchen drain · Kiez Apartment"),
     steps: [
-      { label: "Gemeldet", meta: "heute", state: "done" },
-      { label: "Diagnose beim Turnover", meta: "12.07.", state: "current" },
-      { label: "Erledigt", state: "pending" },
+      { label: t("Gemeldet", "Reported"), meta: t("heute", "today"), state: "done" },
+      { label: t("Diagnose beim Turnover", "Diagnosis at turnover"), meta: "12.07.", state: "current" },
+      { label: t("Erledigt", "Resolved"), state: "pending" },
     ],
   },
   {
     kind: "bot",
-    text: "Falls es mehr als eine Reinigung des Siphons ist, holen wir dir vorab ein Angebot ein — du entscheidest, bevor Kosten entstehen.",
+    text: t(
+      "Falls es mehr als eine Reinigung des Siphons ist, holen wir dir vorab ein Angebot ein — du entscheidest, bevor Kosten entstehen.",
+      "If it's more than cleaning the trap, we'll get you a quote first — you decide before any costs arise."
+    ),
   },
 ];
 
-const units: { name: string; bookings: Booking[] }[] = [
+const buildUnits = (t: Tr): { name: string; bookings: Booking[] }[] => [
   {
     name: "Altstadt Apartment",
     bookings: [
@@ -105,11 +124,11 @@ const units: { name: string; bookings: Booking[] }[] = [
       {
         start: 13,
         end: 14,
-        label: "Therme-Wartung",
+        label: t("Therme-Wartung", "Boiler service"),
         kind: "maintenance",
         ticket: "#1046",
-        note: "Jährliche Thermenwartung (Drittanbieter). Kein Gast betroffen.",
-        seed: thermeSeed,
+        note: t("Jährliche Thermenwartung (Drittanbieter). Kein Gast betroffen.", "Annual boiler service (third-party). No guest affected."),
+        seed: thermeSeed(t),
       },
       { start: 15, end: 22, label: "J. Karlsson", price: "€1.610", profit: "€1.180" },
       { start: 27, end: 31, label: "T. Becker", price: "€760", profit: "€550" },
@@ -122,12 +141,12 @@ const units: { name: string; bookings: Booking[] }[] = [
       {
         start: 4,
         end: 11,
-        label: "Wasserschaden Bad",
+        label: t("Wasserschaden Bad", "Bathroom water damage"),
         kind: "maintenance",
         ticket: "#1038",
-        lostRevenue: "ca. €610",
-        note: "Trocknung & Reparatur. Zeitraum auf allen Kanälen gesperrt.",
-        seed: wasserschadenSeed,
+        lostRevenue: t("ca. €610", "approx. €610"),
+        note: t("Trocknung & Reparatur. Zeitraum auf allen Kanälen gesperrt.", "Drying & repair. Period blocked across all channels."),
+        seed: wasserschadenSeed(t),
       },
       { start: 13, end: 16, label: "S. Meier", price: "€560", profit: "€400" },
       { start: 18, end: 31, label: "F. Dubois", price: "€1.890", profit: "€1.400" },
@@ -137,8 +156,8 @@ const units: { name: string; bookings: Booking[] }[] = [
     name: "Garten Apartment",
     bookings: [
       { start: 3, end: 6, label: "P. Novak", price: "€510", profit: "€370" },
-      { start: 8, end: 16, label: "Familie Krüger", price: "€1.320", profit: "€960" },
-      { start: 20, end: 24, label: "Eigenbelegung", kind: "owner" },
+      { start: 8, end: 16, label: t("Familie Krüger", "Krüger family"), price: "€1.320", profit: "€960" },
+      { start: 20, end: 24, label: t("Eigenbelegung", "Owner stay"), kind: "owner" },
       { start: 26, end: 30, label: "R. Silva", price: "€830", profit: "€600" },
     ],
   },
@@ -146,7 +165,7 @@ const units: { name: string; bookings: Booking[] }[] = [
     name: "Altbau Suite Eppendorf",
     bookings: [
       { start: 1, end: 4, label: "H. Lindqvist", price: "€780", profit: "€560" },
-      { start: 6, end: 13, label: "Familie Conti", price: "€1.560", profit: "€1.150" },
+      { start: 6, end: 13, label: t("Familie Conti", "Conti family"), price: "€1.560", profit: "€1.150" },
       { start: 15, end: 19, label: "A. Popović", price: "€1.010", profit: "€740" },
       { start: 22, end: 31, label: "Whitfield", price: "€1.980", profit: "€1.460" },
     ],
@@ -159,11 +178,11 @@ const units: { name: string; bookings: Booking[] }[] = [
       {
         start: 12,
         end: 12,
-        label: "Abfluss-Diagnose",
+        label: t("Abfluss-Diagnose", "Drain diagnosis"),
         kind: "maintenance",
         ticket: "#1047",
-        note: "Hausmeister prüft den Küchenabfluss beim Turnover. Kein Gast betroffen.",
-        seed: abflussSeed,
+        note: t("Hausmeister prüft den Küchenabfluss beim Turnover. Kein Gast betroffen.", "Caretaker checks the kitchen drain at turnover. No guest affected."),
+        seed: abflussSeed(t),
       },
       { start: 14, end: 20, label: "D. Yılmaz", price: "€1.240", profit: "€910" },
       { start: 23, end: 28, label: "S. Andersson", price: "€1.040", profit: "€760" },
@@ -221,6 +240,7 @@ function BookingBar({
 }
 
 function Tooltip({ h }: { h: Hovered }) {
+  const { t } = useLang();
   const b = h.b;
   const kind = b.kind ?? "guest";
   const width = 260;
@@ -241,30 +261,30 @@ function Tooltip({ h }: { h: Hovered }) {
       <div className="bg-white border border-line rounded-[18px] shadow-[0_8px_30px_rgba(0,0,0,0.14)] px-5 py-4">
         <div className="text-[15px]">{b.label}</div>
         <div className="text-[13px] text-muted mt-0.5">
-          {String(b.start).padStart(2, "0")}. – {String(b.end).padStart(2, "0")}. Juli 2026
+          {String(b.start).padStart(2, "0")}. – {String(b.end).padStart(2, "0")}. {t("Juli", "July")} 2026
         </div>
         {kind === "guest" && (
           <div className="flex flex-col gap-1.5 mt-3">
             <div className="flex justify-between text-[14px]">
-              <span className="text-muted">Buchungswert</span>
+              <span className="text-muted">{t("Buchungswert", "Booking value")}</span>
               <span>{b.price}</span>
             </div>
             <div className="flex justify-between text-[14px]">
-              <span className="text-muted">Geschätzter Profit</span>
+              <span className="text-muted">{t("Geschätzter Profit", "Estimated profit")}</span>
               <span className="text-accent-text">{b.profit}</span>
             </div>
           </div>
         )}
         {kind === "owner" && (
           <div className="text-[13px] text-muted mt-3">
-            Eigenbelegung · Zeitraum für Gäste blockiert
+            {t("Eigenbelegung · Zeitraum für Gäste blockiert", "Owner stay · period blocked for guests")}
           </div>
         )}
         {kind === "maintenance" && (
           <div className="mt-3 flex flex-col gap-1.5">
             <div className="flex items-center gap-1.5 text-[13px] text-[#8a5a1a]">
               <Wrench size={12} />
-              Wartung · für Gäste blockiert
+              {t("Wartung · für Gäste blockiert", "Maintenance · blocked for guests")}
             </div>
             {b.note && <p className="text-[13px] text-muted leading-snug">{b.note}</p>}
             {b.ticket && (
@@ -275,14 +295,14 @@ function Tooltip({ h }: { h: Hovered }) {
             )}
             {b.lostRevenue && (
               <div className="flex justify-between text-[14px]">
-                <span className="text-muted">Entgangener Umsatz</span>
+                <span className="text-muted">{t("Entgangener Umsatz", "Lost revenue")}</span>
                 <span className="text-negative">{b.lostRevenue}</span>
               </div>
             )}
             {b.seed && (
               <div className="flex items-center gap-1.5 text-[13px] text-muted mt-2 pt-2 border-t border-line">
                 <MessageCircle size={12} />
-                Klicken für Status im Chat
+                {t("Klicken für Status im Chat", "Click for status in chat")}
               </div>
             )}
           </div>
@@ -296,6 +316,8 @@ type Mode = "aufenthalt" | "wartung";
 
 export default function Kalender() {
   const { openChat } = useArbioChat();
+  const { t } = useLang();
+  const units = buildUnits(t);
   const [modalOpen, setModalOpen] = useState(false);
   const [mode, setMode] = useState<Mode>("aufenthalt");
   const [done, setDone] = useState(false);
@@ -309,9 +331,9 @@ export default function Kalender() {
 
   return (
     <div className="relative min-h-screen px-8 py-6 pb-32">
-      <h1 className="text-[22px]">Kalender</h1>
+      <h1 className="text-[22px]">{t("Kalender", "Calendar")}</h1>
       <p className="text-[15px] text-muted mt-1">
-        Alle Einheiten, Buchungen und Wartungen im Überblick
+        {t("Alle Einheiten, Buchungen und Wartungen im Überblick", "All units, bookings and maintenance at a glance")}
       </p>
 
       {/* Filters + entry button */}
@@ -323,7 +345,7 @@ export default function Kalender() {
           className="flex items-center gap-2 bg-[#2a2a2a] text-white rounded-full px-6 py-3 text-[15px] hover:bg-black transition-colors"
         >
           <Plus size={16} />
-          Eintragen
+          {t("Eintragen", "Add entry")}
         </button>
       </div>
 
@@ -380,13 +402,13 @@ export default function Kalender() {
 
         <div className="flex gap-6 mt-5 pt-4 border-t border-line text-[13px] text-muted">
           <span className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-[#dcebd4] inline-block" /> Gastbuchung
+            <span className="w-3 h-3 rounded-full bg-[#dcebd4] inline-block" /> {t("Gastbuchung", "Guest booking")}
           </span>
           <span className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-[#eceff1] border border-line inline-block" /> Eigenbelegung
+            <span className="w-3 h-3 rounded-full bg-[#eceff1] border border-line inline-block" /> {t("Eigenbelegung", "Owner stay")}
           </span>
           <span className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-[#fbe4c2] inline-block" /> Wartung
+            <span className="w-3 h-3 rounded-full bg-[#fbe4c2] inline-block" /> {t("Wartung", "Maintenance")}
           </span>
         </div>
       </div>
@@ -402,20 +424,20 @@ export default function Kalender() {
               <div className="flex flex-col items-center text-center py-6">
                 <CheckCircle2 size={40} className="text-accent-text" />
                 <div className="text-[19px] mt-4">
-                  {mode === "aufenthalt" ? "Aufenthalt eingetragen" : "Wartung eingetragen"}
+                  {mode === "aufenthalt" ? t("Aufenthalt eingetragen", "Stay added") : t("Wartung eingetragen", "Maintenance added")}
                 </div>
                 <p className="text-[14px] text-muted mt-2 leading-snug">
                   {mode === "aufenthalt" ? (
                     <>
-                      Garten Apartment · 07. – 10. August 2026
+                      Garten Apartment · 07. – 10. {t("August", "August")} 2026
                       <br />
-                      Der Zeitraum ist ab sofort für Gästebuchungen blockiert.
+                      {t("Der Zeitraum ist ab sofort für Gästebuchungen blockiert.", "The period is now blocked for guest bookings.")}
                     </>
                   ) : (
                     <>
-                      Altstadt Apartment · 12. August 2026 · Rauchfangkehrer
+                      Altstadt Apartment · 12. {t("August", "August")} 2026 · {t("Rauchfangkehrer", "Chimney sweep")}
                       <br />
-                      Der Zeitraum ist für Gäste blockiert und unser Team ist informiert.
+                      {t("Der Zeitraum ist für Gäste blockiert und unser Team ist informiert.", "The period is blocked for guests and our team has been notified.")}
                     </>
                   )}
                 </p>
@@ -423,13 +445,13 @@ export default function Kalender() {
                   onClick={() => setModalOpen(false)}
                   className="mt-6 bg-[#2a2a2a] text-white rounded-full px-8 py-3 text-[15px]"
                 >
-                  Fertig
+                  {t("Fertig", "Done")}
                 </button>
               </div>
             ) : (
               <>
                 <div className="flex items-start justify-between">
-                  <div className="text-[19px]">Kalender-Eintrag</div>
+                  <div className="text-[19px]">{t("Kalender-Eintrag", "Calendar entry")}</div>
                   <button
                     onClick={() => setModalOpen(false)}
                     className="w-9 h-9 rounded-full bg-panel flex items-center justify-center text-muted"
@@ -447,7 +469,7 @@ export default function Kalender() {
                     }`}
                   >
                     <Home size={14} />
-                    Eigener Aufenthalt
+                    {t("Eigener Aufenthalt", "Own stay")}
                   </button>
                   <button
                     onClick={() => setMode("wartung")}
@@ -456,14 +478,14 @@ export default function Kalender() {
                     }`}
                   >
                     <Wrench size={14} />
-                    Wartung / Termin
+                    {t("Wartung / Termin", "Maintenance / appointment")}
                   </button>
                 </div>
 
                 <p className="text-[13px] text-muted mt-3">
                   {mode === "aufenthalt"
-                    ? "Kostenlos · blockiert den Zeitraum für Gäste."
-                    : "Blockiert den Zeitraum für Gäste und informiert das Arbio-Team — keine Fake-Buchung, deine Auslastungszahlen bleiben sauber."}
+                    ? t("Kostenlos · blockiert den Zeitraum für Gäste.", "Free · blocks the period for guests.")
+                    : t("Blockiert den Zeitraum für Gäste und informiert das Arbio-Team — keine Fake-Buchung, deine Auslastungszahlen bleiben sauber.", "Blocks the period for guests and notifies the Arbio team — no fake booking, your occupancy figures stay clean.")}
                 </p>
 
                 <div className="flex flex-col gap-3 mt-5">
@@ -474,8 +496,8 @@ export default function Kalender() {
 
                   {mode === "wartung" && (
                     <button className="flex items-center justify-between border border-line rounded-[18px] px-5 py-3.5 text-[15px]">
-                      <span className="text-muted">Art der Wartung</span>
-                      Rauchfangkehrer
+                      <span className="text-muted">{t("Art der Wartung", "Type of maintenance")}</span>
+                      {t("Rauchfangkehrer", "Chimney sweep")}
                       <ChevronDown size={16} className="text-muted" />
                     </button>
                   )}
@@ -483,7 +505,7 @@ export default function Kalender() {
                   <div className="grid grid-cols-2 gap-3">
                     <div className="border border-line rounded-[18px] px-5 py-3.5">
                       <div className="text-[12px] text-muted">
-                        {mode === "aufenthalt" ? "Anreise" : "Von"}
+                        {mode === "aufenthalt" ? t("Anreise", "Check-in") : t("Von", "From")}
                       </div>
                       <div className="text-[15px] mt-0.5">
                         {mode === "aufenthalt" ? "07.08.2026" : "12.08.2026"}
@@ -491,7 +513,7 @@ export default function Kalender() {
                     </div>
                     <div className="border border-line rounded-[18px] px-5 py-3.5">
                       <div className="text-[12px] text-muted">
-                        {mode === "aufenthalt" ? "Abreise" : "Bis"}
+                        {mode === "aufenthalt" ? t("Abreise", "Check-out") : t("Bis", "To")}
                       </div>
                       <div className="text-[15px] mt-0.5">
                         {mode === "aufenthalt" ? "10.08.2026" : "12.08.2026"}
@@ -501,8 +523,8 @@ export default function Kalender() {
 
                   <p className="text-[13px] text-muted leading-snug">
                     {mode === "aufenthalt"
-                      ? "Entgangener Buchungswert im Zeitraum: ca. €480. Reinigung nach Abreise wird automatisch eingeplant."
-                      : "Am gewählten Tag ist keine Buchung betroffen. Fällt eine Wartung in einen gebuchten Zeitraum, meldet sich das Team zur Abstimmung."}
+                      ? t("Entgangener Buchungswert im Zeitraum: ca. €480. Reinigung nach Abreise wird automatisch eingeplant.", "Lost booking value for the period: approx. €480. Cleaning after check-out is scheduled automatically.")
+                      : t("Am gewählten Tag ist keine Buchung betroffen. Fällt eine Wartung in einen gebuchten Zeitraum, meldet sich das Team zur Abstimmung.", "No booking is affected on the selected day. If maintenance falls within a booked period, the team will reach out to coordinate.")}
                   </p>
                 </div>
 
@@ -510,7 +532,7 @@ export default function Kalender() {
                   onClick={() => setDone(true)}
                   className="w-full mt-5 bg-[#2a2a2a] text-white rounded-full px-6 py-3.5 text-[15px] hover:bg-black transition-colors"
                 >
-                  {mode === "aufenthalt" ? "Aufenthalt buchen" : "Wartung eintragen"}
+                  {mode === "aufenthalt" ? t("Aufenthalt buchen", "Book stay") : t("Wartung eintragen", "Add maintenance")}
                 </button>
               </>
             )}
@@ -521,7 +543,7 @@ export default function Kalender() {
       {/* Floating chat */}
       <div className="fixed bottom-6 left-[290px] right-0 flex justify-center px-8 pointer-events-none">
         <ChatInput
-          placeholder="Frag alles über deine Buchungen..."
+          placeholder={t("Frag alles über deine Buchungen...", "Ask anything about your bookings...")}
           className="w-full max-w-[620px] pointer-events-auto"
         />
       </div>
