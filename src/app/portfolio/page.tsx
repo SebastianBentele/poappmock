@@ -367,7 +367,7 @@ export default function Portfolio() {
       </div>
 
       {/* Floating chat */}
-      <div className="fixed bottom-6 left-[290px] right-0 flex justify-center px-8 pointer-events-none">
+      <div className="fixed bottom-6 left-[var(--sidebar-w)] right-0 flex justify-center px-8 pointer-events-none transition-[left] duration-200 ease-out">
         <ChatInput
           placeholder={t("Frag alles über deinen Umsatz...", "Ask anything about your revenue...")}
           className="w-full max-w-[620px] pointer-events-auto"

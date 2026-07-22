@@ -438,7 +438,7 @@ export default function Finanzen() {
       )}
 
       {/* Floating chat */}
-      <div className="fixed bottom-6 left-[290px] right-0 flex justify-center px-8 pointer-events-none">
+      <div className="fixed bottom-6 left-[var(--sidebar-w)] right-0 flex justify-center px-8 pointer-events-none transition-[left] duration-200 ease-out">
         <ChatInput
           placeholder={
             tab === "profit"

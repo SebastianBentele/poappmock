@@ -3,6 +3,7 @@
 :root {
   --background: #ffffff;
   --foreground: #2a2a2a;
+  --sidebar-w: 290px;
   --panel: #f7f7f7;
   --border: #ededed;
   --muted: #717171;
