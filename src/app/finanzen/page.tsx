@@ -18,6 +18,7 @@ import { PnlTable } from "@/components/pnl-table";
 import { OwnerCosts } from "@/components/owner-costs";
 import { useArbioChat, costExplainSeed, type Msg, type Tr } from "@/components/arbio-chat";
 import { useLang } from "@/components/lang";
+import { AskAi } from "@/components/ask-ai";
 
 const buildPayoutTrackers = (t: Tr): {
   title: string;
@@ -138,7 +139,8 @@ export default function Finanzen() {
         <>
           {/* Profit hero — the profit graph front and center */}
           <div className="grid grid-cols-1 xl:grid-cols-[1.5fr_1fr] gap-4">
-            <div className="bg-[#eef5eb] rounded-[24px] p-7 flex flex-col">
+            <div className="group relative bg-[#eef5eb] rounded-[24px] p-7 flex flex-col">
+              <AskAi label={t("Operativer Gewinn", "Operating profit")} />
               <div className="flex items-start justify-between">
                 <div>
                   <span className="text-[15px] text-accent-text">{t("Operativer Gewinn · Juli 2026", "Operating profit · July 2026")}</span>
@@ -224,7 +226,8 @@ export default function Finanzen() {
           </div>
 
           {/* Cost structure */}
-          <div className="bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+          <div className="group relative bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+            <AskAi label={t("Kostenstruktur", "Cost structure")} />
             <div className="flex items-start justify-between">
               <h3 className="text-[16px]">{t("Kostenstruktur", "Cost structure")}</h3>
               <span className="flex items-center gap-1.5 text-[13px] text-muted">
@@ -378,7 +381,8 @@ export default function Finanzen() {
           </div>
 
           {/* Payout history chart */}
-          <div className="bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+          <div className="group relative bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+            <AskAi label={t("Auszahlungen der letzten Monate", "Payouts of recent months")} />
             <div className="flex items-start justify-between">
               <div>
                 <h3 className="text-[16px]">{t("Auszahlungen der letzten Monate", "Payouts of recent months")}</h3>

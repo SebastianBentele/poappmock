@@ -16,6 +16,7 @@ import {
 } from "@/components/charts";
 import { Info as InfoIcon } from "lucide-react";
 import { useLang } from "@/components/lang";
+import { AskAi } from "@/components/ask-ai";
 
 export default function Portfolio() {
   const { t } = useLang();
@@ -104,7 +105,8 @@ export default function Portfolio() {
       </div>
 
       {/* Rolling revenue */}
-      <div className="bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+      <div className="group relative bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+        <AskAi label={t("Rollierender Umsatz", "Rolling revenue")} />
         <div className="flex items-start justify-between">
           <div>
             <h3 className="text-[16px]">{t("Rollierender Umsatz", "Rolling revenue")}</h3>
@@ -133,7 +135,8 @@ export default function Portfolio() {
       </div>
 
       {/* Growth with Arbio (YoY, accented) */}
-      <div className="bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+      <div className="group relative bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+        <AskAi label={t("Dein Wachstum mit Arbio", "Your growth with Arbio")} />
         <div className="grid grid-cols-1 xl:grid-cols-[1fr_1.3fr] gap-8">
           <div>
             <h3 className="text-[16px]">{t("Dein Wachstum mit Arbio", "Your growth with Arbio")}</h3>
@@ -168,7 +171,8 @@ export default function Portfolio() {
       </div>
 
       {/* Length-of-stay optimization */}
-      <div className="bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+      <div className="group relative bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+        <AskAi label={t("Aufenthaltsdauer-Optimierung", "Length-of-stay optimization")} />
         <div className="grid grid-cols-1 xl:grid-cols-[1.4fr_1fr] gap-8">
           <div>
             <h3 className="text-[16px]">{t("Aufenthaltsdauer-Optimierung", "Length-of-stay optimization")}</h3>
@@ -210,7 +214,8 @@ export default function Portfolio() {
 
       {/* Daily revenue + side stats */}
       <div className="grid grid-cols-1 xl:grid-cols-[1.6fr_1fr] gap-4 mt-5">
-        <div className="bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+        <div className="group relative bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+          <AskAi label={t("Täglicher Umsatz", "Daily revenue")} />
           <div className="flex items-start justify-between">
             <div>
               <h3 className="text-[16px]">{t("Täglicher Umsatz", "Daily revenue")}</h3>
@@ -251,8 +256,9 @@ export default function Portfolio() {
         ].map(({ title, chart }) => (
           <div
             key={title}
-            className="bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
+            className="group relative bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
           >
+            <AskAi label={title} />
             <div className="flex items-start justify-between">
               <h3 className="text-[13px] tracking-[1.5px] uppercase text-muted">{title}</h3>
               <DjVjLegend />
@@ -265,7 +271,8 @@ export default function Portfolio() {
 
       {/* Channel mix + booking pace */}
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_1.5fr] gap-4 mt-5">
-        <div className="bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+        <div className="group relative bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+          <AskAi label={t("Kanal-Mix", "Channel mix")} />
           <div className="flex items-start justify-between">
             <h3 className="text-[17px]">{t("Kanal-Mix", "Channel mix")}</h3>
             <div className="text-right">
@@ -308,7 +315,8 @@ export default function Portfolio() {
           </div>
         </div>
 
-        <div className="bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+        <div className="group relative bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+          <AskAi label={t("Buchungstempo", "Booking pace")} />
           <h3 className="text-[17px]">{t("Buchungstempo", "Booking pace")}</h3>
           <p className="text-[14px] text-muted mt-1">
             {t(
