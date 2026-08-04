@@ -14,6 +14,7 @@ import {
   CheckCircle2,
   Map as MapIcon,
   LayoutGrid,
+  List,
   MessageCircle,
 } from "lucide-react";
 import { ChatInput } from "@/components/chat-input";
@@ -571,7 +572,7 @@ function CityMapSvg() {
   );
 }
 
-type View = "karte" | "uebersicht";
+type View = "karte" | "uebersicht" | "liste";
 
 export default function Einheiten() {
   const { openChat } = useArbioChat();
@@ -652,6 +653,15 @@ export default function Einheiten() {
           >
             <LayoutGrid size={15} />
             {t("Übersicht", "Overview")}
+          </button>
+          <button
+            onClick={() => setView("liste")}
+            className={`flex items-center gap-2 rounded-full px-5 py-2 text-[15px] ${
+              view === "liste" ? "bg-[#2a2a2a] text-white" : "text-muted hover:text-foreground"
+            }`}
+          >
+            <List size={15} />
+            {t("Liste", "List")}
           </button>
         </div>
       </div>
@@ -744,7 +754,7 @@ export default function Einheiten() {
             </div>
           </div>
         </div>
-      ) : (
+      ) : view === "uebersicht" ? (
         /* ---------------- Carousel view ---------------- */
         <div className="mt-8">
           <div className="flex items-center justify-between">
@@ -857,6 +867,75 @@ export default function Einheiten() {
                 marginLeft: `${(active * 100) / units.length}%`,
               }}
             />
+          </div>
+        </div>
+      ) : (
+        /* ---------------- List view ---------------- */
+        <div className="mt-6">
+          <h2 className="text-[18px] tracking-[3px] uppercase mb-5">
+            {t("Deine Einheiten", "Your units")}
+          </h2>
+          <div className="bg-white border border-line rounded-[24px] overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+            {units.map((u, i) => (
+              <button
+                key={u.key}
+                onClick={(e) => openPopup(u, e)}
+                className={`w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-panel transition-colors ${
+                  i > 0 ? "border-t border-line" : ""
+                }`}
+              >
+                {/* thumbnail */}
+                <span className="w-14 h-14 rounded-[14px] overflow-hidden shrink-0 bg-panel">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={u.image}
+                    alt={u.name}
+                    className="w-full h-full object-cover"
+                    draggable={false}
+                  />
+                </span>
+
+                {/* name + city */}
+                <div className="min-w-0 w-[210px] shrink-0">
+                  <div className="text-[16px] truncate">{u.name}</div>
+                  <div className="text-[13px] text-muted mt-0.5">{u.city}</div>
+                </div>
+
+                {/* status */}
+                <div className="w-[128px] shrink-0">
+                  {u.status === "live" ? (
+                    <span className="inline-flex items-center gap-1.5 bg-[#eef5eb] text-accent-text rounded-full px-3 py-1 text-[13px]">
+                      <span className="w-2 h-2 rounded-full bg-accent inline-block" /> {t("Live", "Live")}
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 bg-[#fdecea] text-negative rounded-full px-3 py-1 text-[13px]">
+                      <span className="w-2 h-2 rounded-full bg-negative inline-block" /> {t("Blockiert", "Blocked")}
+                    </span>
+                  )}
+                </div>
+
+                {/* KPIs */}
+                <div className="hidden xl:flex items-center gap-8 flex-1">
+                  {[
+                    { label: "ADR", value: u.adr },
+                    { label: t("Auslastung", "Occupancy"), value: u.occ },
+                    { label: t("Umsatz Juli", "Revenue July"), value: u.revenue },
+                    { label: t("Bewertung", "Rating"), value: u.rating },
+                  ].map(({ label, value }) => (
+                    <div key={label} className="min-w-[68px]">
+                      <div className="text-[12px] text-muted">{label}</div>
+                      <div className="text-[15px] mt-0.5">{value}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* hint */}
+                <span className="ml-auto flex items-center gap-1.5 text-[13px] text-muted shrink-0">
+                  {t("Details", "Details")}
+                  <ChevronRight size={15} />
+                </span>
+              </button>
+            ))}
           </div>
         </div>
       )}
