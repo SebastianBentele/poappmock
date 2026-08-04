@@ -37,14 +37,9 @@ h2 {
   letter-spacing: -0.5px;
 }
 
-/* Keyboard-only focus ring — invisible for mouse users, clear for keyboard nav */
-:focus-visible {
-  outline: 2px solid var(--green);
-  outline-offset: 2px;
-  border-radius: 6px;
-}
-button:focus:not(:focus-visible),
-a:focus:not(:focus-visible),
-input:focus:not(:focus-visible) {
-  outline: none;
+/* No focus outline anywhere — the portal should never show a ring on click
+   (neither the browser's default blue on charts/SVG nor any custom one). */
+*:focus,
+*:focus-visible {
+  outline: none !important;
 }
