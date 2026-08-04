@@ -6,16 +6,18 @@ export function KpiCard({
   delta,
   deltaDirection,
   subline,
+  metric,
 }: {
   label: string;
   value: string;
   delta?: string;
   deltaDirection?: "up" | "down";
   subline?: string;
+  metric: string;
 }) {
   return (
     <div className="group relative bg-panel rounded-[24px] px-7 py-6 flex flex-col gap-3">
-      <AskAi label={label} />
+      <AskAi metric={metric} />
       <span className="text-[15px]">{label}</span>
       <span className="text-[42px] leading-none tracking-[-1px]">{value}</span>
       {delta && (

@@ -70,10 +70,10 @@ export default function Portfolio() {
       {/* KPI grid + AI card */}
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_1.15fr] gap-4">
         <div className="grid grid-cols-2 gap-4">
-          <KpiCard label={t("Umsatz", "Revenue")} value="€41.451" delta="7,6%" deltaDirection="up" />
-          <KpiCard label={t("Auslastung", "Occupancy")} value="55,5%" delta="9,0%" deltaDirection="down" />
-          <KpiCard label={t("Ø Tagesrate", "Avg. daily rate")} value="€241" delta="€37" deltaDirection="up" />
-          <KpiCard label={t("Ø Aufenthaltsdauer", "Avg. length of stay")} value={t("6,5 Nächte", "6.5 nights")} delta={t("0,0 Nächte", "0.0 nights")} deltaDirection="up" />
+          <KpiCard metric="revenue" label={t("Umsatz", "Revenue")} value="€41.451" delta="7,6%" deltaDirection="up" />
+          <KpiCard metric="occupancy" label={t("Auslastung", "Occupancy")} value="55,5%" delta="9,0%" deltaDirection="down" />
+          <KpiCard metric="adr" label={t("Ø Tagesrate", "Avg. daily rate")} value="€241" delta="€37" deltaDirection="up" />
+          <KpiCard metric="los" label={t("Ø Aufenthaltsdauer", "Avg. length of stay")} value={t("6,5 Nächte", "6.5 nights")} delta={t("0,0 Nächte", "0.0 nights")} deltaDirection="up" />
         </div>
         <AiCard
           title={t("Dein Portfolio. Auf einen Blick.", "Your portfolio. At a glance.")}
@@ -106,7 +106,7 @@ export default function Portfolio() {
 
       {/* Rolling revenue */}
       <div className="group relative bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
-        <AskAi label={t("Rollierender Umsatz", "Rolling revenue")} />
+        <AskAi metric="rolling-revenue" />
         <div className="flex items-start justify-between">
           <div>
             <h3 className="text-[16px]">{t("Rollierender Umsatz", "Rolling revenue")}</h3>
@@ -136,7 +136,7 @@ export default function Portfolio() {
 
       {/* Growth with Arbio (YoY, accented) */}
       <div className="group relative bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
-        <AskAi label={t("Dein Wachstum mit Arbio", "Your growth with Arbio")} />
+        <AskAi metric="growth" />
         <div className="grid grid-cols-1 xl:grid-cols-[1fr_1.3fr] gap-8">
           <div>
             <h3 className="text-[16px]">{t("Dein Wachstum mit Arbio", "Your growth with Arbio")}</h3>
@@ -172,7 +172,7 @@ export default function Portfolio() {
 
       {/* Length-of-stay optimization */}
       <div className="group relative bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
-        <AskAi label={t("Aufenthaltsdauer-Optimierung", "Length-of-stay optimization")} />
+        <AskAi metric="los-optimization" />
         <div className="grid grid-cols-1 xl:grid-cols-[1.4fr_1fr] gap-8">
           <div>
             <h3 className="text-[16px]">{t("Aufenthaltsdauer-Optimierung", "Length-of-stay optimization")}</h3>
@@ -215,7 +215,7 @@ export default function Portfolio() {
       {/* Daily revenue + side stats */}
       <div className="grid grid-cols-1 xl:grid-cols-[1.6fr_1fr] gap-4 mt-5">
         <div className="group relative bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
-          <AskAi label={t("Täglicher Umsatz", "Daily revenue")} />
+          <AskAi metric="daily-revenue" />
           <div className="flex items-start justify-between">
             <div>
               <h3 className="text-[16px]">{t("Täglicher Umsatz", "Daily revenue")}</h3>
@@ -251,14 +251,14 @@ export default function Portfolio() {
       {/* Daily occupancy + daily rate */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 mt-5">
         {[
-          { title: t("Tägliche Auslastung", "Daily occupancy"), chart: <DailyOccupancyChart /> },
-          { title: t("Tägliche Tagesrate", "Daily rate"), chart: <DailyRateChart /> },
-        ].map(({ title, chart }) => (
+          { title: t("Tägliche Auslastung", "Daily occupancy"), metric: "daily-occupancy", chart: <DailyOccupancyChart /> },
+          { title: t("Tägliche Tagesrate", "Daily rate"), metric: "daily-rate", chart: <DailyRateChart /> },
+        ].map(({ title, metric, chart }) => (
           <div
             key={title}
             className="group relative bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
           >
-            <AskAi label={title} />
+            <AskAi metric={metric} />
             <div className="flex items-start justify-between">
               <h3 className="text-[13px] tracking-[1.5px] uppercase text-muted">{title}</h3>
               <DjVjLegend />
@@ -272,7 +272,7 @@ export default function Portfolio() {
       {/* Channel mix + booking pace */}
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_1.5fr] gap-4 mt-5">
         <div className="group relative bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
-          <AskAi label={t("Kanal-Mix", "Channel mix")} />
+          <AskAi metric="channel-mix" />
           <div className="flex items-start justify-between">
             <h3 className="text-[17px]">{t("Kanal-Mix", "Channel mix")}</h3>
             <div className="text-right">
@@ -316,7 +316,7 @@ export default function Portfolio() {
         </div>
 
         <div className="group relative bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
-          <AskAi label={t("Buchungstempo", "Booking pace")} />
+          <AskAi metric="booking-pace" />
           <h3 className="text-[17px]">{t("Buchungstempo", "Booking pace")}</h3>
           <p className="text-[14px] text-muted mt-1">
             {t(

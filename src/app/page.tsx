@@ -5,23 +5,24 @@ import { ChatInput } from "@/components/chat-input";
 import { useArbioChat, requestIntroSeed } from "@/components/arbio-chat";
 import { useLang } from "@/components/lang";
 import { AskAi } from "@/components/ask-ai";
+import { metricSeed } from "@/components/metric-insights";
 
 export default function Home() {
   const { openChat } = useArbioChat();
   const { t } = useLang();
 
   const kpis = [
-    { label: t("Monatsumsatz", "Monthly revenue"), value: "41.451 €" },
-    { label: t("Tagesrate", "Daily rate"), value: "241 €" },
-    { label: t("Auslastung", "Occupancy"), value: "55 %" },
-    { label: t("Operativer Gewinn", "Operating profit"), value: "33.111 €" },
+    { metric: "revenue", label: t("Monatsumsatz", "Monthly revenue"), value: "41.451 €" },
+    { metric: "adr", label: t("Tagesrate", "Daily rate"), value: "241 €" },
+    { metric: "occupancy", label: t("Auslastung", "Occupancy"), value: "55 %" },
+    { metric: "profit", label: t("Operativer Gewinn", "Operating profit"), value: "33.111 €" },
   ];
 
   const chips = [
-    t("Wöchentlicher Umsatz", "Weekly revenue"),
-    t("Top-Performer", "Top performer"),
-    t("Buchungstempo", "Booking pace"),
-    t("Profitabilität", "Profitability"),
+    { metric: "weekly-revenue", label: t("Wöchentlicher Umsatz", "Weekly revenue") },
+    { metric: "top-performer", label: t("Top-Performer", "Top performer") },
+    { metric: "booking-pace", label: t("Buchungstempo", "Booking pace") },
+    { metric: "profitability", label: t("Profitabilität", "Profitability") },
   ];
 
   return (
@@ -37,12 +38,12 @@ export default function Home() {
       </div>
 
       <div className="flex gap-4 mt-5 flex-wrap justify-center">
-        {kpis.map(({ label, value }) => (
+        {kpis.map(({ metric, label, value }) => (
           <div
             key={label}
             className="group relative bg-panel rounded-[24px] px-7 py-5 min-w-[180px]"
           >
-            <AskAi label={label} />
+            <AskAi metric={metric} />
             <div className="text-[15px]">{label}</div>
             <div className="text-[28px] tracking-[-0.5px] mt-1">{value}</div>
           </div>
@@ -50,12 +51,13 @@ export default function Home() {
       </div>
 
       <div className="flex gap-3 mt-24 flex-wrap justify-center">
-        {chips.map((c) => (
+        {chips.map(({ metric, label }) => (
           <button
-            key={c}
+            key={metric}
+            onClick={() => openChat(metricSeed(metric, t))}
             className="border border-line rounded-full px-5 py-2.5 text-[15px] hover:bg-panel"
           >
-            {c}
+            {label}
           </button>
         ))}
       </div>
