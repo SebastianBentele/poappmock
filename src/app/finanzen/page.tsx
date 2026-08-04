@@ -424,10 +424,14 @@ export default function Finanzen() {
                     <div className="text-[13px] text-muted">{period}</div>
                   </div>
                   <span className="text-[15px] w-[110px] text-right">{amount}</span>
-                  <button className="flex items-center gap-2 border border-line rounded-full px-4 py-2 text-[14px] hover:bg-panel">
+                  <a
+                    href="/dokumente/arbio-dokument.pdf"
+                    download={`Arbio – Owner Statement ${month}.pdf`}
+                    className="flex items-center gap-2 border border-line rounded-full px-4 py-2 text-[14px] hover:bg-panel"
+                  >
                     <Download size={14} />
                     PDF
-                  </button>
+                  </a>
                 </div>
               ))}
             </div>

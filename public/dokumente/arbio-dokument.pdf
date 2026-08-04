@@ -1,0 +1,48 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R /F2 5 0 R >> >> /Contents 6 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+6 0 obj
+<< /Length 821 >>
+stream
+BT /F1 30 Tf 72 754 Td (Arbio) Tj ET
+BT /F2 12 Tf 72 732 Td (Property Owner App) Tj ET
+0.85 0.85 0.85 RG 1 w 72 712 m 523 712 l S
+BT /F1 18 Tf 72 672 Td (Beispieldokument) Tj ET
+BT /F2 12 Tf 72 644 Td (Dieses PDF ist ein Platzhalter aus dem Arbio Property Owner App Mockup.) Tj ET
+BT /F2 12 Tf 72 626 Td (Im echten Portal findest du hier dein Dokument als Original-PDF:) Tj ET
+BT /F2 12 Tf 90 600 Td (- Owner Statements und Abrechnungen) Tj ET
+BT /F2 12 Tf 90 582 Td (- Rechnungen zur Management-Gebuehr) Tj ET
+BT /F2 12 Tf 90 564 Td (- Vertrag und Anhaenge) Tj ET
+0.97 0.97 0.97 rg 72 480 451 56 re f
+BT /F2 10 Tf 88 514 Td 0.44 0.44 0.44 rg (Dokument) Tj ET
+BT /F2 12 Tf 88 498 Td 0 0 0 rg (Demo-Export  -  erstellt Juli 2026) Tj ET
+BT /F2 9 Tf 72 72 Td 0.44 0.44 0.44 rg (Arbio  -  Property Owner App  -  Mockup) Tj ET
+endstream
+endobj
+xref
+0 7
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000251 00000 n 
+0000000326 00000 n 
+0000000396 00000 n 
+trailer
+<< /Size 7 /Root 1 0 R >>
+startxref
+1268
+%%EOF

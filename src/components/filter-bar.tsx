@@ -43,6 +43,12 @@ export function FilterBar({ showStepper = true }: { showStepper?: boolean }) {
   const toggleUnit = (name: string) =>
     setUnits((u) => (u.includes(name) ? u.filter((x) => x !== name) : [...u, name]));
 
+  // Stepper cycles through the period presets (wraps around, leaves custom mode)
+  const stepPeriod = (dir: 1 | -1) => {
+    setCustom(false);
+    setPeriodIdx((i) => (i + dir + periodPresets.length) % periodPresets.length);
+  };
+
   const close = () => setOpen(null);
 
   const btn =
@@ -57,7 +63,10 @@ export function FilterBar({ showStepper = true }: { showStepper?: boolean }) {
       <div className="relative z-40">
         <div className="flex items-center gap-1 border border-line rounded-full bg-white h-11 pl-1 pr-1">
           {showStepper && (
-            <button className="w-8 h-8 rounded-full hover:bg-panel flex items-center justify-center text-muted">
+            <button
+              onClick={() => stepPeriod(-1)}
+              className="w-8 h-8 rounded-full hover:bg-panel flex items-center justify-center text-muted"
+            >
               <ChevronLeft size={16} />
             </button>
           )}
@@ -70,7 +79,10 @@ export function FilterBar({ showStepper = true }: { showStepper?: boolean }) {
             <ChevronDown size={15} className="text-muted" />
           </button>
           {showStepper && (
-            <button className="w-8 h-8 rounded-full hover:bg-panel flex items-center justify-center text-muted">
+            <button
+              onClick={() => stepPeriod(1)}
+              className="w-8 h-8 rounded-full hover:bg-panel flex items-center justify-center text-muted"
+            >
               <ChevronRight size={16} />
             </button>
           )}

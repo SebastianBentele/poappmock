@@ -83,10 +83,14 @@ function DownloadRow({ icon: Icon, name, meta, first }: { icon: typeof FileText;
         <div className="text-[15px] leading-tight">{name}</div>
         <div className="text-[13px] text-muted mt-0.5">{meta}</div>
       </div>
-      <button className="flex items-center gap-2 border border-line rounded-full px-4 py-2 text-[14px] hover:bg-panel">
+      <a
+        href="/dokumente/arbio-dokument.pdf"
+        download={`Arbio – ${name}.pdf`}
+        className="flex items-center gap-2 border border-line rounded-full px-4 py-2 text-[14px] hover:bg-panel"
+      >
         <Download size={14} />
         PDF
-      </button>
+      </a>
     </div>
   );
 }
