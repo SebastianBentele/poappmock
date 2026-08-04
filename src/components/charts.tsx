@@ -24,9 +24,67 @@ const GREEN_DARK = "#5f9e50";
 const GRAY = "#9a9a9a";
 const GRAY_DARK = "#bdbdbd";
 
-// Invisible tooltip: enables recharts' hover tracking (which drives the
-// per-bar activeBar highlight) without rendering a visible tooltip or cursor band.
-const hoverTracker = <Tooltip cursor={false} content={() => null} />;
+// Value formatters shared by axes and tooltips.
+const eur = (v: number | string) => `€${Number(v).toLocaleString("de-DE")}`;
+const pct = (v: number | string) => `${v}%`;
+
+const LINE_CURSOR = { stroke: "#dcdcdc", strokeWidth: 1 } as const;
+
+type TipEntry = {
+  value: number | string | null;
+  dataKey?: string | number;
+  name?: string;
+  color?: string;
+  stroke?: string;
+};
+
+// On-brand tooltip that shows the actual value on hover. Pass `names`
+// (dataKey → label) for multi-series charts; omit it for single-series ones.
+// Also drives recharts' hover tracking that highlights the active bar.
+function ChartTooltip(props: {
+  active?: boolean;
+  payload?: TipEntry[];
+  label?: string | number;
+  fmt?: (v: number) => string;
+  names?: Record<string, string>;
+  labelFmt?: (l: string | number) => string;
+}) {
+  const { active, payload, label, fmt = (v) => `${v}`, names, labelFmt } = props;
+  if (!active || !payload || payload.length === 0) return null;
+  const seen = new Set<string>();
+  const rows = payload.filter((p) => {
+    const key = String(p.dataKey ?? "");
+    if (p.value == null || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  if (rows.length === 0) return null;
+  const heading =
+    label != null && `${label}` !== "" ? (labelFmt ? labelFmt(label) : `${label}`) : null;
+  return (
+    <div className="bg-white border border-line rounded-[12px] shadow-[0_8px_30px_rgba(0,0,0,0.14)] px-3.5 py-2.5 text-[13px]">
+      {heading != null && heading !== "" && <div className="text-muted mb-1.5">{heading}</div>}
+      <div className="flex flex-col gap-1.5">
+        {rows.map((p, i) =>
+          names ? (
+            <div key={i} className="flex items-center gap-2.5">
+              <span
+                className="w-2 h-2 rounded-full shrink-0"
+                style={{ background: p.color || p.stroke || GREEN }}
+              />
+              <span className="text-muted">{names[String(p.dataKey)] ?? p.name}</span>
+              <span className="ml-auto pl-6 font-medium">{fmt(p.value as number)}</span>
+            </div>
+          ) : (
+            <div key={i} className="text-[15px] font-medium">
+              {fmt(p.value as number)}
+            </div>
+          )
+        )}
+      </div>
+    </div>
+  );
+}
 
 // Month axis labels are stored canonically in English (e.g. "Mar", "Aug '25").
 // For German we map the month part back; the year suffix is preserved.
@@ -34,9 +92,10 @@ const MONTH_DE: Record<string, string> = {
   Jan: "Jan", Feb: "Feb", Mar: "Mär", Apr: "Apr", May: "Mai", Jun: "Jun",
   Jul: "Jul", Aug: "Aug", Sep: "Sep", Oct: "Okt", Nov: "Nov", Dec: "Dez",
 };
-const monthTick = (lang: Lang) => (m: string) => {
-  if (lang === "en") return m;
-  const [mon, ...rest] = m.split(" ");
+const monthTick = (lang: Lang) => (m: string | number) => {
+  const s = `${m}`;
+  if (lang === "en") return s;
+  const [mon, ...rest] = s.split(" ");
   return [MONTH_DE[mon] ?? mon, ...rest].join(" ");
 };
 
@@ -82,6 +141,21 @@ export function RollingRevenueChart() {
             stroke="#c5c5c5"
             label={{ value: t("Heute", "Today"), position: "top", fill: "#717171", fontSize: 12 }}
           />
+          <Tooltip
+            cursor={LINE_CURSOR}
+            content={
+              <ChartTooltip
+                fmt={eur}
+                labelFmt={monthTick(lang)}
+                names={{
+                  dj: t("Dieses Jahr", "This year"),
+                  fc: t("Forecast", "Forecast"),
+                  lj: t("Letztes Jahr", "Last year"),
+                  vj: t("Vorjahr", "Prior year"),
+                }}
+              />
+            }
+          />
           <Area type="monotone" dataKey="dj" fill="url(#greenFade)" stroke="none" />
           <Line type="monotone" dataKey="dj" stroke={GREEN} strokeWidth={2.5} dot={{ r: 3.5, fill: GREEN }} />
           <Line type="monotone" dataKey="fc" stroke={GREEN} strokeWidth={2} strokeDasharray="6 6" dot={{ r: 3.5, fill: GREEN }} />
@@ -110,6 +184,7 @@ const dailyRevenue = Array.from({ length: 62 }, (_, i) => {
 });
 
 export function DailyRevenueChart() {
+  const { t } = useLang();
   return (
     <div className="h-[230px]">
       <ResponsiveContainer width="100%" height="100%">
@@ -121,8 +196,18 @@ export function DailyRevenueChart() {
             tick={{ fill: "#717171", fontSize: 13 }}
             tickFormatter={(v: number) => (v === 0 ? "€0" : `€${Math.round(v / 1000)}k`)}
             ticks={[0, 1000, 2000]}
+            domain={[0, 2400]}
           />
-          {hoverTracker}
+          <Tooltip
+            cursor={false}
+            content={
+              <ChartTooltip
+                fmt={eur}
+                labelFmt={() => ""}
+                names={{ dj: t("Dieses Jahr", "This year"), vj: t("Vorjahr", "Prior year") }}
+              />
+            }
+          />
           <Bar dataKey="dj" fill={GREEN} radius={[2, 2, 0, 0]} activeBar={{ fill: GREEN_DARK }} />
           <Bar dataKey="vj" fill={GREEN_LIGHT} radius={[2, 2, 0, 0]} activeBar={{ fill: GREEN }} />
         </BarChart>
@@ -167,7 +252,7 @@ export function PayoutChart() {
             tickFormatter={(v: number) => (v === 0 ? "€0" : `€${Math.round(v / 1000)}k`)}
             ticks={[0, 12000, 24000, 36000]}
           />
-          {hoverTracker}
+          <Tooltip cursor={false} content={<ChartTooltip fmt={eur} labelFmt={monthTick(lang)} />} />
           <Bar dataKey="v" radius={[10, 10, 10, 10]} activeBar={{ fill: GREEN_DARK }}>
             {payouts.map((p) => (
               <Cell key={p.m} fill={p.current ? GREEN : GREEN_LIGHT} />
@@ -206,11 +291,25 @@ function DailyKpiChart({
   formatter: (v: number) => string;
   domain: [number, number];
 }) {
+  const { t } = useLang();
   return (
     <div className="h-[240px]">
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart data={dailyKpis} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
           <CartesianGrid vertical={false} stroke="#f0f0f0" />
+          <Tooltip
+            cursor={LINE_CURSOR}
+            content={
+              <ChartTooltip
+                fmt={formatter}
+                labelFmt={(d) => t(`Tag ${d}`, `Day ${d}`)}
+                names={{
+                  [djKey]: t("Dieses Jahr", "This year"),
+                  [vjKey]: t("Vorjahr", "Prior year"),
+                }}
+              />
+            }
+          />
           <XAxis
             dataKey="d"
             axisLine={false}
@@ -318,7 +417,7 @@ const tickets = [
 ];
 
 export function TicketsChart() {
-  const { lang } = useLang();
+  const { lang, t } = useLang();
   return (
     <div className="h-[260px]">
       <ResponsiveContainer width="100%" height="100%">
@@ -337,7 +436,16 @@ export function TicketsChart() {
             tick={{ fill: "#717171", fontSize: 13 }}
             ticks={[0, 15, 30, 45]}
           />
-          {hoverTracker}
+          <Tooltip
+            cursor={false}
+            content={
+              <ChartTooltip
+                fmt={(v) => `${v}`}
+                labelFmt={monthTick(lang)}
+                names={{ "gelöst": t("Gelöst", "Resolved"), offen: t("Offen", "Open") }}
+              />
+            }
+          />
           <Bar dataKey="gelöst" stackId="t" fill={GREEN_LIGHT} radius={[0, 0, 10, 10]} activeBar={{ fill: GREEN }} />
           <Bar dataKey="offen" stackId="t" fill="#d3d3d3" radius={[10, 10, 0, 0]} activeBar={{ fill: GRAY_DARK }} />
         </BarChart>
@@ -367,6 +475,7 @@ export function ProfitChart() {
     <div className="h-[280px]">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={profitOverTime} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+          <CartesianGrid vertical={false} stroke="#f0f0f0" />
           <XAxis
             dataKey="m"
             axisLine={false}
@@ -375,8 +484,15 @@ export function ProfitChart() {
             tickFormatter={monthTick(lang)}
             dy={8}
           />
-          <YAxis hide />
-          {hoverTracker}
+          <YAxis
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "#717171", fontSize: 13 }}
+            tickFormatter={(v: number) => (v === 0 ? "€0" : `€${(v / 1000).toLocaleString("de-DE")}k`)}
+            ticks={[0, 2000, 4000]}
+            domain={[0, 4600]}
+          />
+          <Tooltip cursor={false} content={<ChartTooltip fmt={eur} labelFmt={monthTick(lang)} />} />
           <Bar dataKey="v" fill="#b9d9ae" radius={[10, 10, 10, 10]} activeBar={{ fill: GREEN }} />
         </BarChart>
       </ResponsiveContainer>
@@ -412,7 +528,7 @@ export function GrowthChart() {
             tickFormatter={(v: number) => `€${Math.round(v / 1000)}k`}
             ticks={[0, 100000, 200000, 300000]}
           />
-          {hoverTracker}
+          <Tooltip cursor={false} content={<ChartTooltip fmt={eur} />} />
           <Bar dataKey="v" radius={[10, 10, 10, 10]} activeBar={{ fill: GREEN_DARK }}>
             {growthByYear.map((d) => (
               <Cell key={d.y} fill={d.pre ? "#d3d3d3" : d.ytd ? GREEN : GREEN_LIGHT} />
@@ -454,7 +570,7 @@ export function LosChart() {
             tickFormatter={(v: number) => `${v}%`}
             ticks={[0, 20, 40]}
           />
-          {hoverTracker}
+          <Tooltip cursor={false} content={<ChartTooltip fmt={pct} />} />
           <Bar dataKey="share" radius={[10, 10, 10, 10]} activeBar={{ fill: GREEN_DARK }}>
             {losBuckets.map((d) => (
               <Cell key={d.b} fill={d.share >= 39 ? GREEN : GREEN_LIGHT} />
