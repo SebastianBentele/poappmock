@@ -92,8 +92,8 @@ export const requestIntroSeed = (t: Tr): Msg[] => [
 export const chatUnavailableReply = (t: Tr): Msg => ({
   kind: "bot",
   text: t(
-    "In der aktuellen Version ist der Chat noch nicht funktional. Wir werden bald eine Version erstellen mit funktionalem Chat.",
-    "The chat is not functional in the current version yet. We will soon release a version with a working chat."
+    "In der aktuellen Version ist der Chat noch nicht funktional. Wir werden bald eine Version erstellen mit funktionalem Chat. Gerne kannst du alle Buttons im Chat testen, diese sind bereits funktional.",
+    "The chat is not functional in the current version yet. We will soon release a version with a working chat. Feel free to try all the buttons in the chat — those already work."
   ),
 });
 
