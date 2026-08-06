@@ -76,7 +76,7 @@ export function PasswordGate({ children }: { children: ReactNode }) {
             className="h-[30px] w-auto mix-blend-multiply"
             draggable={false}
           />
-          <p className="text-[15px] text-muted mt-2">Property Owner App</p>
+          <p className="text-[15px] mt-2">Arbio Portal Demo</p>
 
           <span className="w-11 h-11 rounded-full bg-panel flex items-center justify-center text-muted mt-8">
             <Lock size={17} />
