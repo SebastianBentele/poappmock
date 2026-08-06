@@ -79,10 +79,27 @@ export const requestIntroSeed = (t: Tr): Msg[] => [
   {
     kind: "bot",
     text: t(
-      "Hi Sebastian! Wähl unten Melden oder Anfragen — ich führe dich Schritt für Schritt durch. Für komplexe Themen oder Beschwerden buch direkt einen Termin mit deinem KAM, oder beschreib dein Anliegen einfach frei.",
-      "Hi Sebastian! Pick Report or Request below — I'll guide you step by step. For complex topics or complaints, book a call with your KAM directly, or just describe your request freely."
+      "Hi! Wähl unten Melden oder Anfragen — ich führe dich Schritt für Schritt durch. Für komplexe Themen oder Beschwerden buch direkt einen Termin mit deinem KAM, oder beschreib dein Anliegen einfach frei.",
+      "Hi! Pick Report or Request below — I'll guide you step by step. For complex topics or complaints, book a call with your KAM directly, or just describe your request freely."
     ),
   },
+];
+
+/**
+ * Reply to any free-text message: the chat is not wired up in this demo yet.
+ * The guided flows (report / request / KAM call) still work as before.
+ */
+export const chatUnavailableReply = (t: Tr): Msg => ({
+  kind: "bot",
+  text: t(
+    "In der aktuellen Version ist der Chat noch nicht funktional. Wir werden bald eine Version erstellen mit funktionalem Chat.",
+    "The chat is not functional in the current version yet. We will soon release a version with a working chat."
+  ),
+});
+
+export const chatUnavailableSeed = (text: string, t: Tr): Msg[] => [
+  { kind: "user", text },
+  chatUnavailableReply(t),
 ];
 
 export function costExplainSeed(label: string, t: Tr): Msg[] {
@@ -313,14 +330,6 @@ const buildNotifications = (t: Tr): Notification[] => [
   },
 ];
 
-const draftFor = (text: string) => ({
-  kind: "draft" as const,
-  title: text.length > 60 ? text.slice(0, 57) + "..." : text,
-  unit: "Altstadt Apartment",
-  prio: "Mittel",
-  status: "pending" as const,
-});
-
 const ChatCtx = createContext<{ openChat: (seed: Msg[]) => void }>({
   openChat: () => {},
 });
@@ -354,12 +363,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 
   const submitRequest = (text: string) => {
     if (!text.trim()) return;
-    setMessages((m) => [
-      ...m,
-      { kind: "user", text },
-      { kind: "bot", text: t("Gerne! Ich habe folgendes Ticket vorbereitet — bitte bestätige kurz:", "Sure! I've prepared the following ticket — please confirm:") },
-      draftFor(text),
-    ]);
+    setMessages((m) => [...m, ...chatUnavailableSeed(text, t)]);
     setInput("");
   };
 

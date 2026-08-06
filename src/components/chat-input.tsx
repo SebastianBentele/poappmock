@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { Mic, ArrowUp, LifeBuoy } from "lucide-react";
 import { useLang } from "@/components/lang";
+import { useArbioChat, chatUnavailableSeed } from "@/components/arbio-chat";
 
 export function ChatInput({
   placeholder,
@@ -13,6 +15,18 @@ export function ChatInput({
   onRequest?: () => void;
 }) {
   const { t } = useLang();
+  const { openChat } = useArbioChat();
+  const [value, setValue] = useState("");
+
+  // Sending from the bar opens the chat with the message and the standard
+  // "not functional yet" reply.
+  const submit = () => {
+    const text = value.trim();
+    if (!text) return;
+    setValue("");
+    openChat(chatUnavailableSeed(text, t));
+  };
+
   return (
     <div
       className={`flex items-center gap-2 bg-white border border-line rounded-[30px] shadow-[0_2px_12px_rgba(0,0,0,0.06)] ${
@@ -30,6 +44,9 @@ export function ChatInput({
       )}
       <input
         type="text"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && submit()}
         placeholder={placeholder}
         className={`flex-1 min-w-0 bg-transparent outline-none text-[16px] placeholder:text-muted ${
           onRequest ? "pl-1" : ""
@@ -38,7 +55,10 @@ export function ChatInput({
       <button className="w-10 h-10 rounded-full flex items-center justify-center text-muted hover:bg-panel">
         <Mic size={18} />
       </button>
-      <button className="w-10 h-10 rounded-full bg-panel flex items-center justify-center text-muted hover:bg-line">
+      <button
+        onClick={submit}
+        className="w-10 h-10 rounded-full bg-panel flex items-center justify-center text-muted hover:bg-line"
+      >
         <ArrowUp size={18} />
       </button>
     </div>
