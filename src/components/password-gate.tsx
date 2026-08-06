@@ -13,7 +13,8 @@ import { useLang } from "@/components/lang";
  *   node scripts/make-access.mjs <email> <password>
  */
 const ACCESS_HASHES = new Set([
-  "e7a258fa7339d6e96858521b0ec5a5438bb45bb4f170f2c85c4b38e5112906f9", // internal
+  "e7a258fa7339d6e96858521b0ec5a5438bb45bb4f170f2c85c4b38e5112906f9", // internal (legacy password)
+  "93aabfaafc8a15fa803c17bbbebd642661ca2e02ffebf9d3854d97a985d547f4", // internal
   "4926ac5e0912832143ca10bb3e082ae7bb87f1233c03c51f8d81caf85b9f832e", // invited owner 1
   "84d1bf240fc7787f62ab578b2aa811954219dbcdaffe345a9a6e06c3904a8e8f", // invited owner 2
   "a71d23f32931096fad83d2ca729ac2cf512a72ebe3965c6a0e44ea36dec9f455", // invited owner 3
