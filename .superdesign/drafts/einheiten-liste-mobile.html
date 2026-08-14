@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arbio Portfolio — Units</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap');
+  body { 
+    font-family: 'Inter', sans-serif; 
+    letter-spacing: -0.01em; 
+    color: #1a1a1a; 
+    background-color: #ffffff;
+    margin: 0;
+  }
+  .font-mono-numbers { font-variant-numeric: tabular-nums; }
+  .safe-bottom { padding-bottom: calc(34px + 100px); }
+</style>
+</head>
+<body>
+<div class="flex flex-col min-h-screen bg-white">
+
+  <!-- Compact Top Bar -->
+  <header class="shrink-0 pt-14 pb-4 px-6 border-b border-[#eeeeee] bg-white sticky top-0 z-40">
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-2">
+        <img src="https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/bab5c95d-5f5e-4863-8fc6-5b9193839637/external-assets/07fddea7-8615-42e0-9c8f-ca2a47bfdf84-arbio-logo.jpg" alt="Arbio" class="h-[20px] w-auto">
+      </div>
+      <button id="nav-menu-btn" class="w-11 h-11 flex items-center justify-end">
+        <iconify-icon icon="lucide:menu" width="24" class="text-[#1a1a1a]"></iconify-icon>
+      </button>
+    </div>
+    
+    <div class="flex items-center justify-between">
+      <h1 class="text-[20px] tracking-tight">Portfolio</h1>
+      <div class="flex bg-[#f5f5f5] p-1 rounded-lg border border-[#eee]">
+        <button id="view-map-btn" class="px-3 py-1 text-[12px] text-[#666] rounded-md">Map</button>
+        <button id="view-list-btn" class="px-3 py-1 text-[12px] bg-white text-[#1a1a1a] shadow-sm border border-[#eee] rounded-md font-medium">List</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 overflow-y-auto safe-bottom">
+    <!-- Pinned Portfolio Totals Card -->
+    <div class="p-6">
+      <div class="bg-[#fafafa] border border-[#eeeeee] rounded-xl p-5">
+        <div class="flex justify-between items-baseline mb-4">
+          <div>
+            <p class="text-[11px] uppercase tracking-wider text-[#999] font-medium mb-1">Total Revenue July</p>
+            <h2 class="text-[28px] tracking-tighter">€50.100</h2>
+          </div>
+          <div class="text-right">
+            <p class="text-[11px] uppercase tracking-wider text-[#999] font-medium mb-1">Active Assets</p>
+            <p class="text-[14px] font-medium">5 Units</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-3 gap-4 pt-4 border-t border-[#eee]">
+          <div>
+            <p class="text-[10px] uppercase text-[#999] mb-0.5">Avg. ADR</p>
+            <p class="text-[13px] font-mono-numbers text-[#1a1a1a]">€208</p>
+          </div>
+          <div>
+            <p class="text-[10px] uppercase text-[#999] mb-0.5">Avg. Occ</p>
+            <p class="text-[13px] font-mono-numbers text-[#1a1a1a]">78%</p>
+          </div>
+          <div class="text-right">
+            <p class="text-[10px] uppercase text-[#999] mb-0.5">Avg Rating</p>
+            <p class="text-[13px] font-mono-numbers text-[#1a1a1a]">4.76 ★</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stacked Units List -->
+    <div class="px-6 flex flex-col gap-6">
+      <!-- Unit 1 -->
+      <a id="unit-altstadt" href="#" class="block group">
+        <div class="flex gap-4 mb-4">
+          <img src="https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/bab5c95d-5f5e-4863-8fc6-5b9193839637/external-assets/76fdf020-6e98-4b9d-a499-413178e9001b-altstadt.jpg" class="w-14 h-14 rounded-lg object-cover bg-gray-100" alt="">
+          <div class="flex-1">
+            <div class="flex justify-between items-start">
+              <h3 class="text-[15px] text-[#1a1a1a]">Altstadt Apartment</h3>
+              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#f0f9f0] text-[#2d6a4f] text-[10px] font-medium">
+                <span class="w-1 h-1 rounded-full bg-[#2d6a4f]"></span> Live
+              </span>
+            </div>
+            <p class="text-[12px] text-[#888]">Hamburg, DE</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-y-3 gap-x-8 py-3 border-y border-[#f0f0f0]">
+          <div class="flex justify-between">
+            <span class="text-[12px] text-[#999]">ADR</span>
+            <span class="text-[12px] font-mono-numbers">€265</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-[12px] text-[#999]">Occupancy</span>
+            <span class="text-[12px] font-mono-numbers">82%</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-[12px] text-[#999]">Rev July</span>
+            <span class="text-[12px] font-mono-numbers text-[#1a1a1a]">€15.400</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-[12px] text-[#999]">Rating</span>
+            <span class="text-[12px] font-mono-numbers">4.9 ★</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Unit 2 (Blocked) -->
+      <a id="unit-studio" href="#" class="block group opacity-75">
+        <div class="flex gap-4 mb-4">
+          <div class="relative">
+            <img src="https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/bab5c95d-5f5e-4863-8fc6-5b9193839637/external-assets/a32f6b5e-d9fa-4c8e-b06c-ffeb5c2031f3-studio.jpg" class="w-14 h-14 rounded-lg object-cover grayscale opacity-50" alt="">
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between items-start">
+              <h3 class="text-[15px] text-[#1a1a1a]">Studio Universität</h3>
+              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#fef2f2] text-[#991b1b] text-[10px] font-medium">
+                <span class="w-1 h-1 rounded-full bg-[#991b1b]"></span> Blocked
+              </span>
+            </div>
+            <p class="text-[12px] text-[#888]">Hamburg, DE</p>
+            <p class="text-[9px] text-[#b91c1c] font-medium uppercase mt-1 tracking-tight">Maintenance Recovery</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-y-3 gap-x-8 py-3 border-y border-[#f0f0f0]">
+          <div class="flex justify-between">
+            <span class="text-[12px] text-[#999]">ADR</span>
+            <span class="text-[12px] font-mono-numbers text-[#aaa]">€182</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-[12px] text-[#999]">Occupancy</span>
+            <span class="text-[12px] font-mono-numbers text-[#aaa]">0%</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-[12px] text-[#999]">Rev July</span>
+            <span class="text-[12px] font-medium font-mono-numbers text-[#aaa]">€0</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-[12px] text-[#999]">Rating</span>
+            <span class="text-[12px] font-mono-numbers text-[#aaa]">4.7 ★</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Unit 3 -->
+      <a id="unit-garten" href="#" class="block group">
+        <div class="flex gap-4 mb-4">
+          <img src="https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/bab5c95d-5f5e-4863-8fc6-5b9193839637/external-assets/f4ac0353-0d43-4ec8-b395-5344bb01995b-garten.jpg" class="w-14 h-14 rounded-lg object-cover" alt="">
+          <div class="flex-1">
+            <div class="flex justify-between items-start">
+              <h3 class="text-[15px] text-[#1a1a1a]">Garten Apartment</h3>
+              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#f0f9f0] text-[#2d6a4f] text-[10px] font-medium">
+                <span class="w-1 h-1 rounded-full bg-[#2d6a4f]"></span> Live
+              </span>
+            </div>
+            <p class="text-[12px] text-[#888]">Hamburg, DE</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-y-3 gap-x-8 py-3 border-y border-[#f0f0f0]">
+          <div class="flex justify-between">
+            <span class="text-[12px] text-[#999]">ADR</span>
+            <span class="text-[12px] font-mono-numbers">€221</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-[12px] text-[#999]">Occupancy</span>
+            <span class="text-[12px] font-mono-numbers">76%</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-[12px] text-[#999]">Rev July</span>
+            <span class="text-[12px] font-mono-numbers text-[#1a1a1a]">€12.900</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-[12px] text-[#999]">Rating</span>
+            <span class="text-[12px] font-mono-numbers">4.8 ★</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Unit 4 -->
+      <a id="unit-eppendorf" href="#" class="block group">
+        <div class="flex gap-4 mb-4">
+          <img src="https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/bab5c95d-5f5e-4863-8fc6-5b9193839637/external-assets/148f768d-25ed-4616-bb3c-8b71934b88fe-eppendorf.jpg" class="w-14 h-14 rounded-lg object-cover" alt="">
+          <div class="flex-1">
+            <div class="flex justify-between items-start">
+              <h3 class="text-[15px] text-[#1a1a1a]">Altbau Suite Eppendorf</h3>
+              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#f0f9f0] text-[#2d6a4f] text-[10px] font-medium">
+                <span class="w-1 h-1 rounded-full bg-[#2d6a4f]"></span> Live
+              </span>
+            </div>
+            <p class="text-[12px] text-[#888]">Hamburg, DE</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-y-3 gap-x-8 py-3 border-y border-[#f0f0f0]">
+          <div class="flex justify-between">
+            <span class="text-[12px] text-[#999]">ADR</span>
+            <span class="text-[12px] font-mono-numbers">€198</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-[12px] text-[#999]">Occupancy</span>
+            <span class="text-[12px] font-mono-numbers">79%</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-[12px] text-[#999]">Rev July</span>
+            <span class="text-[12px] font-mono-numbers text-[#1a1a1a]">€11.600</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-[12px] text-[#999]">Rating</span>
+            <span class="text-[12px] font-mono-numbers">4.8 ★</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </main>
+
+  <!-- Floating Copilot Pill -->
+  <div class="fixed bottom-8 left-0 right-0 flex justify-center pointer-events-none z-50 px-6">
+    <div class="w-full max-w-[340px] bg-[#1a1a1a] text-white rounded-full shadow-2xl flex items-center gap-3 px-5 py-3.5 border border-[#333] pointer-events-auto">
+      <div class="w-6 h-6 flex items-center justify-center">
+        <img src="https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/bab5c95d-5f5e-4863-8fc6-5b9193839637/external-assets/2ecc66af-a839-45e7-afc6-b2cdcd199c3f-arbio-a-white.png" alt="A" class="w-3.5 h-3.5">
+      </div>
+      <div class="flex-1 text-[14px] text-[#999]">Ask Arbio...</div>
+      <button id="cta-ask-btn" class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center">
+        <iconify-icon icon="lucide:arrow-up" width="16"></iconify-icon>
+      </button>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

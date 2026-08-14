@@ -630,7 +630,7 @@ export default function Einheiten() {
   };
 
   return (
-    <div className="relative min-h-screen px-8 py-6 pb-32">
+    <div className="relative min-h-screen px-4 md:px-8 py-6 pb-32">
       <div className="flex items-center justify-end flex-wrap gap-3">
         {/* View toggle */}
         <div className="flex items-center border border-line rounded-full p-1 bg-white">
@@ -834,13 +834,16 @@ export default function Einheiten() {
                     )}
                   </div>
                   <div className="p-5">
-                    <span className="bg-[#d3f2a3] text-[#3c5f33] rounded-md px-2 py-0.5 text-[11px] tracking-[1.5px] uppercase">
+                    <span className="border border-line text-muted rounded-full px-2.5 py-0.5 text-[11px] tracking-[1.5px] uppercase">
                       {u.city}
                     </span>
                     <div className={`mt-2.5 ${isActive ? "text-[21px]" : "text-[18px]"}`}>
                       {u.name}
                     </div>
                     <div className="mt-3 flex flex-col gap-1">
+                      <div className="text-[15px]">
+                        {u.revenue} <span className="text-muted">{t("Umsatz Juli", "revenue July")}</span>
+                      </div>
                       <div className="text-[15px]">
                         {u.adr} <span className="text-muted">ADR</span>
                       </div>
@@ -876,13 +879,24 @@ export default function Einheiten() {
             {t("Deine Einheiten", "Your units")}
           </h2>
           <div className="bg-white border border-line rounded-[24px] overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+            {/* column headers (desktop) */}
+            <div className="hidden xl:grid grid-cols-[56px_1.6fr_128px_1fr_1fr_1fr_1fr_80px] gap-4 items-center px-5 py-3 text-[12px] tracking-[1px] uppercase text-muted border-b border-line">
+              <span />
+              <span>{t("Einheit", "Unit")}</span>
+              <span>{t("Status", "Status")}</span>
+              <span className="text-right">ADR</span>
+              <span className="text-right">{t("Auslastung", "Occupancy")}</span>
+              <span className="text-right">{t("Umsatz Juli", "Revenue July")}</span>
+              <span className="text-right">{t("Bewertung", "Rating")}</span>
+              <span />
+            </div>
             {units.map((u, i) => (
               <button
                 key={u.key}
                 onClick={(e) => openPopup(u, e)}
-                className={`w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-panel transition-colors ${
+                className={`w-full text-left hover:bg-panel transition-colors ${
                   i > 0 ? "border-t border-line" : ""
-                }`}
+                } grid grid-cols-[56px_1fr_auto] xl:grid-cols-[56px_1.6fr_128px_1fr_1fr_1fr_1fr_80px] gap-x-4 gap-y-3 items-center px-5 py-4`}
               >
                 {/* thumbnail */}
                 <span className="w-14 h-14 rounded-[14px] overflow-hidden shrink-0 bg-panel">
@@ -895,14 +909,17 @@ export default function Einheiten() {
                   />
                 </span>
 
-                {/* name + city */}
-                <div className="min-w-0 w-[210px] shrink-0">
+                {/* name + city + blocked note */}
+                <div className="min-w-0">
                   <div className="text-[16px] truncate">{u.name}</div>
                   <div className="text-[13px] text-muted mt-0.5">{u.city}</div>
+                  {u.blockedNote && (
+                    <div className="text-[12px] text-negative mt-0.5 xl:hidden">{u.blockedNote}</div>
+                  )}
                 </div>
 
                 {/* status */}
-                <div className="w-[128px] shrink-0">
+                <div className="justify-self-end xl:justify-self-start">
                   {u.status === "live" ? (
                     <span className="inline-flex items-center gap-1.5 bg-[#eef5eb] text-accent-text rounded-full px-3 py-1 text-[13px]">
                       <span className="w-2 h-2 rounded-full bg-accent inline-block" /> {t("Live", "Live")}
@@ -914,28 +931,43 @@ export default function Einheiten() {
                   )}
                 </div>
 
-                {/* KPIs */}
-                <div className="hidden xl:flex items-center gap-8 flex-1">
+                {/* KPIs: aligned columns on xl, 2x2 grid on mobile */}
+                <div className="col-span-3 grid grid-cols-2 gap-x-8 gap-y-2 xl:hidden">
                   {[
                     { label: "ADR", value: u.adr },
                     { label: t("Auslastung", "Occupancy"), value: u.occ },
                     { label: t("Umsatz Juli", "Revenue July"), value: u.revenue },
                     { label: t("Bewertung", "Rating"), value: u.rating },
                   ].map(({ label, value }) => (
-                    <div key={label} className="min-w-[68px]">
-                      <div className="text-[12px] text-muted">{label}</div>
-                      <div className="text-[15px] mt-0.5">{value}</div>
+                    <div key={label} className="flex items-baseline justify-between gap-3">
+                      <span className="text-[12px] text-muted">{label}</span>
+                      <span className="text-[15px]">{value}</span>
                     </div>
                   ))}
                 </div>
+                <span className="hidden xl:block text-right text-[15px]">{u.adr}</span>
+                <span className="hidden xl:block text-right text-[15px]">{u.occ}</span>
+                <span className="hidden xl:block text-right text-[15px]">{u.revenue}</span>
+                <span className="hidden xl:block text-right text-[15px]">{u.rating}</span>
 
                 {/* hint */}
-                <span className="ml-auto flex items-center gap-1.5 text-[13px] text-muted shrink-0">
+                <span className="hidden xl:flex items-center justify-end gap-1.5 text-[13px] text-muted">
                   {t("Details", "Details")}
                   <ChevronRight size={15} />
                 </span>
               </button>
             ))}
+            {/* totals row */}
+            <div className="grid grid-cols-[56px_1fr_auto] xl:grid-cols-[56px_1.6fr_128px_1fr_1fr_1fr_1fr_80px] gap-x-4 items-center px-5 py-4 border-t border-line bg-[#fafafa]">
+              <span />
+              <span className="text-[14px] text-muted">{t("Gesamt · 5 Einheiten", "Total · 5 units")}</span>
+              <span className="hidden xl:block" />
+              <span className="hidden xl:block text-right text-[15px]">{t("Ø €208", "Avg. €208")}</span>
+              <span className="hidden xl:block text-right text-[15px]">{t("Ø 78,4 %", "Avg. 78.4%")}</span>
+              <span className="text-right text-[15px] justify-self-end xl:justify-self-auto">€59.900</span>
+              <span className="hidden xl:block text-right text-[15px]">{t("Ø 4,76 ★", "Avg. 4.76 ★")}</span>
+              <span className="hidden xl:block" />
+            </div>
           </div>
         </div>
       )}
@@ -952,7 +984,7 @@ export default function Einheiten() {
       )}
 
       {/* Floating chat */}
-      <div className="fixed bottom-6 left-[var(--sidebar-w)] right-0 flex justify-center px-8 pointer-events-none transition-[left] duration-200 ease-out">
+      <div className="fixed bottom-6 left-0 lg:left-[var(--sidebar-w)] right-0 flex justify-center px-4 md:px-8 pointer-events-none transition-[left] duration-200 ease-out">
         <ChatInput
           placeholder={t("Frag alles über deine Einheiten...", "Ask anything about your units...")}
           className="w-full max-w-[620px] pointer-events-auto"

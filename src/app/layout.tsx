@@ -5,6 +5,7 @@ import { ChatProvider } from "@/components/arbio-chat";
 import { PasswordGate } from "@/components/password-gate";
 import { LanguageProvider } from "@/components/lang";
 import { TopBar } from "@/components/top-bar";
+import { MobileNav } from "@/components/mobile-nav";
 
 export const metadata: Metadata = {
   title: "Arbio Property Owner App",
@@ -25,6 +26,7 @@ export default function RootLayout({
               <div className="flex min-h-screen">
                 <Sidebar />
                 <main className="flex-1 min-w-0">
+                  <MobileNav />
                   <TopBar />
                   {children}
                 </main>

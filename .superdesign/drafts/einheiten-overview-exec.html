@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arbio — Portfolio Carousel</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap');
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    letter-spacing: -0.01em;
+    color: #1a1a1a;
+    -webkit-font-smoothing: antialiased;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  @view-transition {
+    navigation: auto;
+  }
+</style>
+</head>
+<body>
+<div class="flex min-h-screen bg-[#ffffff]">
+
+  <!-- Sidebar -->
+  <aside class="shrink-0 w-[280px] bg-white border-r border-[#f0f0f0] flex flex-col py-6 px-5 z-50">
+    <div class="flex items-center justify-between px-2 mb-10">
+      <img src="https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/bab5c95d-5f5e-4863-8fc6-5b9193839637/external-assets/07fddea7-8615-42e0-9c8f-ca2a47bfdf84-arbio-logo.jpg" alt="Arbio" class="h-[20px] w-auto grayscale">
+      <button class="flex items-center justify-center text-[#a0a0a0] hover:text-[#1a1a1a] transition-colors">
+        <iconify-icon icon="lucide:panel-left" width="18"></iconify-icon>
+      </button>
+    </div>
+    
+    <nav class="flex flex-col gap-1">
+      <a id="nav-chat" href="#chat" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[14px] text-[#717171] hover:bg-[#f8f8f8] transition-colors">
+        <iconify-icon icon="lucide:message-circle" width="18"></iconify-icon>
+        <span>Ask Arbio</span>
+      </a>
+      <a id="nav-portfolio" href="#portfolio" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[14px] bg-[#1a1a1a] text-white shadow-sm">
+        <iconify-icon icon="lucide:layout-grid" width="18"></iconify-icon>
+        <span>Portfolio</span>
+      </a>
+      <a id="nav-revenue" href="#revenue" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[14px] text-[#717171] hover:bg-[#f8f8f8]">
+        <iconify-icon icon="lucide:bar-chart-3" width="18"></iconify-icon>
+        <span>Revenue</span>
+      </a>
+      <a id="nav-finance" href="#finance" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[14px] text-[#717171] hover:bg="#f8f8f8">
+        <iconify-icon icon="lucide:wallet" width="18"></iconify-icon>
+        <span>Finance</span>
+      </a>
+      <a id="nav-operations" href="#operations" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[14px] text="#717171] hover:bg="#f8f8f8">
+        <iconify-icon icon="lucide:clipboard-list" width="18"></iconify-icon>
+        <span>Operations</span>
+      </a>
+    </nav>
+
+    <div class="mt-auto pt-6 border-t border-[#f0f0f0]">
+      <div class="flex items-center gap-3 px-2">
+        <div class="w-8 h-8 rounded-full bg-[#1a1a1a] flex items-center justify-center text-white text-[13px] font-medium">
+          A
+        </div>
+        <div class="flex flex-col">
+          <span class="text-[13px] font-medium">Arbio Admin</span>
+          <span class="text-[11px] text-[#a0a0a0]">Premium Account</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="flex-1 relative bg-[#fafafa]">
+    <div class="px-10 py-8">
+      
+      <!-- Header Section -->
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-[24px] tracking-tight text-[#1a1a1a]">Portfolio Overview</h1>
+          <p class="text-[14px] text-[#717171] mt-1">Manage and monitor your 12 active properties</p>
+        </div>
+        
+        <div class="flex items-center bg-white border border-[#eeeeee] p-1 rounded-xl shadow-sm">
+          <a id="view-map" href="#" class="px-4 py-1.5 text-[13px] text-[#717171] hover:text-[#1a1a1a] flex items-center gap-2 transition-colors">
+            <iconify-icon icon="lucide:map" width="14"></iconify-icon> Map
+          </a>
+          <div class="px-4 py-1.5 text-[13px] bg-[#1a1a1a] text-white rounded-lg flex items-center gap-2">
+            <iconify-icon icon="lucide:layout-grid" width="14"></iconify-icon> Carousel
+          </div>
+          <a id="view-list" href="#" class="px-4 py-1.5 text-[13px] text-[#717171] hover:text-[#1a1a1a] flex items-center gap-2 transition-colors">
+            <iconify-icon icon="lucide:list" width="14"></iconify-icon> List
+          </a>
+        </div>
+      </div>
+
+      <!-- Carousel Area -->
+      <div class="mt-12">
+        <div class="flex items-end justify-between mb-6">
+          <h3 class="text-[12px] font-medium tracking-[0.1em] uppercase text-[#717171]">Select Unit</h3>
+          <div class="flex gap-3">
+            <button class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-[#eeeeee] text-[#1a1a1a] shadow-sm hover:border-[#1a1a1a] transition-all">
+              <iconify-icon icon="lucide:arrow-left" width="18"></iconify-icon>
+            </button>
+            <button class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-[#eeeeee] text-[#1a1a1a] shadow-sm hover:border-[#1a1a1a] transition-all">
+              <iconify-icon icon="lucide:arrow-right" width="18"></iconify-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Horizontal Container -->
+        <div class="flex items-center gap-8 overflow-visible pb-12">
+          
+          <!-- Left Neighbour (Smaller, Faded) -->
+          <div class="shrink-0 w-[300px] bg-white border border-[#f0f0f0] rounded-[24px] overflow-hidden opacity-40 scale-[0.9] blur-[0.5px] transition-all">
+            <div class="h-[220px] bg-gray-100">
+              <img src="https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/bab5c95d-5f5e-4863-8fc6-5b9193839637/external-assets/76fdf020-6e98-4b9d-a499-413178e9001b-altstadt.jpg" class="w-full h-full object-cover" alt="Altstadt">
+            </div>
+            <div class="p-6">
+              <div class="text-[10px] tracking-wider uppercase border border-[#e0e0e0] inline-block px-2 py-0.5 rounded-full mb-3 text-[#717171]">Hamburg</div>
+              <div class="text-[18px] text-[#1a1a1a]">Altstadt Apartment</div>
+            </div>
+          </div>
+
+          <!-- Active Card (Large, Detailed) -->
+          <div class="shrink-0 w-[420px] bg-white border border-[#e5e5e5] rounded-[28px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.08)] transform transition-all z-20">
+            <div class="relative h-[280px] bg-gray-200">
+              <img src="https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/bab5c95d-5f5e-4863-8fc6-5b9193839637/external-assets/a32f6b5e-d9fa-4c8e-b06c-ffeb5c2031f3-studio.jpg" class="w-full h-full object-cover" alt="Studio">
+              <div class="absolute top-4 left-4 flex gap-2">
+                <span class="px-2.5 py-1 bg-white/90 backdrop-blur-sm border border-[#eeeeee] text-[10px] font-medium tracking-wider uppercase rounded-full">Hamburg</span>
+                <span class="px-2.5 py-1 bg-[#1a1a1a] text-white text-[10px] font-medium tracking-wider uppercase rounded-full">Active</span>
+              </div>
+            </div>
+            <div class="p-8">
+              <div class="flex justify-between items-start">
+                <h2 class="text-[24px] font-normal tracking-tight">Studio Universität</h2>
+                <div class="flex items-center gap-1 px-2 py-1 bg-[#fafafa] border border-[#f0f0f0] rounded-lg">
+                  <iconify-icon icon="lucide:star" class="text-[#1a1a1a]" width="14"></iconify-icon>
+                  <span class="text-[13px] font-medium">4.8</span>
+                </div>
+              </div>
+              
+              <div class="grid grid-cols-3 gap-4 mt-8 pt-8 border-t border-[#f0f0f0]">
+                <div>
+                  <div class="text-[11px] text-[#a0a0a0] uppercase tracking-widest">Est. Revenue</div>
+                  <div class="text-[18px] font-normal mt-1">€4,250</div>
+                </div>
+                <div>
+                  <div class="text-[11px] text-[#a0a0a0] uppercase tracking-widest">ADR</div>
+                  <div class="text-[18px] font-normal mt-1">€182</div>
+                </div>
+                <div>
+                  <div class="text-[11px] text-[#a0a0a0] uppercase tracking-widest">Occupancy</div>
+                  <div class="text-[18px] font-normal mt-1">71%</div>
+                </div>
+              </div>
+
+              <a id="view-details" href="#" class="mt-8 w-full py-4 bg-[#1a1a1a] text-white text-[14px] rounded-2xl flex items-center justify-center gap-2 hover:bg-[#333333] transition-colors">
+                View Full Analytics <iconify-icon icon="lucide:arrow-right" width="16"></iconify-icon>
+              </a>
+            </div>
+          </div>
+
+          <!-- Right Neighbour (Blocked State) -->
+          <div class="shrink-0 w-[300px] bg-white border border-[#f0f0f0] rounded-[24px] overflow-hidden opacity-40 scale-[0.9] blur-[0.5px] transition-all relative">
+            <div class="h-[220px] bg-gray-100 grayscale">
+              <img src="https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/bab5c95d-5f5e-4863-8fc6-5b9193839637/external-assets/f4ac0353-0d43-4ec8-b395-5344bb01995b-garten.jpg" class="w-full h-full object-cover" alt="Garten">
+              <div class="absolute inset-0 bg-white/40 flex items-center justify-center">
+                <span class="px-3 py-1 bg-white border border-[#eeeeee] text-[11px] tracking-widest uppercase">Blocked</span>
+              </div>
+            </div>
+            <div class="p-6">
+              <div class="text-[10px] tracking-wider uppercase border border-[#e0e0e0] inline-block px-2 py-0.5 rounded-full mb-3 text-[#717171]">Berlin</div>
+              <div class="text-[18px] text-[#1a1a1a]">Garten Apartment</div>
+              <div class="mt-3 p-3 bg-[#fcfcfc] border border-[#f0f0f0] rounded-xl">
+                <p class="text-[12px] text-[#717171] leading-relaxed">Blocked for maintenance. Estimated recovery: June 12, 2024.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="flex flex-col items-center gap-4 mt-8">
+          <div class="flex items-center gap-2">
+            <span class="text-[13px] font-medium text-[#1a1a1a]">02</span>
+            <div class="w-48 h-[2px] bg-[#f0f0f0] rounded-full overflow-hidden">
+              <div class="h-full bg-[#1a1a1a] transition-all duration-500" style="width: 33%;"></div>
+            </div>
+            <span class="text-[13px] text-[#a0a0a0]">12</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fixed Chat Input Area -->
+    <div class="absolute bottom-8 left-0 right-0 flex justify-center px-10 pointer-events-none">
+      <div class="w-full max-w-[680px] bg-white border border-[#e5e5e5] rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.1)] p-2 flex items-center gap-3 pointer-events-auto">
+        <span class="w-8 h-8 rounded-full bg-[#16171a] flex items-center justify-center shrink-0"><img src="https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/bab5c95d-5f5e-4863-8fc6-5b9193839637/external-assets/2ecc66af-a839-45e7-afc6-b2cdcd199c3f-arbio-a-white.png" alt="A" class="w-3.5 h-3.5"></span>
+        <input type="text" placeholder="Ask about occupancy trends or upcoming maintenance..." class="flex-1 bg-transparent border-none text-[14px] text-[#1a1a1a] placeholder:text-[#a0a0a0] focus:ring-0 px-1">
+        <button class="w-10 h-10 rounded-xl bg-[#1a1a1a] text-white flex items-center justify-center hover:bg-[#333333] transition-colors">
+          <iconify-icon icon="lucide:arrow-up" width="18"></iconify-icon>
+        </button>
+      </div>
+    </div>
+
+  </main>
+</div>
+</body>
+</html>

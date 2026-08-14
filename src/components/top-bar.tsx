@@ -48,9 +48,9 @@ export function TopBar() {
   const sub = entry.subDe ? t(entry.subDe, entry.subEn ?? entry.subDe) : null;
 
   return (
-    <div className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-line">
+    <div className="sticky top-16 lg:top-0 z-30 bg-white/90 backdrop-blur-md border-b border-line">
       {/* right padding keeps the title clear of the language toggle + bell */}
-      <div className="px-8 py-4 pr-[190px]">
+      <div className="px-4 lg:px-8 py-4 pr-[120px] lg:pr-[190px]">
         <h1 className="text-[20px] leading-tight">{t(entry.de, entry.en)}</h1>
         {sub && <p className="text-[13px] text-muted mt-0.5">{sub}</p>}
       </div>

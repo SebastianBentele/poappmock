@@ -114,7 +114,7 @@ export default function Finanzen() {
   ];
 
   return (
-    <div className="relative min-h-screen px-8 py-6 pb-32">
+    <div className="relative min-h-screen px-4 md:px-8 py-6 pb-32">
       {/* Tabs + filters */}
       <div className="flex items-center gap-3 mb-6 flex-wrap">
         <div className="flex items-center border border-line rounded-full p-1">
@@ -139,25 +139,25 @@ export default function Finanzen() {
         <>
           {/* Profit hero — the profit graph front and center */}
           <div className="grid grid-cols-1 xl:grid-cols-[1.5fr_1fr] gap-4">
-            <div className="group relative bg-[#eef5eb] rounded-[24px] p-7 flex flex-col">
+            <div className="group relative bg-white border border-line rounded-[24px] p-7 flex flex-col shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
               <AskAi metric="profit" />
               <div className="flex items-start justify-between">
                 <div>
-                  <span className="text-[15px] text-accent-text">{t("Operativer Gewinn · Juli 2026", "Operating profit · July 2026")}</span>
+                  <span className="text-[15px] text-muted">{t("Operativer Gewinn · Juli 2026", "Operating profit · July 2026")}</span>
                   <div className="flex items-end gap-3 mt-2">
                     <span className="text-[54px] leading-none tracking-[-1.5px]">€33,1k</span>
                     <span className="text-[16px] text-accent-text mb-1.5">▲ {t("7,6% vs. Vorjahr", "7.6% vs. last year")}</span>
                   </div>
                   <div className="flex flex-wrap items-center gap-2 mt-4">
-                    <span className="rounded-full bg-white px-3.5 py-1.5 text-[13px]">{t("86,0% Deckungsbeitrag", "86.0% contribution margin")}</span>
-                    <span className="rounded-full bg-white px-3.5 py-1.5 text-[13px]">{t("80% operative Marge", "80% operating margin")}</span>
+                    <span className="rounded-full bg-panel px-3.5 py-1.5 text-[13px]">{t("86,0% Deckungsbeitrag", "86.0% contribution margin")}</span>
+                    <span className="rounded-full bg-panel px-3.5 py-1.5 text-[13px]">{t("80% operative Marge", "80% operating margin")}</span>
                   </div>
                 </div>
                 <span className="flex items-center gap-2 text-[13px] text-muted shrink-0">
-                  <span className="w-4 h-[3px] bg-accent inline-block rounded" /> {t("Gewinn über Zeit", "Profit over time")}
+                  <span className="w-4 h-[3px] bg-[#3D7BE5] inline-block rounded" /> {t("Gewinn über Zeit", "Profit over time")}
                 </span>
               </div>
-              <div className="bg-white rounded-[18px] p-4 mt-6">
+              <div className="bg-white border border-line rounded-[18px] p-4 mt-6">
                 <ProfitChart />
               </div>
             </div>
@@ -207,14 +207,12 @@ export default function Finanzen() {
                   )}
                   <div
                     className={`flex-1 rounded-[20px] px-6 py-5 ${
-                      s.highlight ? "bg-[#eef5eb]" : "bg-panel"
+                      s.highlight ? "bg-panel border border-line" : "bg-panel"
                     }`}
                   >
                     <div className="text-[14px] text-muted">{s.label}</div>
                     <div
-                      className={`text-[32px] tracking-[-0.5px] mt-1 ${
-                        s.highlight ? "text-accent-text" : ""
-                      }`}
+                      className="text-[32px] tracking-[-0.5px] mt-1"
                     >
                       {s.value}
                     </div>
@@ -390,10 +388,10 @@ export default function Finanzen() {
               </div>
               <div className="flex gap-5 text-[13px] text-muted">
                 <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#b9d9ae] inline-block" /> {t("Ausgezahlt", "Paid out")}
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#A9C3EF] inline-block" /> {t("Ausgezahlt", "Paid out")}
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-accent inline-block" /> {t("Aufgelaufen (Juli)", "Accrued (July)")}
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#3D7BE5] inline-block" /> {t("Aufgelaufen (Juli)", "Accrued (July)")}
                 </span>
               </div>
             </div>
@@ -442,7 +440,7 @@ export default function Finanzen() {
       )}
 
       {/* Floating chat */}
-      <div className="fixed bottom-6 left-[var(--sidebar-w)] right-0 flex justify-center px-8 pointer-events-none transition-[left] duration-200 ease-out">
+      <div className="fixed bottom-6 left-0 lg:left-[var(--sidebar-w)] right-0 flex justify-center px-4 md:px-8 pointer-events-none transition-[left] duration-200 ease-out">
         <ChatInput
           placeholder={
             tab === "profit"

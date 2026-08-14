@@ -330,7 +330,7 @@ export default function Kalender() {
   };
 
   return (
-    <div className="relative min-h-screen px-8 py-6 pb-32">
+    <div className="relative min-h-screen px-4 md:px-8 py-6 pb-32">
       {/* Filters + entry button */}
       <div className="flex items-center gap-3 mb-6 flex-wrap">
         <FilterBar />
@@ -536,7 +536,7 @@ export default function Kalender() {
       )}
 
       {/* Floating chat */}
-      <div className="fixed bottom-6 left-[var(--sidebar-w)] right-0 flex justify-center px-8 pointer-events-none transition-[left] duration-200 ease-out">
+      <div className="fixed bottom-6 left-0 lg:left-[var(--sidebar-w)] right-0 flex justify-center px-4 md:px-8 pointer-events-none transition-[left] duration-200 ease-out">
         <ChatInput
           placeholder={t("Frag alles über deine Buchungen...", "Ask anything about your bookings...")}
           className="w-full max-w-[620px] pointer-events-auto"

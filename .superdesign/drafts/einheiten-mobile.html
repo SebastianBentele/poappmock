@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Arbio Units Mobile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      letter-spacing: -0.2px;
+      color: #2a2a2a;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .safe-bottom {
+      padding-bottom: calc(34px + 1rem);
+    }
+  </style>
+</head>
+<body>
+  <div class="flex flex-col h-screen overflow-hidden bg-[#fbfbfb]">
+    <!-- Compact Top Bar -->
+    <header class="shrink-0 pt-14 pb-4 px-5 flex items-center justify-between bg-white border-b border-[#f0f0f0] z-20">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-[#2a2a2a] flex items-center justify-center text-white">
+          <iconify-icon icon="lucide:layout-grid" width="18"></iconify-icon>
+        </div>
+        <h1 class="text-[17px]">Portfolio</h1>
+      </div>
+      <div class="flex items-center gap-3">
+        <button id="btn-search" class="w-11 h-11 flex items-center justify-center rounded-full bg-[#f5f5f5] text-[#2a2a2a]">
+          <iconify-icon icon="lucide:search" width="20"></iconify-icon>
+        </button>
+        <button id="btn-menu" class="w-11 h-11 flex items-center justify-center rounded-full bg-[#f5f5f5] text-[#2a2a2a]">
+          <iconify-icon icon="lucide:menu" width="20"></iconify-icon>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+      
+      <!-- Map View (40% Viewport Height) -->
+      <section class="h-[40vh] relative bg-[#eef1ec] overflow-hidden">
+        <svg viewBox="0 0 400 320" class="absolute inset-0 w-full h-full opacity-60">
+          <rect x="50" y="40" width="120" height="100" rx="20" fill="#dcebd4"/>
+          <rect x="220" y="180" width="150" height="120" rx="20" fill="#e9ece5"/>
+          <path d="M 0 160 Q 200 140 400 180" stroke="#fff" stroke-width="8" fill="none"/>
+          <path d="M 180 0 Q 200 160 160 320" stroke="#fff" stroke-width="8" fill="none"/>
+        </svg>
+
+        <!-- Unit Markers -->
+        <div class="absolute" style="left:25%; top:25%">
+          <div class="relative flex flex-col items-center">
+            <div class="w-10 h-10 rounded-full bg-white border-2 border-white shadow-lg flex items-center justify-center">
+              <iconify-icon icon="lucide:home" width="18" class="text-[#2a2a2a]"></iconify-icon>
+              <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full border-2 border-white bg-[#7db86c]"></span>
+            </div>
+          </div>
+        </div>
+        <div class="absolute" style="left:65%; top:60%">
+          <div class="relative flex flex-col items-center">
+            <div class="w-10 h-10 rounded-full bg-white border-2 border-[#2a2a2a] shadow-lg flex items-center justify-center scale-110">
+              <iconify-icon icon="lucide:home" width="18" class="text-[#2a2a2a]"></iconify-icon>
+              <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full border-2 border-white bg-[#c62828]"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Map Controls -->
+        <div class="absolute bottom-4 right-4 flex flex-col gap-2">
+          <button class="w-11 h-11 bg-white rounded-full shadow-md flex items-center justify-center text-[#2a2a2a]"><iconify-icon icon="lucide:plus" width="20"></iconify-icon></button>
+          <button class="w-11 h-11 bg-white rounded-full shadow-md flex items-center justify-center text-[#2a2a2a]"><iconify-icon icon="lucide:locate-fixed" width="20"></iconify-icon></button>
+        </div>
+      </section>
+
+      <!-- Swipeable Cards Area -->
+      <section class="flex-1 flex flex-col bg-[#fbfbfb] -mt-4 rounded-t-[24px] z-10 p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-[15px] text-[#717171] uppercase tracking-wider">5 Units Nearby</h2>
+          <button class="text-[#2a2a2a] text-[15px] font-medium underline underline-offset-4">View List</button>
+        </div>
+
+        <!-- Horizontal Scroll Container -->
+        <div class="flex gap-4 overflow-x-auto no-scrollbar pb-4 snap-x snap-mandatory">
+          <!-- Card 1 -->
+          <div class="shrink-0 w-[280px] bg-white rounded-[24px] border border-[#f0f0f0] shadow-sm snap-center">
+            <div class="h-32 bg-gradient-to-br from-[#d8cfc4] to-[#b8aa9a] rounded-t-[24px]"></div>
+            <div class="p-4">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="text-[16px]">Studio Universität</h3>
+                  <p class="text-[13px] text-[#717171]">Hamburg, Univiertel</p>
+                </div>
+                <span class="px-2.5 py-1 bg-[#fdecea] text-[#c62828] text-[11px] rounded-full uppercase">Blocked</span>
+              </div>
+              <div class="mt-3 flex gap-4">
+                <div>
+                  <p class="text-[11px] text-[#717171]">Revenue</p>
+                  <p class="text-[14px]">€9.800</p>
+                </div>
+                <div>
+                  <p class="text-[11px] text-[#717171]">Occupancy</p>
+                  <p class="text-[14px]">71%</p>
+                </div>
+                <div>
+                  <p class="text-[11px] text-[#717171]">Rating</p>
+                  <p class="text-[14px] flex items-center gap-0.5">4,7 <iconify-icon icon="lucide:star" width="10" class="text-[#4f9d4f]"></iconify-icon></p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="shrink-0 w-[280px] bg-white rounded-[24px] border border-[#f0f0f0] shadow-sm snap-center">
+            <div class="h-32 bg-gradient-to-br from-[#e0e7ff] to-[#c7d2fe] rounded-t-[24px]"></div>
+            <div class="p-4">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="text-[16px]">Altstadt Loft</h3>
+                  <p class="text-[13px] text-[#717171]">Hamburg, Old Town</p>
+                </div>
+                <span class="px-2.5 py-1 bg-[#eef5eb] text-[#4f9d4f] text-[11px] rounded-full uppercase">Live</span>
+              </div>
+              <div class="mt-3 flex gap-4">
+                <div>
+                  <p class="text-[11px] text-[#717171]">Revenue</p>
+                  <p class="text-[14px]">€12.450</p>
+                </div>
+                <div>
+                  <p class="text-[11px] text-[#717171]">Occupancy</p>
+                  <p class="text-[14px]">94%</p>
+                </div>
+                <div>
+                  <p class="text-[11px] text="#717171">Rating</p>
+                  <p class="text-[14px] flex items-center gap-0.5">4,9 <iconify-icon icon="lucide:star" width="10" class="text-[#4f9d4f]"></iconify-icon></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Bottom Sheet (Unit Detail) -->
+    <div class="fixed inset-x-0 bottom-0 z-40">
+      <!-- Handle/Indicator -->
+      <div class="flex flex-col bg-white border-t border-[#f0f0f0] rounded-t-[32px] shadow-[0_-8px_30px_rgba(0,0,0,0.08)]">
+        <div class="w-12 h-1 bg-[#e5e5e5] rounded-full mx-auto my-3"></div>
+        
+        <div class="px-6 pb-[34px]">
+          <!-- Mini Summary in sheet -->
+          <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-4">
+               <div class="w-12 h-12 rounded-xl bg-[#f7f7f7] flex items-center justify-center text-[#c62828]">
+                 <iconify-icon icon="lucide:alert-circle" width="24"></iconify-icon>
+               </div>
+               <div>
+                 <h4 class="">Unit Issue Detected</h4>
+                 <p class="text-[13px] text-[#717171]">Water damage in Studio Universität</p>
+               </div>
+            </div>
+            <iconify-icon icon="lucide:chevron-right" class="text-[#717171]" width="20"></iconify-icon>
+          </div>
+
+          <!-- CTA Button -->
+          <button id="cta-insights" class="w-full h-[56px] bg-[#2a2a2a] text-white rounded-2xl flex items-center justify-center gap-3">
+            <iconify-icon icon="lucide:zap" width="18" class="text-[#2a2a2a]"></iconify-icon>
+            Fix with Arbio AI
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Chat Pill -->
+    <div class="fixed bottom-[110px] left-1/2 -translate-x-1/2 z-30">
+      <a id="floating-ask" href="#chat" class="flex items-center gap-2 bg-[#2a2a2a] text-white rounded-full px-6 py-3.5 shadow-xl">
+        <iconify-icon icon="lucide:message-circle" width="20"></iconify-icon>
+        <span class="text-[15px]">Ask Arbio</span>
+      </a>
+    </div>
+
+  </div>
+</body>
+</html>

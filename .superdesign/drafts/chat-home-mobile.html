@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Arbio Mobile Home</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      letter-spacing: -0.02em;
+      -webkit-font-smoothing: antialiased;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    @view-transition {
+      navigation: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="flex flex-col h-screen bg-white text-[#2a2a2a]">
+    <!-- Top Header -->
+    <header class="shrink-0 pt-14 px-6 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-[#2a2a2a] flex items-center justify-center">
+          <iconify-icon icon="lucide:zap" class="text-white" width="16"></iconify-icon>
+        </div>
+        <img src="https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/bab5c95d-5f5e-4863-8fc6-5b9193839637/external-assets/07fddea7-8615-42e0-9c8f-ca2a47bfdf84-arbio-logo.jpg" alt="Arbio" class="h-[20px] w-auto" style="mix-blend-mode:multiply">
+      </div>
+      <button id="profile-btn" class="w-10 h-10 rounded-full bg-[#f7f7f7] border border-[#ededed] flex items-center justify-center text-[13px] font-medium">
+        SE
+      </button>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto pt-8 px-6 pb-20">
+      <!-- Greeting Section -->
+      <section class="mb-8">
+        <h1 class="text-[32px] font-medium leading-tight tracking-tight text-[#2a2a2a]">
+          Good afternoon, <br/>Sebastian
+        </h1>
+        <p class="text-[#717171] mt-3 text-[16px] leading-relaxed">
+          How can I help you with your portfolio today?
+        </p>
+      </section>
+
+      <!-- KPI Grid: 2x2 -->
+      <section class="grid grid-cols-2 gap-3 mb-10">
+        <div class="bg-[#fafafa] border border-[#f0f0f0] rounded-[24px] p-5">
+          <div class="text-[13px] text-[#717171] font-medium mb-1">Revenue</div>
+          <div class="text-[22px] font-normal">41.451 €</div>
+        </div>
+        <div class="bg-[#fafafa] border border-[#f0f0f0] rounded-[24px] p-5">
+          <div class="text-[13px] text-[#717171] font-medium mb-1">Daily rate</div>
+          <div class="text-[22px] font-normal">241 €</div>
+        </div>
+        <div class="bg-[#fafafa] border border-[#f0f0f0] rounded-[24px] p-5">
+          <div class="text-[13px] text-[#717171] font-medium mb-1">Occupancy</div>
+          <div class="text-[22px] font-normal">55 %</div>
+        </div>
+        <div class="bg-[#fafafa] border border-[#f0f0f0] rounded-[24px] p-5">
+          <div class="text-[13px] text-[#717171] font-medium mb-1">Profit</div>
+          <div class="text-[22px] font-normal">33.111 €</div>
+        </div>
+      </section>
+
+      <!-- Suggestions: Horizontally Scrollable -->
+      <section class="mb-6">
+        <div class="flex items-center justify-between mb-4">
+          <span class="text-[12px] text-[#b1b1b1] uppercase tracking-wider">Suggestions</span>
+        </div>
+        <div class="flex gap-2 overflow-x-auto no-scrollbar -mx-6 px-6">
+          <button id="chip-weekly-rev" class="shrink-0 border border-[#ededed] rounded-full px-5 py-2.5 text-[14px] bg-white whitespace-nowrap active:bg-[#f7f7f7] transition-colors">
+            Weekly revenue
+          </button>
+          <button id="chip-top-performer" class="shrink-0 border border-[#ededed] rounded-full px-5 py-2.5 text-[14px] bg-white whitespace-nowrap active:bg-[#f7f7f7] transition-colors">
+            Top performer
+          </button>
+          <button id="chip-booking-pace" class="shrink-0 border border-[#ededed] rounded-full px-5 py-2.5 text-[14px] bg-white whitespace-nowrap active:bg-[#f7f7f7] transition-colors">
+            Booking pace
+          </button>
+          <button id="chip-profit" class="shrink-0 border border-[#ededed] rounded-full px-5 py-2.5 text-[14px] bg-white whitespace-nowrap active:bg-[#f7f7f7] transition-colors">
+            Profitability
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- Docked Input Section -->
+    <footer class="shrink-0 bg-white border-t border-[#f0f0f0] pb-[34px] px-4 pt-4 sticky bottom-0 z-40">
+      <div class="relative w-full">
+        <input 
+          type="text" 
+          placeholder="Ask anything about your portfolio..." 
+          class="w-full bg-[#f7f7f7] border-none rounded-[28px] py-4 pl-5 pr-24 text-[15px] focus:outline-none focus:ring-2 focus:ring-[#2a2a2a]/10"
+        >
+        <div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
+          <button id="mic-btn" class="w-9 h-9 flex items-center justify-center text-[#717171]">
+            <iconify-icon icon="lucide:mic" width="20"></iconify-icon>
+          </button>
+          <button id="send-btn" class="w-9 h-9 bg-[#2a2a2a] text-white rounded-full flex items-center justify-center">
+            <iconify-icon icon="lucide:arrow-up" width="18"></iconify-icon>
+          </button>
+        </div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

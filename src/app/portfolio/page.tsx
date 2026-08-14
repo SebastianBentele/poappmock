@@ -42,7 +42,7 @@ export default function Portfolio() {
   const DjVjLegend = () => (
     <div className="flex gap-5 text-[13px] text-muted">
       <span className="flex items-center gap-2">
-        <span className="w-4 h-[2.5px] bg-accent inline-block rounded" /> {t("DJ", "TY")}
+        <span className="w-4 h-[2.5px] bg-[#3D7BE5] inline-block rounded" /> {t("DJ", "TY")}
       </span>
       <span className="flex items-center gap-2">
         <span className="w-4 h-[2px] inline-block rounded border-t-2 border-dashed border-[#b5b5b5]" /> {t("VJ", "LY")}
@@ -51,7 +51,7 @@ export default function Portfolio() {
   );
 
   return (
-    <div className="relative min-h-screen px-8 py-6 pb-32">
+    <div className="relative min-h-screen px-4 md:px-8 py-6 pb-32">
       {/* Filter bar */}
       <div className="flex items-center gap-3 mb-6 flex-wrap">
         <FilterBar />
@@ -107,23 +107,33 @@ export default function Portfolio() {
       {/* Rolling revenue */}
       <div className="group relative bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
         <AskAi metric="rolling-revenue" />
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between flex-wrap gap-4">
           <div>
             <h3 className="text-[16px]">{t("Rollierender Umsatz", "Rolling revenue")}</h3>
             <p className="text-[13px] text-muted mt-0.5">Apr 2026 - Mar 2027</p>
           </div>
-          <div className="text-right">
-            <div className="text-[15px] text-muted">{t("Ist-Wert bis heute", "Actual to date")}</div>
-            <div className="text-[30px] tracking-[-0.5px]">€117.856</div>
+          <div className="flex gap-8 text-right flex-wrap">
+            <div>
+              <div className="text-[13px] tracking-[1px] uppercase text-muted">{t("Ist bis heute", "Actual to date")}</div>
+              <div className="text-[30px] tracking-[-0.5px] mt-0.5">€117.856</div>
+            </div>
+            <div>
+              <div className="text-[13px] tracking-[1px] uppercase text-muted">{t("Verbleibender Forecast", "Remaining forecast")}</div>
+              <div className="text-[30px] tracking-[-0.5px] mt-0.5">€84.210</div>
+            </div>
+            <div>
+              <div className="text-[13px] tracking-[1px] uppercase text-muted">{t("Gesamt", "Total")}</div>
+              <div className="text-[30px] tracking-[-0.5px] mt-0.5">€202.066</div>
+            </div>
           </div>
         </div>
         <RollingRevenueChart />
         <div className="flex gap-7 mt-3 text-[13px] text-muted">
           <span className="flex items-center gap-2">
-            <span className="w-4 h-[2.5px] bg-accent inline-block rounded" /> {t("Dieses Jahr", "This year")}
+            <span className="w-4 h-[2.5px] bg-[#3D7BE5] inline-block rounded" /> {t("Dieses Jahr", "This year")}
           </span>
           <span className="flex items-center gap-2">
-            <span className="w-4 h-[2.5px] inline-block rounded border-t-[2.5px] border-dashed border-accent" /> {t("Forecast", "Forecast")}
+            <span className="w-4 h-[2.5px] inline-block rounded border-t-[2.5px] border-dashed border-[#3D7BE5]" /> {t("Forecast", "Forecast")}
           </span>
           <span className="flex items-center gap-2">
             <span className="w-4 h-[2px] bg-[#9a9a9a] inline-block rounded" /> {t("Letztes Jahr", "Last year")}
@@ -194,7 +204,7 @@ export default function Portfolio() {
                 <div className="text-[26px] tracking-[-0.5px] mt-0.5">8 %</div>
               </div>
             </div>
-            <div className="bg-[#f1f6ee] rounded-[16px] px-5 py-4">
+            <div className="bg-panel rounded-[16px] px-5 py-4">
               <div className="flex items-center gap-2 text-[13px] text-accent-text">
                 <span className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-[11px]">
                   A
@@ -225,10 +235,10 @@ export default function Portfolio() {
             </div>
             <div className="flex gap-4 text-[13px] text-muted">
               <span className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-accent inline-block" /> {t("DJ", "TY")}
+                <span className="w-2.5 h-2.5 rounded-full bg-[#3D7BE5] inline-block" /> {t("DJ", "TY")}
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#b9d9ae] inline-block" /> {t("VJ", "LY")}
+                <span className="w-2.5 h-2.5 rounded-full bg-[#A9C3EF] inline-block" /> {t("VJ", "LY")}
               </span>
             </div>
           </div>
@@ -340,7 +350,7 @@ export default function Portfolio() {
           <div className="flex flex-col gap-3 mt-6">
             <div className="flex items-center gap-3">
               <div className="flex-1 h-[16px] bg-panel rounded-full overflow-hidden">
-                <div className="h-full bg-accent rounded-full" style={{ width: "55.5%" }} />
+                <div className="h-full bg-[#3D7BE5] rounded-full" style={{ width: "55.5%" }} />
               </div>
               <span className="text-[13px] text-muted w-[70px]">{t("DJ", "TY")} 55,5%</span>
             </div>
@@ -358,7 +368,7 @@ export default function Portfolio() {
               <div key={label} className="border border-line rounded-[18px] px-5 py-4">
                 <div className="text-[14px] text-muted">{label}</div>
                 <div className="text-[34px] tracking-[-0.5px] mt-2">{value}</div>
-                <div className="text-[14px] text-accent-text mt-1">{delta}</div>
+                <div className={`text-[14px] mt-1 ${delta.startsWith("-") ? "text-negative" : "text-accent-text"}`}>{delta}</div>
                 <div className="text-[13px] text-muted mt-1">{vj}</div>
               </div>
             ))}
@@ -366,8 +376,53 @@ export default function Portfolio() {
         </div>
       </div>
 
+      {/* Per-unit breakdown */}
+      <div className="group relative bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+        <AskAi metric="unit-breakdown" />
+        <div className="flex items-start justify-between">
+          <h3 className="text-[17px]">{t("Aufschlüsselung nach Einheit", "Breakdown by unit")}</h3>
+          <span className="text-[13px] text-muted">{t("Juli 2026", "July 2026")}</span>
+        </div>
+        <div className="mt-4 overflow-x-auto">
+          <div className="min-w-[640px]">
+            <div className="grid grid-cols-[1.6fr_1fr_1fr_1fr_1fr] gap-2 py-2.5 text-[12px] tracking-[1px] uppercase text-muted border-b border-line">
+              <span>{t("Einheit", "Unit")}</span>
+              <span className="text-right">{t("Umsatz", "Revenue")}</span>
+              <span className="text-right">{t("Auslastung", "Occupancy")}</span>
+              <span className="text-right">{t("Ø Tagesrate", "Avg. rate")}</span>
+              <span className="text-right">{t("ggü. VJ", "vs LY")}</span>
+            </div>
+            {[
+              { name: "Altstadt Apartment", rev: "€15.400", occ: "82 %", adr: "€265", ly: "+12,4%", up: true },
+              { name: "Studio Universität", rev: "€9.800", occ: "71 %", adr: "€182", ly: "−18,2%", up: false, note: t("Blockiert bis vsl. 11.07.", "Blocked until est. Jul 11") },
+              { name: "Garten Apartment", rev: "€12.900", occ: "76 %", adr: "€221", ly: "+9,1%", up: true },
+              { name: "Altbau Suite Eppendorf", rev: "€11.600", occ: "79 %", adr: "€198", ly: "+6,8%", up: true },
+              { name: "Kiez Apartment Prenzlauer Berg", rev: "€10.200", occ: "84 %", adr: "€174", ly: "+4,2%", up: true },
+            ].map(({ name, rev, occ, adr, ly, up, note }) => (
+              <div key={name} className="grid grid-cols-[1.6fr_1fr_1fr_1fr_1fr] gap-2 py-3.5 text-[15px] border-b border-line items-center">
+                <span>
+                  {name}
+                  {note && <span className="block text-[12px] text-negative mt-0.5">{note}</span>}
+                </span>
+                <span className="text-right">{rev}</span>
+                <span className="text-right">{occ}</span>
+                <span className="text-right">{adr}</span>
+                <span className={`text-right ${up ? "text-accent-text" : "text-negative"}`}>{ly}</span>
+              </div>
+            ))}
+            <div className="grid grid-cols-[1.6fr_1fr_1fr_1fr_1fr] gap-2 py-3.5 text-[15px] items-center">
+              <span className="text-muted">{t("Gesamt · 5 Einheiten", "Total · 5 units")}</span>
+              <span className="text-right">€59.900</span>
+              <span className="text-right">{t("Ø 78,4 %", "Avg. 78.4%")}</span>
+              <span className="text-right">{t("Ø €208", "Avg. €208")}</span>
+              <span className="text-right text-accent-text">+5,9%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Floating chat */}
-      <div className="fixed bottom-6 left-[var(--sidebar-w)] right-0 flex justify-center px-8 pointer-events-none transition-[left] duration-200 ease-out">
+      <div className="fixed bottom-6 left-0 lg:left-[var(--sidebar-w)] right-0 flex justify-center px-4 md:px-8 pointer-events-none transition-[left] duration-200 ease-out">
         <ChatInput
           placeholder={t("Frag alles über deinen Umsatz...", "Ask anything about your revenue...")}
           className="w-full max-w-[620px] pointer-events-auto"

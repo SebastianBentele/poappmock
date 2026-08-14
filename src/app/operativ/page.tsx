@@ -374,7 +374,7 @@ export default function Operativ() {
   board[1].tickets[1].seed = blockedSeed;
 
   return (
-    <div className="relative min-h-screen px-8 py-6 pb-32">
+    <div className="relative min-h-screen px-4 md:px-8 py-6 pb-32">
       {/* Filters */}
       <div className="flex items-center gap-3 mb-6 flex-wrap">
         <FilterBar showStepper={false} />
@@ -554,7 +554,7 @@ export default function Operativ() {
               <div key={label} className="flex items-center gap-4">
                 <span className="w-[110px] shrink-0 text-[15px]">{label}</span>
                 <div className="flex-1 h-[6px] bg-panel rounded-full overflow-hidden">
-                  <div className="h-full bg-accent rounded-full" style={{ width }} />
+                  <div className="h-full bg-[#3D7BE5] rounded-full" style={{ width }} />
                 </div>
                 <span className="w-[46px] text-right text-[15px]">{pct}</span>
               </div>
@@ -662,7 +662,7 @@ export default function Operativ() {
       )}
 
       {/* Floating chat */}
-      <div className="fixed bottom-6 left-[var(--sidebar-w)] right-0 flex justify-center px-8 pointer-events-none transition-[left] duration-200 ease-out">
+      <div className="fixed bottom-6 left-0 lg:left-[var(--sidebar-w)] right-0 flex justify-center px-4 md:px-8 pointer-events-none transition-[left] duration-200 ease-out">
         <ChatInput
           placeholder={t("Frag alles über deinen Betrieb...", "Ask anything about your operations...")}
           className="w-full max-w-[620px] pointer-events-auto"

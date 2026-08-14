@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arbio — Executive Portfolio Units</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap');
+  body { 
+    font-family: 'Inter', sans-serif; 
+    letter-spacing: -0.01em; 
+    color: #2a2a2a; 
+    -webkit-font-smoothing: antialiased; 
+  }
+  .hairline-border { border: 0.5px solid #ededed; }
+  .accent-text { color: #2a2a2a; }
+  .accent-bg { background-color: #2a2a2a; }
+  @view-transition { navigation: auto; }
+</style>
+</head>
+<body>
+<div class="flex min-h-screen bg-white overflow-hidden">
+
+  <!-- Sidebar -->
+  <aside class="shrink-0 w-[260px] bg-[#fafafa] border-r border-[#ededed] flex flex-col py-6 px-4">
+    <div class="flex items-center justify-between px-3 mb-10">
+      <img src="https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/bab5c95d-5f5e-4863-8fc6-5b9193839637/external-assets/07fddea7-8615-42e0-9c8f-ca2a47bfdf84-arbio-logo.jpg" alt="Arbio" class="h-[20px] w-auto" style="mix-blend-mode:multiply">
+      <button id="toggle-sidebar" class="text-[#717171] hover:text-[#2a2a2a] transition-colors">
+        <iconify-icon icon="lucide:panel-left" width="18"></iconify-icon>
+      </button>
+    </div>
+    <nav class="flex flex-col gap-1.5">
+      <a id="nav-chat" href="#chat" class="flex items-center gap-3 rounded-xl px-3 py-2 text-[14px] text-[#717171] hover:bg-[#f2f2f2] transition-colors">
+        <iconify-icon icon="lucide:message-circle" width="18"></iconify-icon>
+        <span>Ask Arbio</span>
+      </a>
+      <a id="nav-portfolio" href="#portfolio" class="flex items-center gap-3 rounded-xl px-3 py-2 text-[14px] bg-white border border-[#ededed] shadow-sm text-[#2a2a2a]">
+        <iconify-icon icon="lucide:layout-grid" width="18" class="accent-text"></iconify-icon>
+        <span class="font-normal">Portfolio</span>
+      </a>
+      <a id="nav-revenue" href="#revenue" class="flex items-center gap-3 rounded-xl px-3 py-2 text-[14px] text-[#717171] hover:bg-[#f2f2f2] transition-colors">
+        <iconify-icon icon="lucide:bar-chart-3" width="18"></iconify-icon>
+        <span>Revenue</span>
+      </a>
+      <a id="nav-finance" href="#finance" class="flex items-center gap-3 rounded-xl px-3 py-2 text-[14px] text-[#717171] hover:bg-[#f2f2f2] transition-colors">
+        <iconify-icon icon="lucide:wallet" width="18"></iconify-icon>
+        <span>Finance</span>
+      </a>
+      <a id="nav-operations" href="#operations" class="flex items-center gap-3 rounded-xl px-3 py-2 text-[14px] text-[#717171] hover:bg-[#f2f2f2] transition-colors">
+        <iconify-icon icon="lucide:clipboard-list" width="18"></iconify-icon>
+        <span>Operations</span>
+      </a>
+      <a id="nav-calendar" href="#calendar" class="flex items-center gap-3 rounded-xl px-3 py-2 text-[14px] text-[#717171] hover:bg-[#f2f2f2] transition-colors">
+        <iconify-icon icon="lucide:calendar-days" width="18"></iconify-icon>
+        <span>Calendar</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col min-w-0">
+    
+    <!-- Header -->
+    <header class="h-[72px] border-b border-[#ededed] flex items-center justify-between px-8 bg-white z-10">
+      <h1 class="text-[18px] font-normal tracking-tight">Portfolio Units</h1>
+      <div class="flex items-center gap-4">
+        <div class="flex items-center p-1 bg-[#f7f7f7] rounded-lg">
+          <button class="px-4 py-1.5 text-[13px] bg-white shadow-sm border border-[#ededed] rounded-md flex items-center gap-2">
+            <iconify-icon icon="lucide:map" width="14"></iconify-icon> Map
+          </button>
+          <button class="px-4 py-1.5 text-[13px] text-[#717171] hover:text-[#2a2a2a] flex items-center gap-2">
+            <iconify-icon icon="lucide:layout-grid" width="14"></iconify-icon> Overview
+          </button>
+          <button class="px-4 py-1.5 text-[13px] text-[#717171] hover:text-[#2a2a2a] flex items-center gap-2">
+            <iconify-icon icon="lucide:list" width="14"></iconify-icon> List
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1 overflow-y-auto bg-[#fafafa] pb-32">
+      <!-- Summary Strip -->
+      <section class="px-8 pt-8">
+        <div class="bg-white border border-[#ededed] rounded-2xl p-6 flex items-center justify-between shadow-sm">
+          <div class="flex gap-12">
+            <div>
+              <p class="text-[12px] uppercase tracking-wider text-[#717171] mb-1">Portfolio Health</p>
+              <div class="flex items-center gap-4">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-[#7db86c]"></span>
+                  <span class="text-[18px]">14 Live</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-[#c62828]"></span>
+                  <span class="text-[18px]">2 Blocked</span>
+                </div>
+              </div>
+            </div>
+            <div class="w-px h-10 bg-[#ededed]"></div>
+            <div>
+              <p class="text-[12px] uppercase tracking-wider text-[#717171] mb-1">July Projected Revenue</p>
+              <p class="text-[18px] tracking-tight">€142,500 <span class="text-[#4f9d4f] text-[14px] ml-1">+12%</span></p>
+            </div>
+            <div class="w-px h-10 bg-[#ededed]"></div>
+            <div>
+              <p class="text-[12px] uppercase tracking-wider text-[#717171] mb-1">Portfolio Rating</p>
+              <p class="text-[18px] tracking-tight">4.82 <span class="text-[#717171] text-[14px] ml-1">★</span></p>
+            </div>
+          </div>
+          <button id="cta-report" class="accent-bg text-white px-5 py-2.5 rounded-full text-[14px] hover:opacity-90 transition-opacity">
+            Download Report
+          </button>
+        </div>
+      </section>
+
+      <!-- Map Section -->
+      <section class="p-8">
+        <div class="bg-white border border-[#ededed] rounded-3xl overflow-hidden relative shadow-sm">
+          <div class="relative h-[600px] bg-[#eef1ec]">
+            <!-- stylized city map -->
+            <svg viewBox="0 0 1400 560" class="absolute inset-0 w-full h-full">
+              <rect x="180" y="60" width="300" height="220" rx="26" fill="#e9ece5"/>
+              <rect x="620" y="240" width="330" height="240" rx="26" fill="#e9ece5"/>
+              <rect x="1000" y="80" width="300" height="220" rx="26" fill="#ece9e1"/>
+              <path d="M 860 0 C 810 140, 890 260, 820 400 C 780 480, 820 520, 800 560" stroke="#d7e6ee" stroke-width="46" fill="none" stroke-linecap="round"/>
+              <path d="M 200 200 C 160 120, 300 80, 380 120 C 460 160, 440 280, 350 310 C 260 340, 230 280, 200 200 Z" fill="#dcebd4"/>
+              <ellipse cx="1150" cy="440" rx="140" ry="80" fill="#dcebd4"/>
+              <line x1="0" y1="240" x2="1400" y2="200" stroke="#ffffff" stroke-width="12"/>
+              <line x1="0" y1="420" x2="1400" y2="460" stroke="#ffffff" stroke-width="12"/>
+              <line x1="380" y1="0" x2="420" y2="560" stroke="#ffffff" stroke-width="12"/>
+              <line x1="1040" y1="0" x2="1000" y2="560" stroke="#ffffff" stroke-width="12"/>
+              <text x="240" y="55" fill="#9aa39a" font-size="14" letter-spacing="2" font-weight="400">ALTSTADT</text>
+              <text x="660" y="380" fill="#9aa39a" font-size="14" letter-spacing="2" font-weight="400">UNIVIERTEL</text>
+              <text x="1060" y="130" fill="#9aa39a" font-size="14" letter-spacing="2" font-weight="400">GARTENSTADT</text>
+            </svg>
+
+            <!-- Markers -->
+            <div class="absolute" style="left:300px;top:150px">
+              <button class="group relative flex flex-col items-center">
+                <span class="w-10 h-10 rounded-full bg-white border border-[#ededed] shadow-lg flex items-center justify-center transition-transform group-hover:scale-110">
+                  <iconify-icon icon="lucide:home" width="18"></iconify-icon>
+                  <span class="absolute top-0 right-0 w-3 h-3 rounded-full border-2 border-white bg-[#7db86c]"></span>
+                </span>
+                <span class="mt-2 bg-white/90 backdrop-blur-sm border border-[#ededed] rounded-full px-3 py-1 text-[12px] shadow-sm whitespace-nowrap">Altstadt Apt.</span>
+              </button>
+            </div>
+
+            <div class="absolute" style="left:700px;top:330px">
+              <button class="group relative flex flex-col items-center">
+                <span class="w-12 h-12 rounded-full bg-white border-2 accent-border shadow-2xl flex items-center justify-center transition-transform scale-110">
+                  <iconify-icon icon="lucide:home" width="20" class="accent-text"></iconify-icon>
+                  <span class="absolute top-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-white bg-[#c62828]"></span>
+                </span>
+                <span class="mt-2 bg-[#2a2a2a] text-white rounded-full px-3 py-1 text-[12px] shadow-sm whitespace-nowrap">Studio Universität</span>
+              </button>
+            </div>
+
+            <div class="absolute" style="left:1120px;top:170px">
+              <button class="group relative flex flex-col items-center">
+                <span class="w-10 h-10 rounded-full bg-white border border-[#ededed] shadow-lg flex items-center justify-center transition-transform group-hover:scale-110">
+                  <iconify-icon icon="lucide:home" width="18"></iconify-icon>
+                  <span class="absolute top-0 right-0 w-3 h-3 rounded-full border-2 border-white bg-[#7db86c]"></span>
+                </span>
+                <span class="mt-2 bg-white/90 backdrop-blur-sm border border-[#ededed] rounded-full px-3 py-1 text-[12px] shadow-sm whitespace-nowrap">Garten Apt.</span>
+              </button>
+            </div>
+
+            <!-- Controls -->
+            <div class="absolute right-6 bottom-6 flex flex-col gap-2">
+              <button class="w-10 h-10 rounded-xl bg-white border border-[#ededed] shadow-sm flex items-center justify-center hover:bg-gray-50">
+                <iconify-icon icon="lucide:plus" width="18"></iconify-icon>
+              </button>
+              <button class="w-10 h-10 rounded-xl bg-white border border-[#ededed] shadow-sm flex items-center justify-center hover:bg-gray-50">
+                <iconify-icon icon="lucide:minus" width="18"></iconify-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Floating Input -->
+      <div class="fixed bottom-8 left-[260px] right-[400px] flex justify-center px-8 z-10">
+        <div class="w-full max-w-[600px] bg-white border border-[#ededed] rounded-2xl shadow-xl px-5 py-3 flex items-center gap-4">
+          <span class="w-8 h-8 rounded-full bg-[#16171a] flex items-center justify-center shrink-0"><img src="https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/bab5c95d-5f5e-4863-8fc6-5b9193839637/external-assets/2ecc66af-a839-45e7-afc6-b2cdcd199c3f-arbio-a-white.png" alt="A" class="w-3.5 h-3.5"></span>
+          <input type="text" placeholder="Ask about performance, tickets, or maintenance..." class="flex-1 text-[15px] outline-none placeholder:text-[#9a9a9a]">
+          <button class="w-9 h-9 rounded-lg accent-bg text-white flex items-center justify-center">
+            <iconify-icon icon="lucide:arrow-up-right" width="18"></iconify-icon>
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Right Docked Panel -->
+  <aside class="shrink-0 w-[400px] border-l border-[#ededed] flex flex-col bg-white overflow-y-auto">
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-[16px] font-normal">Unit Details</h2>
+        <button class="text-[#717171] hover:text-[#2a2a2a]"><iconify-icon icon="lucide:x" width="20"></iconify-icon></button>
+      </div>
+
+      <!-- Unit Hero -->
+      <div class="relative h-[180px] rounded-2xl bg-gradient-to-br from-[#d8cfc4] to-[#b8aa9a] overflow-hidden mb-6">
+        <div class="absolute bottom-4 left-4 right-4 flex items-end justify-between">
+          <div class="text-white">
+            <h3 class="text-[18px] font-normal leading-tight">Studio Universität</h3>
+            <p class="text-[13px] opacity-80">Eimsbütteler Chaussee 42, Hamburg</p>
+          </div>
+          <span class="bg-white/20 backdrop-blur-md text-white rounded-full px-3 py-1 text-[12px] border border-white/20">4 Units in Area</span>
+        </div>
+      </div>
+
+      <!-- Recovery Status -->
+      <div class="mb-8">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2 text-[#c62828] text-[14px]">
+            <iconify-icon icon="lucide:alert-circle" width="16"></iconify-icon>
+            <span>Recovery Timeline</span>
+          </div>
+          <span class="text-[13px] text-[#717171]">Est. Live: Jul 11</span>
+        </div>
+        <div class="relative px-2 pt-2">
+          <div class="flex items-center justify-between relative z-10">
+            <div class="flex flex-col items-center gap-2">
+              <div class="w-5 h-5 rounded-full accent-bg border-4 border-white shadow-sm"></div>
+              <span class="text-[11px] text-[#717171]">Issue</span>
+            </div>
+            <div class="flex flex-col items-center gap-2">
+              <div class="w-5 h-5 rounded-full accent-bg border-4 border-white shadow-sm"></div>
+              <span class="text-[11px] text-[#717171]">Fixing</span>
+            </div>
+            <div class="flex flex-col items-center gap-2">
+              <div class="w-5 h-5 rounded-full bg-[#ededed] border-4 border-white shadow-sm"></div>
+              <span class="text-[11px] text-[#717171]">Review</span>
+            </div>
+            <div class="flex flex-col items-center gap-2">
+              <div class="w-5 h-5 rounded-full bg-[#ededed] border-4 border-white shadow-sm"></div>
+              <span class="text-[11px] text-[#717171]">Live</span>
+            </div>
+          </div>
+          <div class="absolute top-[17px] left-5 right-5 h-[2px] bg-[#ededed]"></div>
+          <div class="absolute top-[17px] left-5 w-[33%] h-[2px] accent-bg"></div>
+        </div>
+      </div>
+
+      <!-- KPI Grid -->
+      <div class="grid grid-cols-2 gap-4 mb-8">
+        <div class="hairline-border rounded-xl p-4">
+          <p class="text-[12px] text-[#717171] mb-1">Revenue July</p>
+          <p class="text-[18px]">€9.800</p>
+        </div>
+        <div class="hairline-border rounded-xl p-4">
+          <p class="text-[12px] text-[#717171] mb-1">Occupancy</p>
+          <p class="text-[18px]">71%</p>
+        </div>
+        <div class="hairline-border rounded-xl p-4">
+          <p class="text-[12px] text-[#717171] mb-1">Avg. Daily Rate</p>
+          <p class="text-[18px]">182 €</p>
+        </div>
+        <div class="hairline-border rounded-xl p-4">
+          <p class="text-[12px] text-[#717171] mb-1">Rating</p>
+          <div class="flex items-center gap-1">
+            <p class="text-[18px]">4.72</p>
+            <iconify-icon icon="lucide:star" class="accent-text" width="14"></iconify-icon>
+          </div>
+        </div>
+      </div>
+
+      <!-- Maintenance Tickets -->
+      <div class="mb-8">
+        <div class="flex items-center justify-between mb-4">
+          <h4 class="text-[13px] font-medium uppercase tracking-wider text-[#717171]">Maintenance</h4>
+          <button class="text-[13px] accent-text">View All</button>
+        </div>
+        <div class="space-y-2">
+          <div class="p-3 hairline-border rounded-xl flex items-center justify-between">
+            <div class="flex flex-col">
+              <span class="text-[14px]">Water damage bathroom</span>
+              <span class="text-[12px] text-[#717171]">#1038 · In Progress</span>
+            </div>
+            <iconify-icon icon="lucide:chevron-right" class="text-[#d1d1d1]" width="16"></iconify-icon>
+          </div>
+          <div class="p-3 hairline-border rounded-xl flex items-center justify-between opacity-60">
+            <div class="flex flex-col">
+              <span class="text-[14px]">Extra cleaning check</span>
+              <span class="text-[12px] text-[#717171]">#1039 · Open</span>
+            </div>
+            <iconify-icon icon="lucide:chevron-right" class="text-[#d1d1d1]" width="16"></iconify-icon>
+          </div>
+        </div>
+      </div>
+
+      <!-- Arbio Recommendation -->
+      <div class="bg-[#f9fafb] border border-[#ededed] rounded-2xl p-5">
+        <div class="flex items-center gap-2 accent-text text-[13px] font-medium mb-2">
+          <span class="w-6 h-6 rounded-full bg-[#16171a] flex items-center justify-center shrink-0"><img src="https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/bab5c95d-5f5e-4863-8fc6-5b9193839637/external-assets/2ecc66af-a839-45e7-afc6-b2cdcd199c3f-arbio-a-white.png" alt="A" class="w-3 h-3"></span>
+          <span>Arbio Insight</span>
+        </div>
+        <p class="text-[14px] leading-relaxed text-[#4b5563] mb-3">
+          Guest feedback suggests the toaster needs replacement (requested twice). Replacing it could improve rating by ~0.1.
+        </p>
+        <button class="w-full py-2.5 bg-white border border-[#ededed] rounded-xl text-[13px] hover:bg-gray-50 transition-colors shadow-sm">
+          Approve €35 Purchase
+        </button>
+      </div>
+
+      <!-- Action Area -->
+      <div class="mt-10 pb-6">
+        <button id="cta-action" class="w-full accent-bg text-white py-3.5 rounded-2xl text-[15px] shadow-lg shadow-black/10">
+          View Analytics for this Unit
+        </button>
+      </div>
+    </div>
+  </aside>
+
+</div>
+</body>
+</html>

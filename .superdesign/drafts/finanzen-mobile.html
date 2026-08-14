@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arbio Finance Mobile</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap');
+  body {
+    font-family: 'Plus+Jakarta+Sans', sans-serif;
+    letter-spacing: -0.01em;
+    color: #1a1a1a;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+</style>
+</head>
+<body>
+<div class="flex flex-col min-h-screen bg-[#F8F9FB]">
+
+  <!-- Compact Top Bar -->
+  <header class="shrink-0 pt-14 pb-4 px-5 bg-white border-b border-gray-100 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <span class="text-xl tracking-tight">Finance</span>
+    </div>
+    <div class="flex items-center gap-4">
+      <button id="header-filter-btn" class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-50 text-gray-600">
+        <iconify-icon icon="lucide:sliders-horizontal" width="18"></iconify-icon>
+      </button>
+      <button id="header-menu-btn" class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-50 text-gray-600">
+        <iconify-icon icon="lucide:menu" width="20"></iconify-icon>
+      </button>
+    </div>
+  </header>
+
+  <main class="flex-1 overflow-y-auto px-5 pb-[120px]">
+    <!-- Tabs: Segmented Control -->
+    <div class="mt-6 mb-6">
+      <div class="flex p-1 bg-gray-100 rounded-2xl">
+        <button id="tab-profitability" class="flex-1 py-2.5 text-[14px] font-medium rounded-xl bg-white shadow-sm">Profitability</button>
+        <button id="tab-payouts" class="flex-1 py-2.5 text-[14px] font-medium text-gray-500">Payouts</button>
+        <button id="tab-costs" class="flex-1 py-2.5 text-[14px] font-medium text-gray-500">Costs</button>
+      </div>
+    </div>
+
+    <!-- Quick Filter -->
+    <div class="flex gap-2 mb-6 overflow-x-auto no-scrollbar pb-1">
+      <button id="filter-period" class="shrink-0 px-4 py-2.5 bg-white border border-gray-100 rounded-full flex items-center gap-2 text-[14px] font-medium">
+        <iconify-icon icon="lucide:calendar" width="14"></iconify-icon>
+        This month
+        <iconify-icon icon="lucide:chevron-down" width="12" class="text-gray-400"></iconify-icon>
+      </button>
+      <button id="filter-units" class="shrink-0 px-4 py-2.5 bg-white border border-gray-100 rounded-full flex items-center gap-2 text-[14px] font-medium">
+        <iconify-icon icon="lucide:map-pin" width="14"></iconify-icon>
+        All units
+        <iconify-icon icon="lucide:chevron-down" width="12" class="text-gray-400"></iconify-icon>
+      </button>
+    </div>
+
+    <!-- Profit Hero Card -->
+    <div class="bg-[#EBF2FF] rounded-[32px] p-6 mb-4">
+      <div class="flex justify-between items-start mb-6">
+        <div>
+          <p class="text-[13px] font-medium text-[#717171] uppercase tracking-wider">Operating Profit · July</p>
+          <h2 class="text-[42px] font-medium tracking-tight mt-1">€33,1k</h2>
+          <div class="flex items-center gap-2 mt-1">
+            <span class="text-[14px] text-green-600 font-medium">▲ 7.6%</span>
+            <span class="text-[14px] text-gray-500">vs last year</span>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white rounded-2xl p-3">
+        <svg viewBox="0 0 300 120" class="w-full">
+          <path d="M0,100 C40,95 80,70 120,65 C180,58 220,40 260,35 C280,32 300,20 300,20" fill="none" stroke="#3D7BE5" stroke-width="3" stroke-linecap="round"/>
+          <path d="M0,100 C40,95 80,70 120,65 C180,58 220,40 260,35 C280,32 300,20 300,20 L300,120 L0,120 Z" fill="url(#gradient-blue)" opacity="0.2"/>
+          <defs>
+            <linearGradient id="gradient-blue" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#3D7BE5" />
+              <stop offset="100%" stop-color="#3D7BE5" stop-opacity="0" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+    </div>
+
+    <!-- AI Summary -->
+    <div class="bg-[#16171A] text-white rounded-[32px] p-6 mb-6">
+      <div class="flex items-center gap-2 mb-6">
+        <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+          <img src="https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/bab5c95d-5f5e-4863-8fc6-5b9193839637/external-assets/2ecc66af-a839-45e7-afc6-b2cdcd199c3f-arbio-a-white.png" alt="A" class="w-4 h-4">
+        </div>
+        <span class="text-[15px] font-medium">Arbio Insight</span>
+      </div>
+      <div class="space-y-6">
+        <div>
+          <p class="text-[12px] text-white/40 uppercase tracking-widest mb-2">The Result</p>
+          <p class="text-[15px] leading-relaxed">Your operating margin is a strong 85% — performing excellently.</p>
+        </div>
+        <div>
+          <p class="text-[12px] text-white/40 uppercase tracking-widest mb-2">Context</p>
+          <p class="text-[15px] leading-relaxed">Total costs rose seasonally to €5,628, but revenue grew faster.</p>
+        </div>
+      </div>
+      <a id="cta-ask-ai" href="#" class="mt-8 flex items-center justify-center gap-2 py-4 bg-white/10 rounded-2xl text-[14px] font-medium">
+        <iconify-icon icon="lucide:message-circle" width="18"></iconify-icon>
+        Ask for details
+      </a>
+    </div>
+
+    <!-- Margin Funnel - Vertical Connected Steps -->
+    <div class="bg-white rounded-[32px] border border-gray-100 p-6 mb-6">
+      <h3 class="text-[16px] mb-6">Profit Funnel</h3>
+      <div class="space-y-0">
+        <!-- Step 1 -->
+        <div class="flex gap-4">
+          <div class="flex flex-col items-center">
+            <div class="w-4 h-4 rounded-full bg-gray-200"></div>
+            <div class="w-0.5 flex-1 bg-gray-100 my-2"></div>
+          </div>
+          <div class="flex-1 pb-6">
+            <p class="text-[13px] text-gray-500">Gross Booking Value</p>
+            <p class="text-[20px] font-medium">€41,5k</p>
+          </div>
+        </div>
+        <!-- Deduction -->
+        <div class="flex gap-4">
+          <div class="flex flex-col items-center">
+            <div class="w-0.5 flex-1 bg-gray-100 mb-2"></div>
+          </div>
+          <div class="flex-1 pb-6">
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-red-50 text-red-600 rounded-full text-[12px] font-medium">
+              <iconify-icon icon="lucide:minus" width="10"></iconify-icon>
+              €2,8k taxes
+            </div>
+          </div>
+        </div>
+        <!-- Step 2 -->
+        <div class="flex gap-4">
+          <div class="flex flex-col items-center">
+            <div class="w-4 h-4 rounded-full bg-gray-200"></div>
+            <div class="w-0.5 flex-1 bg-gray-100 my-2"></div>
+          </div>
+          <div class="flex-1 pb-6">
+            <p class="text-[13px] text-gray-500">Net Revenue</p>
+            <p class="text-[20px] font-medium">€38,7k</p>
+          </div>
+        </div>
+        <!-- Deduction -->
+        <div class="flex gap-4">
+          <div class="flex flex-col items-center">
+            <div class="w-0.5 flex-1 bg-gray-100 mb-2"></div>
+          </div>
+          <div class="flex-1 pb-6">
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-red-50 text-red-600 rounded-full text-[12px] font-medium">
+              <iconify-icon icon="lucide:minus" width="10"></iconify-icon>
+              €5,6k costs
+            </div>
+          </div>
+        </div>
+        <!-- Step 3 -->
+        <div class="flex gap-4">
+          <div class="flex flex-col items-center">
+            <div class="w-4 h-4 rounded-full bg-[#2a2a2a]"></div>
+          </div>
+          <div class="flex-1">
+            <p class="text-[13px] text-[#717171] font-medium">Operating Profit</p>
+            <p class="text-[28px]">€33,1k</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cost Structure -->
+    <div class="bg-white rounded-[32px] border border-gray-100 p-6 mb-6">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-[16px]">Cost Structure</h3>
+        <span class="text-[12px] text-gray-400">% of GBV</span>
+      </div>
+      <div class="space-y-6">
+        <div class="group">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-[14px] font-medium">OTA Commission</span>
+            <span class="text-[14px] font-medium">13,0%</span>
+          </div>
+          <div class="w-full h-3 bg-gray-50 rounded-full overflow-hidden">
+            <div class="h-full bg-gray-300 rounded-full" style="width: 72%"></div>
+          </div>
+        </div>
+        <div class="group">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-[14px] font-medium">Cleaning</span>
+            <span class="text-[14px] font-medium">0,5%</span>
+          </div>
+          <div class="w-full h-3 bg-gray-50 rounded-full overflow-hidden">
+            <div class="h-full bg-gray-300 rounded-full" style="width: 8%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- P&L Table (Mobile Stacked) -->
+    <div class="bg-white rounded-[32px] border border-gray-100 p-6 mb-6">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-[16px]">P&L Detail</h3>
+        <button id="export-btn" class="p-2 -mr-2">
+          <iconify-icon icon="lucide:download" width="18" class="text-gray-400"></iconify-icon>
+        </button>
+      </div>
+      <div class="space-y-4">
+        <div class="flex justify-between py-3 border-b border-gray-50">
+          <span class="text-[14px] text-gray-500">Gross Booking Value</span>
+          <div class="text-right">
+            <div class="text-[15px] font-medium">€41.451</div>
+            <div class="text-[12px] text-gray-400">100%</div>
+          </div>
+        </div>
+        <div class="flex justify-between py-3 border-b border-gray-50">
+          <span class="text-[14px] text-gray-500">VAT + Taxes</span>
+          <div class="text-right">
+            <div class="text-[15px] font-medium text-red-500">- €2.786</div>
+            <div class="text-[12px] text-gray-400">6,7%</div>
+          </div>
+        </div>
+        <div class="flex justify-between py-3 border-b border-gray-50">
+          <span class="text-[14px] text-gray-500">OTA Commission</span>
+          <div class="text-right">
+            <div class="text-[15px] font-medium text-red-500">- €5.407</div>
+            <div class="text-[12px] text-gray-400">13,0%</div>
+          </div>
+        </div>
+        <div class="flex justify-between py-3 border-b border-gray-50">
+          <span class="text-[14px] text-gray-500">Cleaning</span>
+          <div class="text-right">
+            <div class="text-[15px] font-medium text-red-500">- €221</div>
+            <div class="text-[12px] text-gray-400">0,5%</div>
+          </div>
+        </div>
+        <div class="flex justify-between py-3 pt-4">
+          <span class="text-[15px]">Operating Profit</span>
+          <div class="text-right">
+            <div class="text-[18px]">€33.111</div>
+            <div class="text-[12px] text-[#3D7BE5] font-medium">80% Margin</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Floating Chat Pill -->
+  <div class="fixed bottom-[34px] left-0 right-0 flex justify-center px-5 pointer-events-none">
+    <div class="w-full max-w-[335px] bg-white border border-gray-100 rounded-full shadow-[0_8px_24px_rgba(0,0,0,0.12)] p-2.5 flex items-center gap-3 pointer-events-auto">
+      <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400">
+        <iconify-icon icon="lucide:message-square-plus" width="20"></iconify-icon>
+      </div>
+      <input type="text" placeholder="Ask Arbio anything..." class="flex-1 text-[14px] outline-none bg-transparent placeholder-gray-400">
+      <button id="chat-submit-btn" class="w-10 h-10 rounded-full bg-[#16171A] flex items-center justify-center text-white">
+        <iconify-icon icon="lucide:arrow-up" width="20"></iconify-icon>
+      </button>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

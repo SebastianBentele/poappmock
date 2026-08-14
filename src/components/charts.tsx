@@ -18,9 +18,9 @@ import {
 } from "recharts";
 import { useLang, type Lang } from "@/components/lang";
 
-const GREEN = "#7db86c";
-const GREEN_LIGHT = "#b9d9ae";
-const GREEN_DARK = "#5f9e50";
+const BLUE = "#3D7BE5";
+const BLUE_LIGHT = "#A9C3EF";
+const BLUE_DARK = "#2F63C2";
 const GRAY = "#9a9a9a";
 const GRAY_DARK = "#bdbdbd";
 
@@ -70,7 +70,7 @@ function ChartTooltip(props: {
             <div key={i} className="flex items-center gap-2.5">
               <span
                 className="w-2 h-2 rounded-full shrink-0"
-                style={{ background: p.color || p.stroke || GREEN }}
+                style={{ background: p.color || p.stroke || BLUE }}
               />
               <span className="text-muted">{names[String(p.dataKey)] ?? p.name}</span>
               <span className="ml-auto pl-6 font-medium">{fmt(p.value as number)}</span>
@@ -156,15 +156,15 @@ export function RollingRevenueChart() {
               />
             }
           />
-          <Area type="monotone" dataKey="dj" fill="url(#greenFade)" stroke="none" />
-          <Line type="monotone" dataKey="dj" stroke={GREEN} strokeWidth={2.5} dot={{ r: 3.5, fill: GREEN }} />
-          <Line type="monotone" dataKey="fc" stroke={GREEN} strokeWidth={2} strokeDasharray="6 6" dot={{ r: 3.5, fill: GREEN }} />
+          <Area type="monotone" dataKey="dj" fill="url(#blueFade)" stroke="none" />
+          <Line type="monotone" dataKey="dj" stroke={BLUE} strokeWidth={2.5} dot={{ r: 3.5, fill: BLUE }} />
+          <Line type="monotone" dataKey="fc" stroke={BLUE} strokeWidth={2} strokeDasharray="6 6" dot={{ r: 3.5, fill: BLUE }} />
           <Line type="monotone" dataKey="lj" stroke={GRAY} strokeWidth={1.5} dot={false} />
           <Line type="monotone" dataKey="vj" stroke={GRAY} strokeWidth={1.5} strokeDasharray="5 5" dot={false} />
           <defs>
-            <linearGradient id="greenFade" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={GREEN} stopOpacity={0.25} />
-              <stop offset="100%" stopColor={GREEN} stopOpacity={0.02} />
+            <linearGradient id="blueFade" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={BLUE} stopOpacity={0.25} />
+              <stop offset="100%" stopColor={BLUE} stopOpacity={0.02} />
             </linearGradient>
           </defs>
         </ComposedChart>
@@ -208,8 +208,8 @@ export function DailyRevenueChart() {
               />
             }
           />
-          <Bar dataKey="dj" fill={GREEN} radius={[2, 2, 0, 0]} activeBar={{ fill: GREEN_DARK }} />
-          <Bar dataKey="vj" fill={GREEN_LIGHT} radius={[2, 2, 0, 0]} activeBar={{ fill: GREEN }} />
+          <Bar dataKey="dj" fill={BLUE} radius={[2, 2, 0, 0]} activeBar={{ fill: BLUE_DARK }} />
+          <Bar dataKey="vj" fill={BLUE_LIGHT} radius={[2, 2, 0, 0]} activeBar={{ fill: BLUE }} />
         </BarChart>
       </ResponsiveContainer>
     </div>
@@ -253,9 +253,9 @@ export function PayoutChart() {
             ticks={[0, 12000, 24000, 36000]}
           />
           <Tooltip cursor={false} content={<ChartTooltip fmt={eur} labelFmt={monthTick(lang)} />} />
-          <Bar dataKey="v" radius={[10, 10, 10, 10]} activeBar={{ fill: GREEN_DARK }}>
+          <Bar dataKey="v" radius={[10, 10, 10, 10]} activeBar={{ fill: BLUE_DARK }}>
             {payouts.map((p) => (
-              <Cell key={p.m} fill={p.current ? GREEN : GREEN_LIGHT} />
+              <Cell key={p.m} fill={p.current ? BLUE : BLUE_LIGHT} />
             ))}
           </Bar>
         </BarChart>
@@ -326,8 +326,8 @@ function DailyKpiChart({
             domain={domain}
             tickFormatter={formatter}
           />
-          <Area type="monotone" dataKey={djKey} fill="url(#greenFadeDaily)" stroke="none" />
-          <Line type="monotone" dataKey={djKey} stroke={GREEN} strokeWidth={2} dot={false} />
+          <Area type="monotone" dataKey={djKey} fill="url(#blueFadeDaily)" stroke="none" />
+          <Line type="monotone" dataKey={djKey} stroke={BLUE} strokeWidth={2} dot={false} />
           <Line
             type="monotone"
             dataKey={vjKey}
@@ -337,9 +337,9 @@ function DailyKpiChart({
             dot={false}
           />
           <defs>
-            <linearGradient id="greenFadeDaily" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={GREEN} stopOpacity={0.18} />
-              <stop offset="100%" stopColor={GREEN} stopOpacity={0.02} />
+            <linearGradient id="blueFadeDaily" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={BLUE} stopOpacity={0.18} />
+              <stop offset="100%" stopColor={BLUE} stopOpacity={0.02} />
             </linearGradient>
           </defs>
         </ComposedChart>
@@ -446,7 +446,7 @@ export function TicketsChart() {
               />
             }
           />
-          <Bar dataKey="gelöst" stackId="t" fill={GREEN_LIGHT} radius={[0, 0, 10, 10]} activeBar={{ fill: GREEN }} />
+          <Bar dataKey="gelöst" stackId="t" fill={BLUE_LIGHT} radius={[0, 0, 10, 10]} activeBar={{ fill: BLUE }} />
           <Bar dataKey="offen" stackId="t" fill="#d3d3d3" radius={[10, 10, 0, 0]} activeBar={{ fill: GRAY_DARK }} />
         </BarChart>
       </ResponsiveContainer>
@@ -493,7 +493,7 @@ export function ProfitChart() {
             domain={[0, 4600]}
           />
           <Tooltip cursor={false} content={<ChartTooltip fmt={eur} labelFmt={monthTick(lang)} />} />
-          <Bar dataKey="v" fill="#b9d9ae" radius={[10, 10, 10, 10]} activeBar={{ fill: GREEN }} />
+          <Bar dataKey="v" fill={BLUE_LIGHT} radius={[10, 10, 10, 10]} activeBar={{ fill: BLUE }} />
         </BarChart>
       </ResponsiveContainer>
     </div>
@@ -529,9 +529,9 @@ export function GrowthChart() {
             ticks={[0, 100000, 200000, 300000]}
           />
           <Tooltip cursor={false} content={<ChartTooltip fmt={eur} />} />
-          <Bar dataKey="v" radius={[10, 10, 10, 10]} activeBar={{ fill: GREEN_DARK }}>
+          <Bar dataKey="v" radius={[10, 10, 10, 10]} activeBar={{ fill: BLUE_DARK }}>
             {growthByYear.map((d) => (
-              <Cell key={d.y} fill={d.pre ? "#d3d3d3" : d.ytd ? GREEN : GREEN_LIGHT} />
+              <Cell key={d.y} fill={d.pre ? "#d3d3d3" : d.ytd ? BLUE : BLUE_LIGHT} />
             ))}
           </Bar>
         </BarChart>
@@ -571,9 +571,9 @@ export function LosChart() {
             ticks={[0, 20, 40]}
           />
           <Tooltip cursor={false} content={<ChartTooltip fmt={pct} />} />
-          <Bar dataKey="share" radius={[10, 10, 10, 10]} activeBar={{ fill: GREEN_DARK }}>
+          <Bar dataKey="share" radius={[10, 10, 10, 10]} activeBar={{ fill: BLUE_DARK }}>
             {losBuckets.map((d) => (
-              <Cell key={d.b} fill={d.share >= 39 ? GREEN : GREEN_LIGHT} />
+              <Cell key={d.b} fill={d.share >= 39 ? BLUE : BLUE_LIGHT} />
             ))}
           </Bar>
         </BarChart>

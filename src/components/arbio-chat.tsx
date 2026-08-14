@@ -503,7 +503,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       {children}
 
       {/* Language toggle + notification bell */}
-      <div className="fixed top-5 right-6 z-40 flex items-center gap-3">
+      <div className="fixed top-2.5 right-4 lg:top-5 lg:right-6 z-40 flex items-center gap-3">
         <LangToggle />
         <div className="relative">
         <button
@@ -519,7 +519,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         </button>
 
         {notifOpen && (
-          <div className="absolute right-0 top-14 w-[400px] bg-white border border-line rounded-[24px] shadow-[0_16px_50px_rgba(0,0,0,0.14)] overflow-hidden">
+          <div className="absolute right-0 top-14 w-[400px] max-w-[calc(100vw-32px)] bg-white border border-line rounded-[24px] shadow-[0_16px_50px_rgba(0,0,0,0.14)] overflow-hidden">
             <div className="px-6 py-4 border-b border-line flex items-center justify-between">
               <span className="text-[15px]">{t("Benachrichtigungen", "Notifications")}</span>
               <span className="text-[13px] text-muted">{t("Klick öffnet den Chat", "Click opens the chat")}</span>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arbio — Portfolio Carousel</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap');
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    letter-spacing: -0.01em;
+    color: #1a1a1a;
+    -webkit-font-smoothing: antialiased;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  @view-transition {
+    navigation: auto;
+  }
+  .snap-x {
+    scroll-snap-type: x mandatory;
+  }
+  .snap-center {
+    scroll-snap-align: center;
+  }
+</style>
+</head>
+<body>
+<div class="flex flex-col h-screen bg-[#ffffff]">
+
+  <!-- Compact Mobile Header -->
+  <header class="shrink-0 pt-14 pb-4 px-5 border-b border-[#f0f0f0] flex items-center justify-between z-50">
+    <img src="https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/bab5c95d-5f5e-4863-8fc6-5b9193839637/external-assets/07fddea7-8615-42e0-9c8f-ca2a47bfdf84-arbio-logo.jpg" alt="Arbio" class="h-[18px] w-auto grayscale">
+    <button id="mobile-menu-btn" class="w-11 h-11 flex items-center justify-center text-[#1a1a1a]">
+      <iconify-icon icon="lucide:menu" width="24"></iconify-icon>
+    </button>
+  </header>
+
+  <main class="flex-1 overflow-y-auto no-scrollbar pb-[140px]">
+    <div class="px-5 pt-6">
+      <!-- Page Title & View Switcher -->
+      <div class="flex flex-col gap-5">
+        <div>
+          <h1 class="text-[22px] tracking-tight font-normal text-[#1a1a1a]">Portfolio</h1>
+          <p class="text-[14px] text-[#717171] mt-0.5">12 active properties</p>
+        </div>
+
+        <!-- Segmented Control -->
+        <div class="flex items-center bg-[#f8f8f8] p-1 rounded-xl w-full">
+          <a id="view-map-mobile" href="#" class="flex-1 py-2 text-[13px] text-[#717171] flex items-center justify-center gap-2">
+            <iconify-icon icon="lucide:map" width="14"></iconify-icon> Map
+          </a>
+          <div class="flex-1 py-2 text-[13px] bg-white text-[#1a1a1a] shadow-sm rounded-lg flex items-center justify-center gap-2 font-medium border border-[#eeeeee]">
+            <iconify-icon icon="lucide:layout-grid" width="14"></iconify-icon> Carousel
+          </div>
+          <a id="view-list-mobile" href="#" class="flex-1 py-2 text-[13px] text-[#717171] flex items-center justify-center gap-2">
+            <iconify-icon icon="lucide:list" width="14"></iconify-icon> List
+          </a>
+        </div>
+      </div>
+
+      <!-- Swipeable Carousel -->
+      <div class="mt-8">
+        <div class="flex overflow-x-auto snap-x no-scrollbar gap-4 px-0">
+          
+          <!-- Active Card -->
+          <div class="shrink-0 w-[85%] snap-center">
+            <div class="bg-white border border-[#e5e5e5] rounded-[24px] overflow-hidden shadow-[0_12px_32px_rgba(0,0,0,0.04)]">
+              <div class="relative h-[220px] bg-gray-200">
+                <img src="https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/bab5c95d-5f5e-4863-8fc6-5b9193839637/external-assets/a32f6b5e-d9fa-4c8e-b06c-ffeb5c2031f3-studio.jpg" class="w-full h-full object-cover" alt="Studio">
+                <div class="absolute top-3 left-3 flex gap-2">
+                  <span class="px-2 py-0.5 bg-white/95 backdrop-blur-sm border border-[#eeeeee] text-[9px] font-medium tracking-wider uppercase rounded-full">Hamburg</span>
+                  <span class="px-2 py-0.5 bg-[#1a1a1a] text-white text-[9px] font-medium tracking-wider uppercase rounded-full">Active</span>
+                </div>
+              </div>
+              <div class="p-5">
+                <div class="flex justify-between items-start">
+                  <h2 class="text-[18px] font-normal tracking-tight">Studio Universität</h2>
+                  <div class="flex items-center gap-1 px-1.5 py-0.5 bg-[#fafafa] border border-[#f0f0f0] rounded-lg">
+                    <iconify-icon icon="lucide:star" class="text-[#1a1a1a]" width="12"></iconify-icon>
+                    <span class="text-[12px] font-medium">4.8</span>
+                  </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-y-4 gap-x-2 mt-5 pt-5 border-t border-[#f0f0f0]">
+                  <div>
+                    <div class="text-[9px] text-[#a0a0a0] uppercase tracking-widest">Est. Revenue</div>
+                    <div class="text-[15px] font-normal mt-0.5 text-[#1a1a1a]">€4,250</div>
+                  </div>
+                  <div>
+                    <div class="text-[9px] text-[#a0a0a0] uppercase tracking-widest">Occupancy</div>
+                    <div class="text-[15px] font-normal mt-0.5 text-[#1a1a1a]">71%</div>
+                  </div>
+                  <div>
+                    <div class="text-[9px] text-[#a0a0a0] uppercase tracking-widest">ADR</div>
+                    <div class="text-[15px] font-normal mt-0.5 text-[#1a1a1a]">€182</div>
+                  </div>
+                  <div>
+                    <div class="text-[9px] text-[#a0a0a0] uppercase tracking-widest">Units</div>
+                    <div class="text-[15px] font-normal mt-0.5 text-[#1a1a1a]">01</div>
+                  </div>
+                </div>
+
+                <a id="mobile-view-details-1" href="#" class="mt-6 w-full h-12 bg-[#1a1a1a] text-white text-[14px] rounded-xl flex items-center justify-center gap-2">
+                  Details <iconify-icon icon="lucide:arrow-right" width="16"></iconify-icon>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Blocked Card -->
+          <div class="shrink-0 w-[85%] snap-center">
+            <div class="bg-white border border-[#f0f0f0] rounded-[24px] overflow-hidden">
+              <div class="relative h-[220px] bg-gray-100 grayscale">
+                <img src="https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/bab5c95d-5f5e-4863-8fc6-5b9193839637/external-assets/f4ac0353-0d43-4ec8-b395-5344bb01995b-garten.jpg" class="w-full h-full object-cover" alt="Garten">
+                <div class="absolute inset-0 bg-white/40 flex items-center justify-center">
+                  <span class="px-3 py-1 bg-white border border-[#eeeeee] text-[10px] tracking-widest uppercase">Blocked</span>
+                </div>
+              </div>
+              <div class="p-5">
+                <div class="text-[9px] tracking-wider uppercase border border-[#e0e0e0] inline-block px-2 py-0.5 rounded-full mb-2 text-[#717171]">Berlin</div>
+                <h2 class="text-[18px] font-normal tracking-tight">Garten Apartment</h2>
+                
+                <div class="mt-4 p-3 bg-[#fafafa] border border-[#f0f0f0] rounded-xl">
+                  <div class="flex items-center gap-2 mb-1">
+                    <iconify-icon icon="lucide:alert-circle" class="text-[#717171]" width="12"></iconify-icon>
+                    <span class="text-[10px] uppercase tracking-wider font-medium text-[#717171]">Maintenance Note</span>
+                  </div>
+                  <p class="text-[12px] text-[#717171] leading-relaxed">Blocked for maintenance. Recovery: June 12, 2024.</p>
+                </div>
+
+                <a id="mobile-view-details-2" href="#" class="mt-6 w-full h-12 bg-[#f8f8f8] text-[#1a1a1a] text-[14px] border border-[#eeeeee] rounded-xl flex items-center justify-center gap-2">
+                  Status Log
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Next Card Peek -->
+          <div class="shrink-0 w-[85%] snap-center">
+             <div class="bg-white border border-[#f0f0f0] rounded-[24px] overflow-hidden opacity-40">
+                <div class="h-[220px] bg-gray-100"></div>
+             </div>
+          </div>
+
+        </div>
+
+        <!-- Progress Dots -->
+        <div class="flex justify-center gap-1.5 mt-6">
+          <div class="w-4 h-1 bg-[#1a1a1a] rounded-full"></div>
+          <div class="w-1 h-1 bg-[#e5e5e5] rounded-full"></div>
+          <div class="w-1 h-1 bg-[#e5e5e5] rounded-full"></div>
+          <div class="w-1 h-1 bg-[#e5e5e5] rounded-full"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Floating Mobile Chat Pill -->
+  <div class="fixed bottom-8 left-0 right-0 flex justify-center px-5 pointer-events-none z-50">
+    <div class="w-full max-w-[400px] h-[56px] bg-[#1a1a1a] rounded-full shadow-[0_12px_40px_rgba(0,0,0,0.2)] px-4 flex items-center gap-3 pointer-events-auto border border-[#333333]">
+      <span class="w-8 h-8 rounded-full bg-[#333333] flex items-center justify-center shrink-0 overflow-hidden">
+        <img src="https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/bab5c95d-5f5e-4863-8fc6-5b9193839637/external-assets/2ecc66af-a839-45e7-afc6-b2cdcd199c3f-arbio-a-white.png" alt="A" class="w-3.5 h-3.5 opacity-80">
+      </span>
+      <div class="flex-1 text-[13px] text-[#a0a0a0] font-normal">
+        Ask Arbio AI...
+      </div>
+      <button id="mobile-send-btn" class="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-white">
+        <iconify-icon icon="lucide:arrow-up" width="18"></iconify-icon>
+      </button>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

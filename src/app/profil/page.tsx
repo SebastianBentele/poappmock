@@ -217,7 +217,7 @@ export default function Profil() {
   const documents = buildDocuments(t);
   const invoices = buildInvoices(t);
   return (
-    <div className="min-h-screen px-8 py-6 pb-32 max-w-[1000px]">
+    <div className="min-h-screen px-4 md:px-8 py-6 pb-32 max-w-[1000px]">
       <div className="flex items-center gap-4">
         <span className="w-14 h-14 rounded-full bg-panel flex items-center justify-center text-[18px] font-medium">
           SE
