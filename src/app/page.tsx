@@ -37,20 +37,20 @@ export default function Home() {
         <span>{t("Aktueller Monat · Juli 2026", "Current month · July 2026")}</span>
       </div>
 
-      <div className="flex gap-4 mt-5 flex-wrap justify-center">
+      <div className="grid grid-cols-2 gap-3 w-full max-w-[420px] md:max-w-none md:w-auto md:flex md:gap-4 mt-5 md:flex-wrap md:justify-center">
         {kpis.map(({ metric, label, value }) => (
           <div
             key={label}
-            className="group relative bg-panel rounded-[24px] px-7 py-5 min-w-[180px]"
+            className="group relative bg-panel rounded-[24px] px-5 md:px-7 py-4 md:py-5 md:min-w-[180px]"
           >
             <AskAi metric={metric} />
-            <div className="text-[15px]">{label}</div>
-            <div className="text-[28px] tracking-[-0.5px] mt-1">{value}</div>
+            <div className="text-[14px] md:text-[15px]">{label}</div>
+            <div className="text-[24px] md:text-[28px] tracking-[-0.5px] mt-1">{value}</div>
           </div>
         ))}
       </div>
 
-      <div className="flex gap-3 mt-24 flex-wrap justify-center">
+      <div className="flex gap-3 mt-12 md:mt-24 flex-wrap justify-center">
         {chips.map(({ metric, label }) => (
           <button
             key={metric}

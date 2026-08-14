@@ -137,7 +137,7 @@ export function PnlTable() {
                   {i === months.length - 1 ? (
                     <span className="text-foreground">
                       {m}{" "}
-                      <span className="bg-[#d3f2a3] text-[#3c5f33] rounded-md px-1.5 py-0.5 text-[10px] tracking-[1px]">
+                      <span className="bg-[#2a2a2a] text-white rounded-full px-2 py-0.5 text-[10px] tracking-[1px]">
                         {t("Jetzt", "Now")}
                       </span>
                     </span>
@@ -154,9 +154,11 @@ export function PnlTable() {
                 <tr key={ri}>
                   <td
                     colSpan={months.length + 1}
-                    className="pt-5 pb-2 text-[12px] tracking-[1.5px] uppercase text-muted border-t border-line"
+                    className="pt-4 pb-0"
                   >
-                    {row.label}
+                    <div className="bg-[#fafafa] rounded-[10px] px-3 py-2 text-[12px] tracking-[1.5px] uppercase text-muted">
+                      {row.label}
+                    </div>
                   </td>
                 </tr>
               ) : (
@@ -182,9 +184,11 @@ export function PnlTable() {
                         v === null
                           ? "text-line"
                           : row.type === "total"
-                            ? row.signed && v.startsWith("–")
-                              ? "text-negative"
-                              : "text-accent-text"
+                            ? row.signed
+                              ? v.startsWith("–")
+                                ? "text-negative"
+                                : "text-accent-text"
+                              : "text-foreground"
                             : row.negative
                               ? "text-negative"
                               : ""

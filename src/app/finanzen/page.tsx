@@ -8,7 +8,6 @@ import {
   FileText,
   Check,
   MessageCircle,
-  ChevronRight,
 } from "lucide-react";
 import { AiCard } from "@/components/ai-card";
 import { ChatInput } from "@/components/chat-input";
@@ -200,9 +199,12 @@ export default function Finanzen() {
               {funnel.map((s, i) => (
                 <div key={s.label} className="flex flex-col xl:flex-row xl:items-center gap-3 xl:flex-1">
                   {i > 0 && (
-                    <div className="flex xl:flex-col items-center justify-center gap-1.5 text-muted shrink-0 xl:px-1">
-                      <ChevronRight size={20} className="rotate-90 xl:rotate-0" />
-                      <span className="text-[12px] whitespace-nowrap">{s.deduction}</span>
+                    <div className="relative flex items-center justify-center shrink-0 h-10 xl:h-auto xl:w-16 self-stretch">
+                      <div className="absolute left-1/2 top-0 bottom-0 w-px bg-line xl:hidden" />
+                      <div className="absolute inset-x-0 top-1/2 h-px bg-line hidden xl:block" />
+                      <span className="relative bg-white border border-line rounded-full px-2.5 py-1 text-[11px] text-muted whitespace-nowrap">
+                        {s.deduction}
+                      </span>
                     </div>
                   )}
                   <div

@@ -310,37 +310,14 @@ function UnitPopup({
   onMore: (u: Unit) => void;
 }) {
   const { t } = useLang();
-  const width = 360;
-  const ref = useRef<HTMLDivElement>(null);
-  const [pos, setPos] = useState<{ left: number; top: number } | null>(null);
   const u = p.unit;
 
-  // Position after render using the popup's real height so it always
-  // stays fully inside the viewport (image header makes height dynamic).
-  useLayoutEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const { width: w, height: h } = el.getBoundingClientRect();
-    setPos({
-      left: Math.max(12, Math.min(p.x + 14, window.innerWidth - w - 16)),
-      top: Math.max(12, Math.min(p.y - 60, window.innerHeight - h - 12)),
-    });
-  }, [p]);
-
+  // Docked panel: bottom sheet on mobile, right-side panel on lg+ —
+  // a stable home for unit details instead of a click-relative popup.
   return (
     <>
-      <div className="fixed inset-0 z-40" onClick={onClose} />
-      <div
-        ref={ref}
-        className="fixed z-50 bg-white border border-line rounded-[22px] shadow-[0_20px_60px_rgba(0,0,0,0.18)] p-6 overflow-y-auto"
-        style={{
-          left: pos?.left ?? p.x,
-          top: pos?.top ?? 12,
-          width,
-          maxHeight: "calc(100vh - 24px)",
-          visibility: pos ? "visible" : "hidden",
-        }}
-      >
+      <div className="fixed inset-0 z-40 bg-black/20" onClick={onClose} />
+      <div className="fixed z-50 bg-white border border-line shadow-[0_20px_60px_rgba(0,0,0,0.18)] p-6 overflow-y-auto inset-x-0 bottom-0 rounded-t-[22px] max-h-[85vh] lg:inset-auto lg:right-6 lg:top-24 lg:bottom-6 lg:w-[380px] lg:rounded-[22px] lg:max-h-none">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={u.image}
@@ -373,8 +350,49 @@ function UnitPopup({
             </button>
           </div>
         </div>
-        {u.blockedNote && (
-          <div className="text-[13px] text-negative mt-2">{u.blockedNote}</div>
+        {u.status === "blocked" && (
+          <div className="mt-3 border border-line rounded-[14px] px-4 py-3.5">
+            <div className="text-[12px] tracking-[1.5px] uppercase text-muted">
+              {t("Wiederherstellung", "Recovery")}
+            </div>
+            <div className="flex items-center mt-3">
+              {[
+                { label: t("Gemeldet", "Reported"), state: "done" },
+                { label: t("In Arbeit", "In progress"), state: "current" },
+                { label: t("Wieder live", "Live again"), meta: t("vsl. 11.07.", "est. Jul 11"), state: "pending" },
+              ].map((s, si) => (
+                <div key={si} className="flex items-center flex-1 last:flex-none">
+                  <div className="flex flex-col items-start">
+                    <span
+                      className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                        s.state === "done"
+                          ? "bg-[#dcebd4] text-[#3c5f33]"
+                          : s.state === "current"
+                            ? "border-2 border-accent text-accent-text"
+                            : "border border-line text-muted"
+                      }`}
+                    >
+                      {s.state === "done" ? (
+                        <CheckCircle2 size={12} />
+                      ) : (
+                        <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                      )}
+                    </span>
+                    <span className={`text-[12px] mt-1.5 whitespace-nowrap ${s.state === "pending" ? "text-muted" : ""}`}>
+                      {s.label}
+                    </span>
+                    {s.meta && <span className="text-[11px] text-muted mt-0.5">{s.meta}</span>}
+                  </div>
+                  {si < 2 && (
+                    <span className={`flex-1 h-[2px] mx-2 -mt-7 ${s.state === "done" ? "bg-[#dcebd4]" : "bg-line"}`} />
+                  )}
+                </div>
+              ))}
+            </div>
+            {u.blockedNote && (
+              <div className="text-[12px] text-muted mt-3">{u.blockedNote}</div>
+            )}
+          </div>
         )}
 
         {/* KPIs */}
@@ -668,7 +686,23 @@ export default function Einheiten() {
 
       {view === "karte" ? (
         /* ---------------- Map view ---------------- */
-        <div className="bg-white border border-line rounded-[24px] p-2 mt-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+        <>
+        {/* Portfolio summary strip */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
+          {[
+            { label: t("Einheiten", "Units"), value: "5", sub: t("4 live · 1 blockiert", "4 live · 1 blocked") },
+            { label: t("Umsatz Juli", "Revenue July"), value: "€59.900", sub: t("+5,9% ggü. VJ", "+5.9% vs LY") },
+            { label: t("Ø Auslastung", "Avg. occupancy"), value: "78,4 %" },
+            { label: t("Ø Bewertung", "Avg. rating"), value: "4,76 ★" },
+          ].map(({ label, value, sub }) => (
+            <div key={label} className="bg-white border border-line rounded-[18px] px-5 py-4">
+              <div className="text-[13px] text-muted">{label}</div>
+              <div className="text-[24px] tracking-[-0.5px] mt-0.5">{value}</div>
+              {sub && <div className="text-[12px] text-muted mt-0.5">{sub}</div>}
+            </div>
+          ))}
+        </div>
+        <div className="bg-white border border-line rounded-[24px] p-2 mt-4 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
           <div
             className="relative h-[560px] rounded-[18px] overflow-hidden cursor-grab active:cursor-grabbing select-none"
             style={{ background: "#eef1ec" }}
@@ -754,6 +788,7 @@ export default function Einheiten() {
             </div>
           </div>
         </div>
+        </>
       ) : view === "uebersicht" ? (
         /* ---------------- Carousel view ---------------- */
         <div className="mt-8">
@@ -840,21 +875,45 @@ export default function Einheiten() {
                     <div className={`mt-2.5 ${isActive ? "text-[21px]" : "text-[18px]"}`}>
                       {u.name}
                     </div>
-                    <div className="mt-3 flex flex-col gap-1">
-                      <div className="text-[15px]">
-                        {u.revenue} <span className="text-muted">{t("Umsatz Juli", "revenue July")}</span>
-                      </div>
-                      <div className="text-[15px]">
-                        {u.adr} <span className="text-muted">ADR</span>
-                      </div>
-                      <div className="text-[15px]">
-                        {u.occ} <span className="text-muted">{t("Auslastung", "occupancy")}</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-[13px] text-muted mt-3">
-                      <Star size={13} className="text-accent-text" />
-                      {u.rating} · {t("Details anzeigen", "Show details")}
-                    </div>
+                    {isActive ? (
+                      <>
+                        <div className="grid grid-cols-2 gap-2.5 mt-3">
+                          {[
+                            { label: t("Umsatz Juli", "Revenue July"), value: u.revenue },
+                            { label: "ADR", value: u.adr },
+                            { label: t("Auslastung", "Occupancy"), value: u.occ },
+                            { label: t("Bewertung", "Rating"), value: u.rating },
+                          ].map(({ label, value }) => (
+                            <div key={label} className="bg-panel rounded-[12px] px-3.5 py-2.5">
+                              <div className="text-[11px] text-muted">{label}</div>
+                              <div className="text-[16px] tracking-[-0.3px] mt-0.5">{value}</div>
+                            </div>
+                          ))}
+                        </div>
+                        <span className="mt-4 w-full flex items-center justify-center gap-2 bg-[#2a2a2a] text-white rounded-full px-5 py-2.5 text-[14px]">
+                          <MessageCircle size={14} />
+                          {t("Mehr Einblicke", "More insights")}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <div className="mt-3 flex flex-col gap-1">
+                          <div className="text-[15px]">
+                            {u.revenue} <span className="text-muted">{t("Umsatz Juli", "revenue July")}</span>
+                          </div>
+                          <div className="text-[15px]">
+                            {u.adr} <span className="text-muted">ADR</span>
+                          </div>
+                          <div className="text-[15px]">
+                            {u.occ} <span className="text-muted">{t("Auslastung", "occupancy")}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1.5 text-[13px] text-muted mt-3">
+                          <Star size={13} className="text-accent-text" />
+                          {u.rating} · {t("Details anzeigen", "Show details")}
+                        </div>
+                      </>
+                    )}
                   </div>
                 </button>
               );
@@ -878,6 +937,23 @@ export default function Einheiten() {
           <h2 className="text-[18px] tracking-[3px] uppercase mb-5">
             {t("Deine Einheiten", "Your units")}
           </h2>
+          {/* Mobile: portfolio totals first — you shouldn't scroll past five units to learn how the portfolio is doing */}
+          <div className="xl:hidden bg-white border border-line rounded-[20px] px-5 py-4 mb-4">
+            <div className="text-[12px] tracking-[1.5px] uppercase text-muted">{t("Portfolio gesamt", "Portfolio total")}</div>
+            <div className="grid grid-cols-2 gap-x-6 gap-y-2.5 mt-3">
+              {[
+                { label: t("Umsatz Juli", "Revenue July"), value: "€59.900" },
+                { label: t("Einheiten", "Units"), value: t("5 · 4 live", "5 · 4 live") },
+                { label: "Ø ADR", value: "€208" },
+                { label: t("Ø Bewertung", "Avg. rating"), value: "4,76 ★" },
+              ].map(({ label, value }) => (
+                <div key={label} className="flex items-baseline justify-between gap-3">
+                  <span className="text-[12px] text-muted">{label}</span>
+                  <span className="text-[15px]">{value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
           <div className="bg-white border border-line rounded-[24px] overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
             {/* column headers (desktop) */}
             <div className="hidden xl:grid grid-cols-[56px_1.6fr_128px_1fr_1fr_1fr_1fr_80px] gap-4 items-center px-5 py-3 text-[12px] tracking-[1px] uppercase text-muted border-b border-line">
@@ -957,8 +1033,8 @@ export default function Einheiten() {
                 </span>
               </button>
             ))}
-            {/* totals row */}
-            <div className="grid grid-cols-[56px_1fr_auto] xl:grid-cols-[56px_1.6fr_128px_1fr_1fr_1fr_1fr_80px] gap-x-4 items-center px-5 py-4 border-t border-line bg-[#fafafa]">
+            {/* totals row (desktop only — mobile shows the summary card on top) */}
+            <div className="hidden xl:grid grid-cols-[56px_1.6fr_128px_1fr_1fr_1fr_1fr_80px] gap-x-4 items-center px-5 py-4 border-t border-line bg-[#fafafa]">
               <span />
               <span className="text-[14px] text-muted">{t("Gesamt · 5 Einheiten", "Total · 5 units")}</span>
               <span className="hidden xl:block" />
