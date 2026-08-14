@@ -60,12 +60,17 @@ export default function Home() {
             {label}
           </button>
         ))}
+        <button
+          onClick={() => openChat(requestIntroSeed(t))}
+          className="border border-line rounded-full px-5 py-2.5 text-[15px] hover:bg-panel"
+        >
+          {t("Ich möchte etwas melden", "I'd like to report something")}
+        </button>
       </div>
 
       <ChatInput
-        placeholder={t("Frag etwas zu deinem Portfolio...", "Ask anything about your portfolio...")}
+        placeholder={t("Frag etwas — oder melde ein Anliegen...", "Ask something — or report an issue...")}
         className="w-full max-w-[1060px] mt-5"
-        onRequest={() => openChat(requestIntroSeed(t))}
       />
     </div>
   );

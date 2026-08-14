@@ -15,8 +15,9 @@ import {
   Image as ImageIcon,
   BadgeEuro,
   Phone,
-  AlertTriangle,
   Sparkles,
+  MessageSquarePlus,
+  ChevronDown,
 } from "lucide-react";
 
 export type Msg =
@@ -26,6 +27,7 @@ export type Msg =
       kind: "draft";
       title: string;
       unit: string;
+      category?: string;
       prio: string;
       status: "pending" | "approved" | "discarded";
     }
@@ -75,13 +77,100 @@ const UNIT_NAMES = [
   "Kiez Apartment Prenzlauer Berg",
 ];
 
+// Message-first inquiry: the owner describes the issue in their own words,
+// the assistant classifies it and answers with ONE editable ticket draft.
+// Free text is stubbed in the demo, so the example chips stand in for it.
+const draftIntro = (t: Tr) =>
+  t(
+    "Verstanden — ich habe daraus ein Ticket vorbereitet. Die Zuordnung habe ich automatisch gesetzt, du kannst sie direkt auf der Karte anpassen:",
+    "Got it — I've prepared a ticket from that. I set the classification automatically, you can adjust it right on the card:"
+  );
+
+const KAM_SLOTS = (t: Tr) => [
+  t("Mi 09.07. · 10:00", "Wed Jul 9 · 10:00"),
+  t("Do 10.07. · 14:30", "Thu Jul 10 · 14:30"),
+  t("Fr 11.07. · 09:00", "Fri Jul 11 · 09:00"),
+];
+
 export const requestIntroSeed = (t: Tr): Msg[] => [
   {
     kind: "bot",
     text: t(
-      "Hi! Wähl unten Melden oder Anfragen — ich führe dich Schritt für Schritt durch. Für komplexe Themen oder Beschwerden buch direkt einen Termin mit deinem KAM, oder beschreib dein Anliegen einfach frei.",
-      "Hi! Pick Report or Request below — I'll guide you step by step. For complex topics or complaints, book a call with your KAM directly, or just describe your request freely."
+      "Was kann ich für dich tun? Beschreib dein Anliegen einfach in einem Satz — ich mache direkt ein Ticket daraus und übernehme die Zuordnung. Zum Beispiel:",
+      "What can I do for you? Just describe your request in one sentence — I'll turn it into a ticket and handle the classification. For example:"
     ),
+  },
+  {
+    kind: "chips",
+    options: [
+      {
+        label: t(
+          "Meine Spülmaschine im Studio Universität macht Geräusche.",
+          "My dishwasher in Studio Universität is making noises."
+        ),
+        answer: [
+          { kind: "bot", text: draftIntro(t) },
+          {
+            kind: "draft",
+            title: t("Spülmaschine macht Geräusche", "Dishwasher making noises"),
+            unit: "Studio Universität",
+            category: t("Reparatur", "Repair"),
+            prio: t("Mittel", "Medium"),
+            status: "pending",
+          },
+        ],
+      },
+      {
+        label: t(
+          "Ich hätte gern neue Fotos für das Garten Apartment.",
+          "I'd like new photos for the Garten Apartment."
+        ),
+        answer: [
+          { kind: "bot", text: draftIntro(t) },
+          {
+            kind: "draft",
+            title: t("Neue Fotos für das Listing", "New photos for the listing"),
+            unit: "Garten Apartment",
+            category: t("Fotos & Listing", "Photos & listing"),
+            prio: t("Niedrig", "Low"),
+            status: "pending",
+          },
+        ],
+      },
+      {
+        label: t(
+          "Im Altstadt Apartment fehlt ein Föhn.",
+          "The Altstadt Apartment is missing a hairdryer."
+        ),
+        answer: [
+          { kind: "bot", text: draftIntro(t) },
+          {
+            kind: "draft",
+            title: t("Föhn ergänzen", "Add hairdryer"),
+            unit: "Altstadt Apartment",
+            category: t("Ausstattung", "Amenities"),
+            prio: t("Niedrig", "Low"),
+            status: "pending",
+          },
+        ],
+      },
+      {
+        label: t(
+          "Ich möchte lieber direkt mit meinem KAM sprechen.",
+          "I'd rather talk to my KAM directly."
+        ),
+        answer: [
+          {
+            kind: "bot",
+            text: t(
+              "Sehr gern — dein persönlicher Key Account Manager ist Jovana. Wähl einen der nächsten freien Termine, dann schicke ich dir die Kalendereinladung.",
+              "Gladly — your personal Key Account Manager is Jovana. Pick one of the next available slots and I'll send you the calendar invite."
+            ),
+          },
+          { kind: "kamcall", slots: KAM_SLOTS(t) },
+        ],
+      },
+    ],
   },
 ];
 
@@ -338,6 +427,115 @@ export function useArbioChat() {
   return useContext(ChatCtx);
 }
 
+// Ticket draft card: the assistant pre-classifies unit + category; both stay
+// editable right on the card so correcting the assistant costs one tap, not a
+// restart of the flow. KAM call is the escape hatch for "rather talk about it".
+function DraftCard({
+  m,
+  onResolve,
+  onKam,
+}: {
+  m: Extract<Msg, { kind: "draft" }>;
+  onResolve: (approved: boolean, unit: string, category: string) => void;
+  onKam: () => void;
+}) {
+  const { t } = useLang();
+  const categories = [
+    t("Reparatur", "Repair"),
+    t("Reinigung", "Cleaning"),
+    t("Ausstattung", "Amenities"),
+    t("Fotos & Listing", "Photos & listing"),
+    t("Meldung", "Report"),
+  ];
+  const [unit, setUnit] = useState(m.unit);
+  const [category, setCategory] = useState(m.category ?? categories[0]);
+  const categoryOptions = categories.includes(category) ? categories : [category, ...categories];
+
+  const selectWrap = "relative inline-flex items-center";
+  const select =
+    "appearance-none bg-white border border-line rounded-full pl-3.5 pr-8 py-1.5 text-[13px] outline-none hover:bg-panel cursor-pointer";
+
+  return (
+    <div
+      className={`self-start w-full max-w-[440px] bg-white border border-line rounded-[18px] px-5 py-4 shadow-[0_1px_4px_rgba(0,0,0,0.03)] ${
+        m.status === "discarded" ? "opacity-50" : ""
+      }`}
+    >
+      <div className="flex items-center gap-2 text-[13px] text-muted">
+        <Ticket size={13} />
+        {t("Ticket-Entwurf", "Ticket draft")}
+      </div>
+      <div className="text-[15px] mt-2">{m.title}</div>
+
+      {m.status === "pending" ? (
+        <>
+          <div className="flex flex-col gap-2 mt-3">
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-[13px] text-muted">{t("Einheit", "Unit")}</span>
+              <span className={selectWrap}>
+                <select value={unit} onChange={(e) => setUnit(e.target.value)} className={select}>
+                  {UNIT_NAMES.map((u) => (
+                    <option key={u} value={u}>{u}</option>
+                  ))}
+                </select>
+                <ChevronDown size={13} className="absolute right-3 pointer-events-none text-muted" />
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-[13px] text-muted">{t("Kategorie", "Category")}</span>
+              <span className={selectWrap}>
+                <select value={category} onChange={(e) => setCategory(e.target.value)} className={select}>
+                  {categoryOptions.map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+                <ChevronDown size={13} className="absolute right-3 pointer-events-none text-muted" />
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-[13px] text-muted">{t("Priorität", "Priority")}</span>
+              <span className="text-[13px] pr-1">{m.prio}</span>
+            </div>
+          </div>
+          <div className="flex gap-2.5 mt-4">
+            <button
+              onClick={() => onResolve(true, unit, category)}
+              className="flex-1 bg-[#2a2a2a] text-white rounded-full px-4 py-2.5 text-[14px] hover:bg-black"
+            >
+              {t("Ticket erstellen", "Create ticket")}
+            </button>
+            <button
+              onClick={() => onResolve(false, unit, category)}
+              className="flex-1 border border-line rounded-full px-4 py-2.5 text-[14px] text-muted hover:bg-panel"
+            >
+              {t("Verwerfen", "Discard")}
+            </button>
+          </div>
+          <p className="text-[12px] text-muted mt-3">
+            {t("Zuordnung automatisch gesetzt — du kannst sie oben anpassen.", "Classification set automatically — adjust it above if needed.")}
+          </p>
+          <button
+            onClick={onKam}
+            className="text-[13px] text-muted underline underline-offset-4 mt-1.5 hover:text-foreground"
+          >
+            {t("Lieber direkt besprechen? Termin mit Jovana buchen", "Rather discuss it directly? Book a call with Jovana")}
+          </button>
+        </>
+      ) : (
+        <>
+          <div className="text-[13px] text-muted mt-1">
+            {m.unit}
+            {m.category ? ` · ${m.category}` : ""} · {t("Priorität", "Priority")}: {m.prio}
+          </div>
+          <div className="text-[13px] text-muted mt-3">
+            {m.status === "approved" ? t("Bestätigt", "Confirmed") : t("Verworfen", "Discarded")}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 export function ChatProvider({ children }: { children: ReactNode }) {
   const { t } = useLang();
   const [open, setOpen] = useState(false);
@@ -367,51 +565,10 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     setInput("");
   };
 
-  // Guided flows: type → unit → ticket draft to confirm
-  const startGuided = (mode: "melden" | "anfragen") => {
-    const types =
-      mode === "melden"
-        ? [t("Schaden", "Damage"), t("Sicherheitsvorfall", "Security incident"), t("Sonstiger Vorfall", "Other incident")]
-        : [t("Reparatur", "Repair"), t("Reinigung", "Cleaning"), t("Ausstattung ändern", "Change amenities")];
-    const draftTitle = (typ: string) =>
-      mode === "melden"
-        ? t(`${typ} melden`, `Report ${typ.toLowerCase()}`)
-        : typ === t("Ausstattung ändern", "Change amenities")
-          ? typ
-          : t(`${typ} anfragen`, `Request ${typ.toLowerCase()}`);
-    setMessages((m) => [
-      ...m,
-      { kind: "user", text: mode === "melden" ? t("Ich möchte etwas melden.", "I'd like to report something.") : t("Ich möchte etwas anfragen.", "I'd like to make a request.") },
-      {
-        kind: "bot",
-        text:
-          mode === "melden"
-            ? t("Alles klar — was möchtest du melden?", "Got it — what would you like to report?")
-            : t("Gerne — was brauchst du?", "Sure — what do you need?"),
-      },
-      {
-        kind: "chips",
-        options: types.map((typ) => ({
-          label: typ,
-          answer: [
-            { kind: "bot", text: t(`${typ} — für welche Einheit?`, `${typ} — for which unit?`) },
-            {
-              kind: "chips",
-              options: UNIT_NAMES.map((u) => ({
-                label: u,
-                answer: [
-                  {
-                    kind: "bot",
-                    text: t("Danke! Ich habe alles vorbereitet — bitte bestätige kurz:", "Thanks! I've prepared everything — please confirm:"),
-                  },
-                  { kind: "draft", title: draftTitle(typ), unit: u, prio: t("Mittel", "Medium"), status: "pending" },
-                ],
-              })),
-            },
-          ],
-        })),
-      },
-    ]);
+  // Message-first inquiry: appends the intro + example chips; the ticket
+  // draft card does the classification (editable there), not a chip wizard.
+  const startInquiry = () => {
+    setMessages((m) => [...m, ...requestIntroSeed(t)]);
   };
 
   const bookKamCall = () => {
@@ -472,11 +629,16 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     setMessages((m) => [...m, { kind: "user", text: option.label }, ...option.answer]);
   };
 
-  const resolveDraft = (idx: number, approved: boolean) => {
+  const resolveDraft = (idx: number, approved: boolean, unit?: string, category?: string) => {
     setMessages((m) => {
       const next = m.map((msg, i) =>
         i === idx && msg.kind === "draft"
-          ? { ...msg, status: approved ? ("approved" as const) : ("discarded" as const) }
+          ? {
+              ...msg,
+              unit: unit ?? msg.unit,
+              category: category ?? msg.category,
+              status: approved ? ("approved" as const) : ("discarded" as const),
+            }
           : msg
       );
       const draft = m[idx];
@@ -656,41 +818,12 @@ export function ChatProvider({ children }: { children: ReactNode }) {
                   );
                 if (m.kind === "draft")
                   return (
-                    <div
+                    <DraftCard
                       key={i}
-                      className={`self-start w-full max-w-[440px] bg-white border border-line rounded-[18px] px-5 py-4 shadow-[0_1px_4px_rgba(0,0,0,0.03)] ${
-                        m.status === "discarded" ? "opacity-50" : ""
-                      }`}
-                    >
-                      <div className="flex items-center gap-2 text-[13px] text-muted">
-                        <Ticket size={13} />
-                        {t("Ticket-Entwurf", "Ticket draft")}
-                      </div>
-                      <div className="text-[15px] mt-2">{m.title}</div>
-                      <div className="text-[13px] text-muted mt-1">
-                        {m.unit} · {t("Priorität", "Priority")}: {m.prio}
-                      </div>
-                      {m.status === "pending" ? (
-                        <div className="flex gap-2.5 mt-4">
-                          <button
-                            onClick={() => resolveDraft(i, true)}
-                            className="flex-1 bg-[#2a2a2a] text-white rounded-full px-4 py-2.5 text-[14px] hover:bg-black"
-                          >
-                            {t("Ticket bestätigen", "Confirm ticket")}
-                          </button>
-                          <button
-                            onClick={() => resolveDraft(i, false)}
-                            className="flex-1 border border-line rounded-full px-4 py-2.5 text-[14px] text-muted hover:bg-panel"
-                          >
-                            {t("Verwerfen", "Discard")}
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="text-[13px] text-muted mt-3">
-                          {m.status === "approved" ? t("Bestätigt", "Confirmed") : t("Verworfen", "Discarded")}
-                        </div>
-                      )}
-                    </div>
+                      m={m}
+                      onResolve={(approved, unit, category) => resolveDraft(i, approved, unit, category)}
+                      onKam={bookKamCall}
+                    />
                   );
                 if (m.kind === "approval")
                   return (
@@ -960,25 +1093,11 @@ export function ChatProvider({ children }: { children: ReactNode }) {
               {!hasPending && (
                 <div className="flex gap-2.5 flex-wrap justify-center pt-3">
                   <button
-                    onClick={() => startGuided("melden")}
+                    onClick={startInquiry}
                     className="flex items-center gap-2 border border-line rounded-full px-5 py-2.5 text-[14px] hover:bg-panel"
                   >
-                    <AlertTriangle size={14} className="text-muted" />
-                    {t("Melden", "Report")}
-                  </button>
-                  <button
-                    onClick={() => startGuided("anfragen")}
-                    className="flex items-center gap-2 border border-line rounded-full px-5 py-2.5 text-[14px] hover:bg-panel"
-                  >
-                    <Wrench size={14} className="text-muted" />
-                    {t("Anfragen", "Request")}
-                  </button>
-                  <button
-                    onClick={bookKamCall}
-                    className="flex items-center gap-2 border border-line rounded-full px-5 py-2.5 text-[14px] hover:bg-panel"
-                  >
-                    <Phone size={14} className="text-muted" />
-                    {t("KAM-Termin buchen", "Book KAM call")}
+                    <MessageSquarePlus size={14} className="text-muted" />
+                    {t("Neues Anliegen", "New request")}
                   </button>
                 </div>
               )}
