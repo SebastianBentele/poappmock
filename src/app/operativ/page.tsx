@@ -292,7 +292,7 @@ const buildBoard = (t: Tr): Column[] => [
   },
   {
     key: "done",
-    label: t("Diese Woche gelöst", "Resolved this week"),
+    label: t("Erledigt · diese Woche", "Done · this week"),
     tickets: [
       {
         id: "#1042",

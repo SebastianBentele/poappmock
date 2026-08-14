@@ -354,6 +354,7 @@ export default function Kalender() {
               const day = i + 1;
               const weekday = (day + 2) % 7; // 0=Mo ... 5=Sa 6=So
               const weekend = weekday >= 5;
+              const today = day === 8; // demo "today": Jul 8, 2026
               return (
                 <div
                   key={day}
@@ -361,7 +362,16 @@ export default function Kalender() {
                     weekend ? "text-foreground" : "text-muted"
                   }`}
                 >
-                  {day}
+                  {today ? (
+                    <span
+                      title={t("Heute", "Today")}
+                      className="inline-flex w-6 h-6 rounded-full bg-[#2a2a2a] text-white items-center justify-center"
+                    >
+                      {day}
+                    </span>
+                  ) : (
+                    day
+                  )}
                 </div>
               );
             })}
