@@ -28,7 +28,6 @@ export type Msg =
       title: string;
       unit: string;
       category?: string;
-      prio: string;
       status: "pending" | "approved" | "discarded";
     }
   | { kind: "confirmed"; title: string; number: string }
@@ -115,7 +114,6 @@ export const requestIntroSeed = (t: Tr): Msg[] => [
             title: t("Spülmaschine macht Geräusche", "Dishwasher making noises"),
             unit: "Studio Universität",
             category: t("Reparatur", "Repair"),
-            prio: t("Mittel", "Medium"),
             status: "pending",
           },
         ],
@@ -132,7 +130,6 @@ export const requestIntroSeed = (t: Tr): Msg[] => [
             title: t("Neue Fotos für das Listing", "New photos for the listing"),
             unit: "Garten Apartment",
             category: t("Fotos & Listing", "Photos & listing"),
-            prio: t("Niedrig", "Low"),
             status: "pending",
           },
         ],
@@ -149,7 +146,6 @@ export const requestIntroSeed = (t: Tr): Msg[] => [
             title: t("Föhn ergänzen", "Add hairdryer"),
             unit: "Altstadt Apartment",
             category: t("Ausstattung", "Amenities"),
-            prio: t("Niedrig", "Low"),
             status: "pending",
           },
         ],
@@ -492,10 +488,6 @@ function DraftCard({
                 <ChevronDown size={13} className="absolute right-3 pointer-events-none text-muted" />
               </span>
             </div>
-            <div className="flex items-center justify-between gap-3">
-              <span className="text-[13px] text-muted">{t("Priorität", "Priority")}</span>
-              <span className="text-[13px] pr-1">{m.prio}</span>
-            </div>
           </div>
           <div className="flex gap-2.5 mt-4">
             <button
@@ -525,7 +517,7 @@ function DraftCard({
         <>
           <div className="text-[13px] text-muted mt-1">
             {m.unit}
-            {m.category ? ` · ${m.category}` : ""} · {t("Priorität", "Priority")}: {m.prio}
+            {m.category ? ` · ${m.category}` : ""}
           </div>
           <div className="text-[13px] text-muted mt-3">
             {m.status === "approved" ? t("Bestätigt", "Confirmed") : t("Verworfen", "Discarded")}
