@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, ReactNode } from "react";
+import Link from "next/link";
 import { useLang, LangToggle } from "@/components/lang";
 import {
   X,
@@ -30,11 +31,20 @@ export type Msg =
       category?: string;
       status: "pending" | "approved" | "discarded";
     }
-  | { kind: "confirmed"; title: string; number: string }
+  | {
+      kind: "confirmed";
+      title: string;
+      number: string;
+      unit?: string;
+      category?: string;
+      steps?: TimelineStep[];
+      note?: string;
+    }
   | {
       kind: "timeline";
       title: string;
-      steps: { label: string; meta?: string; state: "done" | "current" | "pending" }[];
+      steps: TimelineStep[];
+      note?: string;
     }
   | {
       kind: "approval";
@@ -65,6 +75,8 @@ export type Msg =
       bars: { label: string; value: string; pct: number }[];
     }
   | { kind: "chips"; options: { label: string; answer: Msg[] }[] };
+
+export type TimelineStep = { label: string; meta?: string; state: "done" | "current" | "pending" };
 
 export type Tr = (de: string, en: string) => string;
 
@@ -423,6 +435,66 @@ export function useArbioChat() {
   return useContext(ChatCtx);
 }
 
+// Shared vertical step timeline for ticket status (chat cards).
+function TimelineSteps({ steps }: { steps: TimelineStep[] }) {
+  return (
+    <div className="flex flex-col">
+      {steps.map((s, si) => (
+        <div key={si} className="flex gap-3">
+          <div className="flex flex-col items-center">
+            <span
+              className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${
+                s.state === "done"
+                  ? "bg-[#dcebd4] text-[#3c5f33]"
+                  : s.state === "current"
+                    ? "border-2 border-accent text-accent-text"
+                    : "border border-line text-muted"
+              }`}
+            >
+              {s.state === "done" ? (
+                <Check size={13} />
+              ) : (
+                <span className="w-1.5 h-1.5 rounded-full bg-current" />
+              )}
+            </span>
+            {si < steps.length - 1 && (
+              <span className={`w-[2px] h-4 ${s.state === "done" ? "bg-[#dcebd4]" : "bg-line"}`} />
+            )}
+          </div>
+          <div className="pb-2">
+            <span className={`text-[14px] ${s.state === "pending" ? "text-muted" : ""}`}>
+              {s.label}
+            </span>
+            {s.meta && <span className="text-[13px] text-muted"> · {s.meta}</span>}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Actions under a status card: the card is an entry point, not a dead end.
+function StatusActions({ onUpdate, onClose }: { onUpdate: () => void; onClose: () => void }) {
+  const { t } = useLang();
+  return (
+    <div className="flex items-center gap-3 mt-3 pt-3 border-t border-line">
+      <button
+        onClick={onUpdate}
+        className="border border-line rounded-full px-4 py-2 text-[13px] hover:bg-panel"
+      >
+        {t("Update anfragen", "Request update")}
+      </button>
+      <Link
+        href="/operativ"
+        onClick={onClose}
+        className="text-[13px] text-muted underline underline-offset-4 hover:text-foreground"
+      >
+        {t("Details unter Operations", "Details under Operations")}
+      </Link>
+    </div>
+  );
+}
+
 // Ticket draft card: the assistant pre-classifies unit + category; both stay
 // editable right on the card so correcting the assistant costs one tap, not a
 // restart of the flow. KAM call is the escape hatch for "rather talk about it".
@@ -563,6 +635,21 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     setMessages((m) => [...m, ...requestIntroSeed(t)]);
   };
 
+  // "Request update" on a status card: acknowledge and promise a follow-up.
+  const requestUpdate = (title: string) => {
+    setMessages((m) => [
+      ...m,
+      { kind: "user", text: t(`Kannst du mir ein Update zu „${title}" geben?`, `Can you give me an update on "${title}"?`) },
+      {
+        kind: "bot",
+        text: t(
+          "Klar — ich habe das Team um ein kurzes Update gebeten. Du bekommst bis heute Abend eine Rückmeldung hier im Chat und als Benachrichtigung.",
+          "Sure — I've asked the team for a quick update. You'll get a reply here in the chat and as a notification by this evening."
+        ),
+      },
+    ]);
+  };
+
   const bookKamCall = () => {
     setMessages((m) => [
       ...m,
@@ -635,7 +722,22 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       );
       const draft = m[idx];
       if (approved && draft.kind === "draft") {
-        next.push({ kind: "confirmed", title: draft.title, number: "#1044" });
+        next.push({
+          kind: "confirmed",
+          title: draft.title,
+          number: "#1044",
+          unit: unit ?? draft.unit,
+          category: category ?? draft.category,
+          steps: [
+            { label: t("Erstellt", "Created"), meta: t("heute", "today"), state: "done" },
+            { label: t("Zuordnung & Termin", "Assignment & scheduling"), meta: t("vsl. bis Fr., 11.07.", "est. by Fri, Jul 11"), state: "current" },
+            { label: t("Erledigt", "Done"), state: "pending" },
+          ],
+          note: t(
+            "Wir melden uns bis Freitag mit dem Termin — du musst nichts weiter tun.",
+            "We'll get back to you with the appointment by Friday — nothing else to do on your side."
+          ),
+        });
       } else {
         next.push({
           kind: "bot",
@@ -764,48 +866,14 @@ export function ChatProvider({ children }: { children: ReactNode }) {
                       className="shrink-0 self-start w-full max-w-[440px] bg-white border border-line rounded-[18px] px-5 py-4 shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
                     >
                       <div className="text-[14px] mb-3">{m.title}</div>
-                      <div className="flex flex-col">
-                        {m.steps.map((s, si) => (
-                          <div key={si} className="flex gap-3">
-                            <div className="flex flex-col items-center">
-                              <span
-                                className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${
-                                  s.state === "done"
-                                    ? "bg-[#dcebd4] text-[#3c5f33]"
-                                    : s.state === "current"
-                                      ? "border-2 border-accent text-accent-text"
-                                      : "border border-line text-muted"
-                                }`}
-                              >
-                                {s.state === "done" ? (
-                                  <Check size={13} />
-                                ) : (
-                                  <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                                )}
-                              </span>
-                              {si < m.steps.length - 1 && (
-                                <span
-                                  className={`w-[2px] h-4 ${
-                                    s.state === "done" ? "bg-[#dcebd4]" : "bg-line"
-                                  }`}
-                                />
-                              )}
-                            </div>
-                            <div className="pb-2">
-                              <span
-                                className={`text-[14px] ${
-                                  s.state === "pending" ? "text-muted" : ""
-                                }`}
-                              >
-                                {s.label}
-                              </span>
-                              {s.meta && (
-                                <span className="text-[13px] text-muted"> · {s.meta}</span>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
+                      <TimelineSteps steps={m.steps} />
+                      {m.note && (
+                        <p className="text-[13px] text-muted leading-snug mt-2">{m.note}</p>
+                      )}
+                      <StatusActions
+                        onUpdate={() => requestUpdate(m.title)}
+                        onClose={() => setOpen(false)}
+                      />
                     </div>
                   );
                 if (m.kind === "draft")
@@ -1047,15 +1115,31 @@ export function ChatProvider({ children }: { children: ReactNode }) {
                   return (
                     <div
                       key={i}
-                      className="shrink-0 self-start w-full max-w-[440px] bg-white border border-line rounded-[18px] px-5 py-4 shadow-[0_1px_4px_rgba(0,0,0,0.03)] flex items-center gap-3"
+                      className="shrink-0 self-start w-full max-w-[440px] bg-white border border-line rounded-[18px] px-5 py-4 shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
                     >
-                      <CheckCircle2 size={18} className="text-accent-text shrink-0" />
-                      <div className="flex-1">
-                        <div className="text-[15px]">{t(`Ticket ${m.number} erstellt`, `Ticket ${m.number} created`)}</div>
-                        <div className="text-[13px] text-muted mt-0.5">
-                          {m.title} · {t("Status jederzeit unter Operations", "Status anytime under Operations")}
+                      <div className="flex items-center gap-2.5">
+                        <CheckCircle2 size={18} className="text-accent-text shrink-0" />
+                        <div className="flex-1">
+                          <div className="text-[15px]">{t(`Ticket ${m.number} erstellt`, `Ticket ${m.number} created`)}</div>
+                          <div className="text-[13px] text-muted mt-0.5">
+                            {m.title}
+                            {m.unit ? ` · ${m.unit}` : ""}
+                            {m.category ? ` · ${m.category}` : ""}
+                          </div>
                         </div>
                       </div>
+                      {m.steps && (
+                        <div className="mt-3.5">
+                          <TimelineSteps steps={m.steps} />
+                        </div>
+                      )}
+                      {m.note && (
+                        <p className="text-[13px] text-muted leading-snug mt-2">{m.note}</p>
+                      )}
+                      <StatusActions
+                        onUpdate={() => requestUpdate(`${m.title} (${m.number})`)}
+                        onClose={() => setOpen(false)}
+                      />
                     </div>
                   );
                 return null;

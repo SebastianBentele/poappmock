@@ -21,7 +21,7 @@ import { ChatInput } from "@/components/chat-input";
 import { useArbioChat, type Msg, type Tr } from "@/components/arbio-chat";
 import { useLang } from "@/components/lang";
 
-type TicketStatus = "Offen" | "Geplant" | "In Arbeit";
+type TicketStatus = "Offen" | "In Arbeit" | "Erledigt";
 
 type Unit = {
   key: string;
@@ -41,7 +41,7 @@ type Unit = {
 };
 
 const statusLabel = (s: TicketStatus, t: Tr) =>
-  s === "Offen" ? t("Offen", "Open") : s === "Geplant" ? t("Geplant", "Planned") : t("In Arbeit", "In progress");
+  s === "Offen" ? t("Offen", "Open") : s === "Erledigt" ? t("Erledigt", "Done") : t("In Arbeit", "In progress");
 
 const buildUnits = (t: Tr): Unit[] => [
   {
@@ -69,7 +69,7 @@ const buildUnits = (t: Tr): Unit[] => [
     ],
     tickets: [
       { id: "#1043", title: t("Spülmaschine macht Geräusche", "Dishwasher making noise"), status: "Offen" },
-      { id: "#1046", title: t("Therme-Wartung 13.–14.07.", "Boiler service Jul 13–14"), status: "Geplant" },
+      { id: "#1046", title: t("Therme-Wartung 13.–14.07.", "Boiler service Jul 13–14"), status: "In Arbeit" },
     ],
   },
   {
@@ -222,20 +222,17 @@ function insightSeed(u: Unit, t: Tr): Msg[] {
           kind: "timeline",
           title: `Ticket ${ticket.id} · ${ticket.title}`,
           steps: [
-            { label: t("Gemeldet", "Reported"), state: "done" },
+            { label: t("Gemeldet", "Reported"), meta: "05.07.", state: "done" },
             {
-              label: ticket.status === "Geplant" ? t("Termin geplant", "Appointment planned") : t("In Bearbeitung", "In progress"),
-              meta: statusLabel(ticket.status, t),
+              label: t("In Arbeit", "In progress"),
+              meta: t("vsl. bis Fr., 11.07.", "est. by Fri, Jul 11"),
               state: "current",
             },
-            { label: t("Erledigt", "Done"), state: "pending" },
+            { label: t("Erledigt", "Done"), meta: t("vsl. 11.07.", "est. Jul 11"), state: "pending" },
           ],
-        },
-        {
-          kind: "bot",
-          text: t(
-            "Das Team kümmert sich — du musst nichts tun. Alle Details und weitere Tickets findest du unter Operations.",
-            "The team is on it — you don't need to do anything. All details and further tickets are under Operations."
+          note: t(
+            "Das Team kümmert sich — du musst nichts tun.",
+            "The team is on it — you don't need to do anything."
           ),
         },
       ],
