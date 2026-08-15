@@ -128,7 +128,7 @@ export function PnlTable() {
         <table className="w-full min-w-[900px] border-separate [border-spacing:0]">
           <thead>
             <tr>
-              <th className="w-[230px] sticky left-0 z-10 bg-white" />
+              <th className="w-[230px] sticky left-0 z-10 bg-white border-r border-line shadow-[6px_0_8px_-6px_rgba(0,0,0,0.10)]" />
               {months.map((m, i) => (
                 <th
                   key={m}
@@ -152,7 +152,7 @@ export function PnlTable() {
             {rows.map((row, ri) =>
               row.type === "section" ? (
                 <tr key={ri}>
-                  <td className="pt-4 pb-0 sticky left-0 z-10 bg-white">
+                  <td className="pt-4 pb-0 sticky left-0 z-10 bg-white border-r border-line shadow-[6px_0_8px_-6px_rgba(0,0,0,0.10)]">
                     <div className="bg-[#fafafa] rounded-l-[10px] px-3 py-2 text-[12px] tracking-[1.5px] uppercase text-muted whitespace-nowrap">
                       {row.label}
                     </div>
@@ -169,7 +169,7 @@ export function PnlTable() {
                     row.type === "line" ? "cursor-pointer hover:bg-panel transition-colors" : ""
                   }`}
                 >
-                  <td className={`py-3 pr-4 pl-2 sticky left-0 z-10 bg-white group-hover:bg-panel transition-colors ${row.type === "total" ? "border-t border-line" : ""}`}>
+                  <td className={`py-3 pr-4 pl-2 sticky left-0 z-10 bg-white group-hover:bg-panel transition-colors border-r border-line shadow-[6px_0_8px_-6px_rgba(0,0,0,0.10)] ${row.type === "total" ? "border-t border-line" : ""}`}>
                     <span className={`text-[15px] ${row.type === "total" ? "font-medium" : ""}`}>
                       {row.label}
                     </span>

@@ -1,16 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { Mic, ArrowUp } from "lucide-react";
+import { Mic, ArrowUp, LifeBuoy } from "lucide-react";
 import { useLang } from "@/components/lang";
 import { useArbioChat, chatUnavailableSeed } from "@/components/arbio-chat";
 
 export function ChatInput({
   placeholder,
   className = "",
+  onRequest,
 }: {
   placeholder: string;
   className?: string;
+  onRequest?: () => void;
 }) {
   const { t } = useLang();
   const { openChat } = useArbioChat();
@@ -27,8 +29,19 @@ export function ChatInput({
 
   return (
     <div
-      className={`flex items-center gap-2 bg-white border border-line rounded-[30px] shadow-[0_2px_12px_rgba(0,0,0,0.06)] pl-6 pr-2.5 py-2.5 ${className}`}
+      className={`flex items-center gap-2 bg-white border border-line rounded-[30px] shadow-[0_2px_12px_rgba(0,0,0,0.06)] ${
+        onRequest ? "pl-2.5" : "pl-6"
+      } pr-2.5 py-2.5 ${className}`}
     >
+      {onRequest && (
+        <button
+          onClick={onRequest}
+          className="flex items-center gap-2 shrink-0 rounded-full bg-panel hover:bg-line text-foreground pl-3 pr-4 py-2 text-[15px]"
+        >
+          <LifeBuoy size={16} />
+          {t("Anfrage", "Request")}
+        </button>
+      )}
       <input
         type="text"
         value={value}
