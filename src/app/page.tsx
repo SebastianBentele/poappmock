@@ -28,7 +28,7 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-5 md:px-10 py-16">
       <h1 className="text-[34px] md:text-[48px] tracking-[-1px] text-center">{t("Guten Tag, Testnutzer.", "Good day, test user.")}</h1>
-      <p className="text-[20px] text-muted mt-2">
+      <p className="text-[20px] text-muted mt-2 text-center">
         {t("Frag uns alles zu Umsatz, Profitabilität oder Forecast.", "Ask us anything about revenue, profitability or forecast.")}
       </p>
 

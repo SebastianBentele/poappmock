@@ -602,12 +602,41 @@ export default function Einheiten() {
   const moved = useRef(false);
   const trackRef = useRef<HTMLDivElement>(null);
   const cDrag = useRef<{ startX: number; scroll: number } | null>(null);
+  // Set when `active` changes because of the user scrolling/swiping the track —
+  // in that case we must NOT scrollIntoView, or we'd fight the user's gesture.
+  const activeFromScroll = useRef(false);
 
   useEffect(() => {
+    if (activeFromScroll.current) {
+      activeFromScroll.current = false;
+      return;
+    }
     trackRef.current
       ?.querySelector(`[data-card="${active}"]`)
       ?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
   }, [active, view]);
+
+  // While swiping, the card nearest to the center becomes active immediately.
+  // No rAF throttle: with 5 cards the math is trivial, and rAF can stall in
+  // throttled/background tabs, jamming its own guard.
+  const onTrackScroll = () => {
+    const el = trackRef.current;
+    if (!el) return;
+    const center = el.scrollLeft + el.clientWidth / 2;
+    let best = active;
+    let bestDist = Infinity;
+    el.querySelectorAll<HTMLElement>("[data-card]").forEach((c) => {
+      const d = Math.abs(c.offsetLeft + c.offsetWidth / 2 - center);
+      if (d < bestDist) {
+        bestDist = d;
+        best = Number(c.dataset.card);
+      }
+    });
+    if (best !== active) {
+      activeFromScroll.current = true;
+      setActive(best);
+    }
+  };
 
   const openPopup = (unit: Unit, e: { clientX: number; clientY: number }) => {
     if (moved.current) return;
@@ -809,6 +838,7 @@ export default function Einheiten() {
 
           <div
             ref={trackRef}
+            onScroll={onTrackScroll}
             className="flex items-center gap-6 mt-8 min-h-[440px] overflow-x-auto px-[calc(50%-170px)] cursor-grab active:cursor-grabbing select-none [&::-webkit-scrollbar]:hidden"
             style={{ scrollbarWidth: "none" }}
             onPointerDown={(e) => {

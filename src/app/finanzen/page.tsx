@@ -116,12 +116,12 @@ export default function Finanzen() {
     <div className="relative min-h-screen px-4 md:px-8 py-6 pb-32">
       {/* Tabs + filters */}
       <div className="flex items-center gap-3 mb-6 flex-wrap">
-        <div className="flex items-center border border-line rounded-full p-1">
+        <div className="flex items-center border border-line rounded-full p-1 w-full md:w-auto">
           {tabs.map(({ key, label }) => (
             <button
               key={key}
               onClick={() => setTab(key)}
-              className={`rounded-full px-5 py-1.5 text-[15px] ${
+              className={`flex-1 md:flex-none rounded-full px-5 py-1.5 text-[15px] ${
                 tab === key
                   ? "bg-white border border-line shadow-[0_1px_3px_rgba(0,0,0,0.05)]"
                   : "text-muted"

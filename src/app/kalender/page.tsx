@@ -349,7 +349,7 @@ export default function Kalender() {
         <div className="min-w-[980px]">
           {/* Day header */}
           <div className="grid" style={{ gridTemplateColumns: `180px repeat(${DAYS}, 1fr)` }}>
-            <div />
+            <div className="sticky left-0 z-10 bg-white" />
             {Array.from({ length: DAYS }, (_, i) => {
               const day = i + 1;
               const weekday = (day + 2) % 7; // 0=Mo ... 5=Sa 6=So
@@ -384,7 +384,7 @@ export default function Kalender() {
               className="grid items-center border-t border-line py-2.5"
               style={{ gridTemplateColumns: `180px repeat(${DAYS}, 1fr)` }}
             >
-              <div className="text-[14px] pr-4 truncate">{name}</div>
+              <div className="text-[14px] pr-4 truncate sticky left-0 z-10 bg-white self-stretch flex items-center">{name}</div>
               <div
                 className="grid col-span-31 gap-y-1"
                 style={{

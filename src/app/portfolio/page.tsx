@@ -55,14 +55,14 @@ export default function Portfolio() {
       {/* Filter bar */}
       <div className="flex items-center gap-3 mb-6 flex-wrap">
         <FilterBar />
-        <div className="flex items-center border border-line rounded-full p-1">
-          <button className="bg-[#2a2a2a] text-white rounded-full px-5 py-1.5 text-[15px]">
+        <div className="flex items-center border border-line rounded-full p-1 w-full md:w-auto">
+          <button className="flex-1 md:flex-none bg-[#2a2a2a] text-white rounded-full px-5 py-1.5 text-[15px]">
             {t("Alle", "All")}
           </button>
-          <button className="px-4 py-1.5 text-[15px] text-muted">L2L</button>
-          <button className="px-4 py-1.5 text-[15px] text-muted">{t("Neue", "New")}</button>
+          <button className="flex-1 md:flex-none px-4 py-1.5 text-[15px] text-muted">L2L</button>
+          <button className="flex-1 md:flex-none px-4 py-1.5 text-[15px] text-muted">{t("Neue", "New")}</button>
         </div>
-        <button className="w-10 h-10 border border-line rounded-full flex items-center justify-center text-muted">
+        <button className="hidden md:flex w-10 h-10 border border-line rounded-full items-center justify-center text-muted">
           <Info size={15} />
         </button>
       </div>

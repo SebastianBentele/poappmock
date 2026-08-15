@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Calendar, MapPin, Building2, ChevronDown, Check, ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar, MapPin, Building2, ChevronDown, Check, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useLang } from "@/components/lang";
 
 const ALL_UNITS = [
@@ -19,6 +19,7 @@ type Open = "period" | "units" | "city" | null;
 export function FilterBar({ showStepper = true }: { showStepper?: boolean }) {
   const { t } = useLang();
   const [open, setOpen] = useState<Open>(null);
+  const [sheetOpen, setSheetOpen] = useState<"period" | "units" | null>(null);
   const [periodIdx, setPeriodIdx] = useState(0);
   const [custom, setCustom] = useState(false);
   const [units, setUnits] = useState<string[]>([]); // empty = all
@@ -55,7 +56,127 @@ export function FilterBar({ showStepper = true }: { showStepper?: boolean }) {
     "flex items-center gap-2 border border-line rounded-full h-11 px-5 text-[15px] bg-white hover:bg-panel";
 
   return (
-    <div className="relative flex items-center gap-3 flex-wrap">
+    <>
+    {/* Mobile: two half-width pills (designer reference) — the same compact
+        filter row on every page; selection happens in a bottom sheet. */}
+    <div className="md:hidden grid grid-cols-2 gap-2 w-full">
+      <button
+        onClick={() => setSheetOpen("period")}
+        className="flex items-center justify-between gap-2 border border-line rounded-full h-11 px-4 text-[14px] bg-white min-w-0"
+      >
+        <span className="flex items-center gap-2 min-w-0">
+          <Calendar size={14} className="shrink-0 text-muted" />
+          <span className="truncate">{period}</span>
+        </span>
+        <ChevronDown size={14} className="shrink-0 text-muted" />
+      </button>
+      <button
+        onClick={() => setSheetOpen("units")}
+        className="flex items-center justify-between gap-2 border border-line rounded-full h-11 px-4 text-[14px] bg-white min-w-0"
+      >
+        <span className="flex items-center gap-2 min-w-0">
+          <MapPin size={14} className="shrink-0 text-muted" />
+          <span className="truncate">
+            {unitLabel}
+            {city ? ` · ${city}` : ""}
+          </span>
+        </span>
+        <ChevronDown size={14} className="shrink-0 text-muted" />
+      </button>
+    </div>
+
+    {sheetOpen !== null && (
+      <div className="md:hidden fixed inset-0 z-50">
+        <div className="absolute inset-0 bg-black/30" onClick={() => setSheetOpen(null)} />
+        <div className="absolute inset-x-0 bottom-0 bg-white rounded-t-[24px] max-h-[85vh] overflow-y-auto px-5 pt-5 pb-8">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-[17px]">
+              {sheetOpen === "period" ? t("Zeitraum", "Period") : t("Einheiten & Stadt", "Units & city")}
+            </span>
+            <button
+              onClick={() => setSheetOpen(null)}
+              className="w-11 h-11 rounded-full bg-panel flex items-center justify-center text-muted"
+            >
+              <X size={16} />
+            </button>
+          </div>
+
+          {sheetOpen === "period" && (
+          <div className="flex gap-2 flex-wrap">
+            {periodPresets.map((p, pi) => (
+              <button
+                key={p}
+                onClick={() => {
+                  setPeriodIdx(pi);
+                  setCustom(false);
+                }}
+                className={`rounded-full px-4 py-2.5 text-[14px] border ${
+                  periodIdx === pi && !custom
+                    ? "bg-[#2a2a2a] text-white border-[#2a2a2a]"
+                    : "border-line hover:bg-panel"
+                }`}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+          )}
+
+          {sheetOpen === "units" && (
+          <>
+          <button
+            onClick={() => setUnits([])}
+            className="w-full flex items-center justify-between rounded-[12px] px-3 py-3 text-[15px] text-left hover:bg-panel"
+          >
+            {t("Alle Einheiten", "All units")}
+            {units.length === 0 && <Check size={15} className="text-accent-text" />}
+          </button>
+          {ALL_UNITS.map((u) => (
+            <button
+              key={u.name}
+              onClick={() => toggleUnit(u.name)}
+              className="w-full flex items-center gap-3 rounded-[12px] px-3 py-3 text-[15px] text-left hover:bg-panel"
+            >
+              <span
+                className={`w-4 h-4 rounded-[5px] border flex items-center justify-center shrink-0 ${
+                  units.includes(u.name) ? "bg-[#2a2a2a] border-[#2a2a2a] text-white" : "border-line"
+                }`}
+              >
+                {units.includes(u.name) && <Check size={11} />}
+              </span>
+              <span className="flex-1">{u.name}</span>
+              <span className="text-[12px] text-muted">{u.city}</span>
+            </button>
+          ))}
+
+          <div className="text-[12px] tracking-[1.5px] uppercase text-muted mt-6 mb-2">{t("Stadt", "City")}</div>
+          <div className="flex gap-2 flex-wrap">
+            {[null, ...CITIES].map((c) => (
+              <button
+                key={c ?? "all"}
+                onClick={() => setCity(c)}
+                className={`rounded-full px-4 py-2.5 text-[14px] border ${
+                  city === c ? "bg-[#2a2a2a] text-white border-[#2a2a2a]" : "border-line hover:bg-panel"
+                }`}
+              >
+                {c ?? t("Alle Städte", "All cities")}
+              </button>
+            ))}
+          </div>
+          </>
+          )}
+
+          <button
+            onClick={() => setSheetOpen(null)}
+            className="w-full bg-[#2a2a2a] text-white rounded-full py-3.5 text-[15px] mt-7 hover:bg-black"
+          >
+            {t("Anwenden", "Apply")}
+          </button>
+        </div>
+      </div>
+    )}
+
+    <div className="relative hidden md:flex items-center gap-3 flex-wrap">
       {/* Backdrop to close dropdowns */}
       {open && <div className="fixed inset-0 z-30" onClick={close} />}
 
@@ -221,5 +342,6 @@ export function FilterBar({ showStepper = true }: { showStepper?: boolean }) {
         )}
       </div>
     </div>
+    </>
   );
 }

@@ -125,10 +125,10 @@ export function PnlTable() {
       </div>
 
       <div className="overflow-x-auto mt-4">
-        <table className="w-full min-w-[900px] border-collapse">
+        <table className="w-full min-w-[900px] border-separate [border-spacing:0]">
           <thead>
             <tr>
-              <th className="w-[230px]" />
+              <th className="w-[230px] sticky left-0 z-10 bg-white" />
               {months.map((m, i) => (
                 <th
                   key={m}
@@ -152,24 +152,24 @@ export function PnlTable() {
             {rows.map((row, ri) =>
               row.type === "section" ? (
                 <tr key={ri}>
-                  <td
-                    colSpan={months.length + 1}
-                    className="pt-4 pb-0"
-                  >
-                    <div className="bg-[#fafafa] rounded-[10px] px-3 py-2 text-[12px] tracking-[1.5px] uppercase text-muted">
+                  <td className="pt-4 pb-0 sticky left-0 z-10 bg-white">
+                    <div className="bg-[#fafafa] rounded-l-[10px] px-3 py-2 text-[12px] tracking-[1.5px] uppercase text-muted whitespace-nowrap">
                       {row.label}
                     </div>
+                  </td>
+                  <td colSpan={months.length} className="pt-4 pb-0">
+                    <div className="bg-[#fafafa] rounded-r-[10px] px-3 py-2 text-[12px]">&nbsp;</div>
                   </td>
                 </tr>
               ) : (
                 <tr
                   key={ri}
                   onClick={row.type === "line" ? () => openChat(costExplainSeed(row.key ?? row.label, t)) : undefined}
-                  className={`${row.type === "total" ? "border-t border-line" : ""} ${
+                  className={`group ${
                     row.type === "line" ? "cursor-pointer hover:bg-panel transition-colors" : ""
                   }`}
                 >
-                  <td className="py-3 pr-4 pl-2 rounded-l-[10px]">
+                  <td className={`py-3 pr-4 pl-2 rounded-l-[10px] sticky left-0 z-10 bg-white group-hover:bg-panel transition-colors ${row.type === "total" ? "border-t border-line" : ""}`}>
                     <span className={`text-[15px] ${row.type === "total" ? "font-medium" : ""}`}>
                       {row.label}
                     </span>
@@ -180,7 +180,7 @@ export function PnlTable() {
                   {row.values.map((v, vi) => (
                     <td
                       key={vi}
-                      className={`py-3 text-right text-[15px] whitespace-nowrap ${
+                      className={`py-3 text-right text-[15px] whitespace-nowrap ${row.type === "total" ? "border-t border-line" : ""} ${
                         v === null
                           ? "text-line"
                           : row.type === "total"
