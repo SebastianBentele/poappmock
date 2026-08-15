@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 import Link from "next/link";
 import { useLang, LangToggle } from "@/components/lang";
+import { useFeatures, type FeatureFlags } from "@/components/variant";
 import {
   X,
   CheckCircle2,
@@ -317,18 +318,21 @@ export const waterDamageApprovalSeed = (t: Tr): Msg[] => [
   },
 ];
 
-const buildNotifications = (t: Tr): Notification[] => [
-  {
+const buildNotifications = (t: Tr, features: FeatureFlags): Notification[] => [
+  ...(features.costApprovals
+    ? [{
     id: "n4",
-    icon: "approval",
+    icon: "approval" as const,
     title: t("Kostenfreigabe · Wasserschaden", "Cost approval · water damage"),
     text: t("Externer Handwerker · €780 — deine Freigabe nötig", "External contractor · €780 — your approval needed"),
     time: t("vor 1 Std", "1 hr ago"),
     seed: waterDamageApprovalSeed(t),
-  },
-  {
+  }] as Notification[]
+    : []),
+  ...(features.maintenanceTickets
+    ? [{
     id: "n1",
-    icon: "ticket",
+    icon: "ticket" as const,
     title: t("Ticket #1041 · WLAN-Router", "Ticket #1041 · WiFi router"),
     text: t("Techniker bestätigt für Di, 14.07., 9–12 Uhr", "Technician confirmed for Tue, Jul 14, 9–12"),
     time: t("vor 2 Std", "2 hrs ago"),
@@ -361,7 +365,7 @@ const buildNotifications = (t: Tr): Notification[] => [
   },
   {
     id: "n2",
-    icon: "ticket",
+    icon: "ticket" as const,
     title: t("Ticket #1043 · Spülmaschine", "Ticket #1043 · Dishwasher"),
     text: t("Ersatzteil bestellt — Einbau vsl. 16.07.", "Spare part ordered — install est. Jul 16"),
     time: t("vor 5 Std", "5 hrs ago"),
@@ -391,7 +395,36 @@ const buildNotifications = (t: Tr): Notification[] => [
         ),
       },
     ],
-  },
+  }] as Notification[]
+    : []),
+  // V1: the bell carries what the portal itself owns — the owner's own requests.
+  ...(features.ownRequests
+    ? [{
+    id: "n5",
+    icon: "ticket" as const,
+    title: t("Anfrage #1044 · Spülmaschine", "Request #1044 · Dishwasher"),
+    text: t("Jovana hat einen Techniker beauftragt", "Jovana assigned a technician"),
+    time: t("vor 3 Std", "3 hrs ago"),
+    seed: [
+      {
+        kind: "bot" as const,
+        text: t(
+          "Update zu deiner Anfrage #1044 (Spülmaschine, Studio Universität): Jovana hat einen Techniker beauftragt. Der Termin steht voraussichtlich bis Freitag, 11.07. — du bekommst eine Nachricht, sobald er bestätigt ist.",
+          "Update on your request #1044 (dishwasher, Studio Universität): Jovana assigned a technician. The appointment should be confirmed by Friday, Jul 11 — you'll get a message as soon as it's set."
+        ),
+      },
+      {
+        kind: "timeline" as const,
+        title: t("Anfrage #1044 · Spülmaschine", "Request #1044 · Dishwasher"),
+        steps: [
+          { label: t("Eingegangen", "Received"), meta: "08.07.", state: "done" as const },
+          { label: t("In Arbeit", "In progress"), meta: t("vsl. bis Fr., 11.07.", "est. by Fri, Jul 11"), state: "current" as const },
+          { label: t("Erledigt", "Done"), state: "pending" as const },
+        ],
+      },
+    ] as Msg[],
+  }] as Notification[]
+    : []),
   {
     id: "n3",
     icon: "payout",
@@ -602,13 +635,14 @@ function DraftCard({
 
 export function ChatProvider({ children }: { children: ReactNode }) {
   const { t } = useLang();
+  const features = useFeatures();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [notifOpen, setNotifOpen] = useState(false);
   const [readIds, setReadIds] = useState<string[]>([]);
 
-  const notifications = buildNotifications(t);
+  const notifications = buildNotifications(t, features);
   const unread = notifications.filter((n) => !readIds.includes(n.id)).length;
 
   const openChat = (seed: Msg[]) => {

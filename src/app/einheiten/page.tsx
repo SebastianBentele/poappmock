@@ -271,7 +271,7 @@ function insightSeed(u: Unit, t: Tr, features: FeatureFlags): Msg[] {
       name: u.name,
       city: u.city,
       status: u.status,
-      blockedNote: u.blockedNote,
+      blockedNote: features.blockDetail ? u.blockedNote : undefined,
       kpis: [
         { label: t("Umsatz Juli", "Revenue July"), value: u.revenue },
         { label: t("Auslastung", "Occupancy"), value: u.occ },
@@ -288,8 +288,8 @@ function insightSeed(u: Unit, t: Tr, features: FeatureFlags): Msg[] {
       text:
         u.status === "blocked"
           ? t(
-              `Kurz eingeordnet: Die Einheit ist aktuell blockiert (${u.blockedNote}), das Team arbeitet an der Freigabe. Davon abgesehen steht sie stark da — ${u.rating} Bewertung und ${u.revenue} Juli-Umsatz. Tipp unten auf ein Thema oder frag frei drauflos.`,
-              `In brief: the unit is currently blocked (${u.blockedNote}), the team is working on the release. Otherwise it's in great shape — ${u.rating} rating and ${u.revenue} July revenue. Tap a topic below or just ask.`
+              `Kurz eingeordnet: Die Einheit ist aktuell blockiert${features.blockDetail ? ` (${u.blockedNote})` : ""}, das Team arbeitet an der Freigabe. Davon abgesehen steht sie stark da — ${u.rating} Bewertung und ${u.revenue} Juli-Umsatz. Tipp unten auf ein Thema oder frag frei drauflos.`,
+              `In brief: the unit is currently blocked${features.blockDetail ? ` (${u.blockedNote})` : ""}, the team is working on the release. Otherwise it's in great shape — ${u.rating} rating and ${u.revenue} July revenue. Tap a topic below or just ask.`
             )
           : t(
               `Kurz eingeordnet: Die Einheit läuft großartig — ${u.rating} Bewertung, ${u.occ} Auslastung und ${u.revenue} Umsatz im Juli. Arbio prüft Preise und Verfügbarkeiten täglich. Tipp unten auf ein Thema oder frag frei drauflos.`,
@@ -351,7 +351,7 @@ function UnitPopup({
             </button>
           </div>
         </div>
-        {u.status === "blocked" && (
+        {u.status === "blocked" && features.blockDetail && (
           <div className="mt-3 border border-line rounded-[14px] px-4 py-3.5">
             <div className="text-[12px] tracking-[1.5px] uppercase text-muted">
               {t("Wiederherstellung", "Recovery")}
@@ -919,7 +919,7 @@ export default function Einheiten() {
                       className="w-full h-full object-cover"
                       draggable={false}
                     />
-                    {u.status === "blocked" && (
+                    {u.status === "blocked" && features.blockDetail && (
                       <span className="absolute top-3 right-3 bg-white/90 text-negative rounded-full px-3 py-1 text-[12px]">
                         {t("Blockiert", "Blocked")}
                       </span>
@@ -1046,7 +1046,7 @@ export default function Einheiten() {
                 <div className="min-w-0">
                   <div className="text-[16px] truncate">{u.name}</div>
                   <div className="text-[13px] text-muted mt-0.5">{u.city}</div>
-                  {u.blockedNote && (
+                  {u.blockedNote && features.blockDetail && (
                     <div className="text-[12px] text-negative mt-0.5 xl:hidden">{u.blockedNote}</div>
                   )}
                 </div>

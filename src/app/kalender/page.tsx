@@ -206,8 +206,14 @@ function BookingBar({
   const features = useFeatures();
   const kind = b.kind ?? "guest";
   // V1 shows occupancy without guest identity — PMS fetches strip PII today.
-  const label = kind === "guest" && !features.guestNames ? t("Belegt", "Booked") : b.label;
-  const clickable = kind === "maintenance" && !!b.seed;
+  const label =
+    kind === "guest" && !features.guestNames
+      ? t("Belegt", "Booked")
+      : kind === "maintenance" && !features.blockDetail
+        ? t("Blockiert", "Blocked")
+        : b.label;
+  // V1: a maintenance block is just a block — no ticket link, no status detail
+  const clickable = kind === "maintenance" && !!b.seed && features.blockDetail;
   const style =
     kind === "guest"
       ? "bg-[#dcebd4] text-[#3c5f33] hover:bg-[#cfe3c4]"
@@ -249,7 +255,12 @@ function Tooltip({ h }: { h: Hovered }) {
   const features = useFeatures();
   const b = h.b;
   const kind = b.kind ?? "guest";
-  const label = kind === "guest" && !features.guestNames ? t("Buchung", "Booking") : b.label;
+  const label =
+    kind === "guest" && !features.guestNames
+      ? t("Buchung", "Booking")
+      : kind === "maintenance" && !features.blockDetail
+        ? t("Blockiert", "Blocked")
+        : b.label;
   const width = 260;
   const placeBelow = h.top < 260;
   const left = Math.max(
@@ -293,6 +304,8 @@ function Tooltip({ h }: { h: Hovered }) {
               <Wrench size={12} />
               {t("Wartung · für Gäste blockiert", "Maintenance · blocked for guests")}
             </div>
+            {features.blockDetail ? (
+              <>
             {b.note && <p className="text-[13px] text-muted leading-snug">{b.note}</p>}
             {b.ticket && (
               <div className="flex justify-between text-[14px] mt-1">
@@ -306,7 +319,13 @@ function Tooltip({ h }: { h: Hovered }) {
                 <span className="text-negative">{b.lostRevenue}</span>
               </div>
             )}
-            {b.seed && (
+              </>
+            ) : (
+              <p className="text-[13px] text-muted leading-snug">
+                {t("Für Gäste blockiert. Dein Team kümmert sich — frag im Chat, wenn du Details brauchst.", "Blocked for guests. Your team is handling it — ask in the chat if you need details.")}
+              </p>
+            )}
+            {b.seed && features.blockDetail && (
               <div className="flex items-center gap-1.5 text-[13px] text-muted mt-2 pt-2 border-t border-line">
                 <MessageCircle size={12} />
                 {t("Klicken für Status im Chat", "Click for status in chat")}

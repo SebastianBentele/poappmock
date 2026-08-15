@@ -38,6 +38,7 @@ export const FEATURES = {
     contract: true,
     ownRequests: false,
     liveClosedSplit: false,
+    blockDetail: true,
   },
   v1: {
     operations: false,
@@ -51,6 +52,10 @@ export const FEATURES = {
     contract: false,
     ownRequests: true,
     liveClosedSplit: true,
+    // "show that a block exists + duration only. Drop lost revenue, detailed
+    // reason, linked ticket, recovery status" — blocking today runs on fragile
+    // hashtag codes in Hostaway, so the detail isn't verified data yet.
+    blockDetail: false,
   },
   kam: {
     operations: true,
@@ -64,6 +69,7 @@ export const FEATURES = {
     contract: true,
     ownRequests: true,
     liveClosedSplit: true,
+    blockDetail: true,
   },
 } as const;
 
