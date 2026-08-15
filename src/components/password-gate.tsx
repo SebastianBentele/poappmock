@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, ReactNode } from "react";
-import { Lock, ArrowRight } from "lucide-react";
+import { Lock, ArrowRight, Eye, Rocket, Headphones } from "lucide-react";
 import { useLang } from "@/components/lang";
 
 /**
@@ -21,6 +21,100 @@ const ACCESS_HASHES = new Set([
 ]);
 
 const STORAGE_KEY = "arbio-po-app-auth";
+const CHOOSER_KEY = "arbio-po-app-variant-chooser";
+const VARIANT_KEY = "arbio-po-app-variant";
+
+// SHA-256 of the one email that gets the variant chooser after login —
+// kept as a hash for the same reason as ACCESS_HASHES (public mirror).
+const CHOOSER_EMAIL_HASH = "789e41784c57ad0bbae33933090237a5e18d7471e03a686a63e315ef728261aa";
+
+// Variant chooser: shown only to the chooser account, once per session,
+// between login and the app. Vision = the current mockup; V1 and the KAM
+// view exist as cards but are not clickable yet.
+function VariantChooser({ onPick }: { onPick: (v: string) => void }) {
+  const { t } = useLang();
+  const variants = [
+    {
+      key: "vision",
+      icon: Eye,
+      title: "Owner Portal Vision",
+      text: t(
+        "Das vollständige Zielbild — alle Funktionen erlebbar.",
+        "The complete target picture — every feature, clickable."
+      ),
+      available: true,
+    },
+    {
+      key: "v1",
+      icon: Rocket,
+      title: "Owner Portal V1",
+      text: t(
+        "Reduzierter Funktionsumfang für die erste Entwicklungsstufe.",
+        "Stripped-down scope for the first development stage."
+      ),
+      available: false,
+    },
+    {
+      key: "kam",
+      icon: Headphones,
+      title: "KAM View",
+      text: t(
+        "Die künftige Sicht deines Key Account Managers.",
+        "The future view for your Key Account Manager."
+      ),
+      available: false,
+    },
+  ];
+
+  return (
+    <div className="min-h-screen bg-[#fafafa] flex flex-col items-center justify-center px-5 py-10">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/arbio-logo.jpg"
+        alt="Arbio"
+        className="h-[30px] w-auto mix-blend-multiply"
+        draggable={false}
+      />
+      <p className="text-[15px] text-muted mt-3">
+        {t("Welche Ansicht möchtest du öffnen?", "Which view would you like to open?")}
+      </p>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8 w-full max-w-[920px]">
+        {variants.map(({ key, icon: Icon, title, text, available }) => (
+          <div
+            key={key}
+            className={`bg-white border border-line rounded-[24px] px-7 py-8 flex flex-col items-start ${
+              available ? "shadow-[0_8px_40px_rgba(0,0,0,0.06)]" : ""
+            }`}
+          >
+            <span
+              className={`w-11 h-11 rounded-full flex items-center justify-center ${
+                available ? "bg-[#2a2a2a] text-white" : "bg-panel text-muted"
+              }`}
+            >
+              <Icon size={18} />
+            </span>
+            <div className={`text-[17px] mt-5 ${available ? "" : "text-muted"}`}>{title}</div>
+            <p className="text-[14px] text-muted leading-snug mt-1.5 flex-1">{text}</p>
+            {available ? (
+              <button
+                onClick={() => onPick(key)}
+                className="w-full flex items-center justify-center gap-2 bg-[#2a2a2a] text-white rounded-full px-5 py-3 text-[15px] mt-6 hover:bg-black transition-colors"
+              >
+                {t("Öffnen", "Open")}
+                <ArrowRight size={15} />
+              </button>
+            ) : (
+              <span className="border border-line text-muted rounded-full px-4 py-2 text-[13px] mt-6">
+                {t("Bald verfügbar", "Coming soon")}
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 async function sha256Hex(value: string) {
   const bytes = new TextEncoder().encode(value);
@@ -33,6 +127,8 @@ async function sha256Hex(value: string) {
 export function PasswordGate({ children }: { children: ReactNode }) {
   const { t } = useLang();
   const [authed, setAuthed] = useState<boolean | null>(null);
+  const [chooser, setChooser] = useState(false);
+  const [variant, setVariant] = useState<string | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
@@ -40,15 +136,22 @@ export function PasswordGate({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     setAuthed(sessionStorage.getItem(STORAGE_KEY) === "1");
+    setChooser(sessionStorage.getItem(CHOOSER_KEY) === "1");
+    setVariant(sessionStorage.getItem(VARIANT_KEY));
   }, []);
 
   const submit = async () => {
     if (!email.trim() || !password || checking) return;
     setChecking(true);
     try {
-      const hash = await sha256Hex(`${email.trim().toLowerCase()}:${password}`);
+      const emailNorm = email.trim().toLowerCase();
+      const hash = await sha256Hex(`${emailNorm}:${password}`);
       if (ACCESS_HASHES.has(hash)) {
         sessionStorage.setItem(STORAGE_KEY, "1");
+        if ((await sha256Hex(emailNorm)) === CHOOSER_EMAIL_HASH) {
+          sessionStorage.setItem(CHOOSER_KEY, "1");
+          setChooser(true);
+        }
         setAuthed(true);
         return;
       }
@@ -132,6 +235,17 @@ export function PasswordGate({ children }: { children: ReactNode }) {
           </button>
         </div>
       </div>
+    );
+  }
+
+  if (chooser && !variant) {
+    return (
+      <VariantChooser
+        onPick={(v) => {
+          sessionStorage.setItem(VARIANT_KEY, v);
+          setVariant(v);
+        }}
+      />
     );
   }
 
