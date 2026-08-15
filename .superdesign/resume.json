@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "targets": {
+    "/": {
+      "targetKind": "existing-ui",
+      "projectId": "bab5c95d-5f5e-4863-8fc6-5b9193839637",
+      "baselineDraftId": "4b66b9a9-db87-40bd-90c9-17b2561ef233",
+      "activeDraftId": "4b66b9a9-db87-40bd-90c9-17b2561ef233",
+      "designSystemPath": ".superdesign/design-system.md",
+      "contextFiles": [
+        ".superdesign/design-system.md",
+        "src/app/globals.css",
+        "src/app/page.tsx",
+        "src/components/chat-input.tsx",
+        "src/components/sidebar.tsx",
+        "src/components/arbio-chat.tsx:561:700"
+      ],
+      "fingerprints": {
+        ".superdesign/design-system.md": "9bf6442ae0de814b42ff4f7c699989463fe1894838c0f3ff863c083d5aa9f6b8",
+        "src/app/globals.css": "fc94c854eac385385d5b214c5e9140bcd5363a485cf02f09c58f480d1685d8ec",
+        "src/app/page.tsx": "053babb8e718b8ff54bba25ab6ac7625c21273a12ce31ee0441d55550c5f2e09",
+        "src/components/chat-input.tsx": "1c4e5dc2727cd4788690f8761e4c66fd8f53260da5a4c4442b9a0579e959234c",
+        "src/components/sidebar.tsx": "0db8b2f7f3501cf3d724113dfe5f8246130c60920e2e34ec6eeac2902f8d82af",
+        "src/components/arbio-chat.tsx": "a5ce9177ec7fcdb26934d4537f8cd92d0ee733d1689939f1b35213f953caf9a5"
+      },
+      "drafts": {
+        "4b66b9a9-db87-40bd-90c9-17b2561ef233": {
+          "title": "Ask Arbio home \u2014 current",
+          "visualDirection": "current-state baseline",
+          "currentVersion": 1
+        },
+        "ea974bbc-785a-40f7-b7ab-a1f02fd2c030": {
+          "title": "Ask Arbio \u2014 Rearranged Hero Chat Home",
+          "visualDirection": "conversation-first rearrangement",
+          "parentDraftId": "4b66b9a9-db87-40bd-90c9-17b2561ef233",
+          "currentVersion": 2
+        },
+        "aaff69cb-cc1f-4690-b6fd-f3a17193dc0c": {
+          "title": "Chat Ticket Inquiry Flow",
+          "visualDirection": "message-first inquiry with editable draft card",
+          "parentDraftId": "4b66b9a9-db87-40bd-90c9-17b2561ef233",
+          "currentVersion": 2
+        }
+      },
+      "updatedAt": "2026-08-14T15:18:39.445821+00:00"
+    }
+  }
+}
