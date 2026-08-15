@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { ChevronLeft, ChevronRight, MessageCircle } from "lucide-react";
 import { useArbioChat, costExplainSeed } from "@/components/arbio-chat";
 import { useLang, type Lang } from "@/components/lang";
@@ -104,12 +105,14 @@ export function PnlTable() {
   const { lang, t } = useLang();
   const months = buildMonths(lang);
   const rows = buildRows(t);
+  // Mobile shows one month at a time — seven columns never fit a phone.
+  const [mIdx, setMIdx] = useState(months.length - 1);
 
   return (
     <div className="bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
       <div className="flex items-center justify-between">
         <h3 className="text-[16px] font-medium">{t("P&L Übersicht", "P&L overview")}</h3>
-        <div className="flex items-center gap-3">
+        <div className="hidden md:flex items-center gap-3">
           <span className="flex items-center gap-1.5 text-[13px] text-muted">
             <MessageCircle size={13} />
             {t("Position anklicken für Erklärung im Chat", "Click a line for an explanation in chat")}
@@ -124,7 +127,71 @@ export function PnlTable() {
         </div>
       </div>
 
-      <div className="overflow-x-auto mt-4">
+      <div className="md:hidden mt-4">
+        <div className="flex items-center justify-between mb-1">
+          <button
+            onClick={() => setMIdx((i) => Math.max(0, i - 1))}
+            disabled={mIdx === 0}
+            className="w-9 h-9 rounded-full border border-line flex items-center justify-center text-muted disabled:opacity-30"
+          >
+            <ChevronLeft size={15} />
+          </button>
+          <span className="text-[14px]">
+            {months[mIdx]}
+            {mIdx === months.length - 1 && (
+              <span className="bg-[#2a2a2a] text-white rounded-full px-2 py-0.5 text-[10px] tracking-[1px] ml-2">
+                {t("Jetzt", "Now")}
+              </span>
+            )}
+          </span>
+          <button
+            onClick={() => setMIdx((i) => Math.min(months.length - 1, i + 1))}
+            disabled={mIdx === months.length - 1}
+            className="w-9 h-9 rounded-full border border-line flex items-center justify-center text-muted disabled:opacity-30"
+          >
+            <ChevronRight size={15} />
+          </button>
+        </div>
+        {rows.map((row, ri) =>
+          row.type === "section" ? (
+            <div key={ri} className="bg-[#fafafa] rounded-[10px] px-3 py-2 text-[12px] tracking-[1.5px] uppercase text-muted mt-4">
+              {row.label}
+            </div>
+          ) : (
+            <button
+              key={ri}
+              onClick={row.type === "line" ? () => openChat(costExplainSeed(row.key ?? row.label, t)) : undefined}
+              className={`w-full flex items-baseline justify-between gap-4 px-1 py-3 text-left ${
+                row.type === "total" ? "border-t border-line" : ""
+              }`}
+            >
+              <span className="min-w-0">
+                <span className={`text-[15px] ${row.type === "total" ? "font-medium" : ""}`}>{row.label}</span>
+                {row.sub && <span className="block text-[12px] text-muted mt-0.5">{row.sub}</span>}
+              </span>
+              <span
+                className={`text-[15px] whitespace-nowrap ${
+                  row.values[mIdx] === null
+                    ? "text-line"
+                    : row.type === "total"
+                      ? row.signed
+                        ? row.values[mIdx]!.startsWith("\u2013")
+                          ? "text-negative"
+                          : "text-accent-text"
+                        : "text-foreground"
+                      : row.negative
+                        ? "text-negative"
+                        : ""
+                }`}
+              >
+                {row.values[mIdx] ?? "\u2013"}
+              </span>
+            </button>
+          )
+        )}
+      </div>
+
+      <div className="hidden md:block overflow-x-auto mt-4">
         <table className="w-full min-w-[900px] border-separate [border-spacing:0]">
           <thead>
             <tr>
