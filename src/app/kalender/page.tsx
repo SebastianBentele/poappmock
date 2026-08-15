@@ -14,6 +14,7 @@ import { ChatInput } from "@/components/chat-input";
 import { FilterBar } from "@/components/filter-bar";
 import { useArbioChat, type Msg, type Tr } from "@/components/arbio-chat";
 import { useLang } from "@/components/lang";
+import { useFeatures } from "@/components/variant";
 
 const DAYS = 31;
 
@@ -201,7 +202,11 @@ function BookingBar({
   onHover: (h: Hovered | null) => void;
   onClick: (b: Booking) => void;
 }) {
+  const { t } = useLang();
+  const features = useFeatures();
   const kind = b.kind ?? "guest";
+  // V1 shows occupancy without guest identity — PMS fetches strip PII today.
+  const label = kind === "guest" && !features.guestNames ? t("Belegt", "Booked") : b.label;
   const clickable = kind === "maintenance" && !!b.seed;
   const style =
     kind === "guest"
@@ -233,7 +238,7 @@ function BookingBar({
         style={hatch}
       >
         {kind === "maintenance" && <Wrench size={12} className="shrink-0" />}
-        <span className="truncate">{b.label}</span>
+        <span className="truncate">{label}</span>
       </div>
     </div>
   );
@@ -241,8 +246,10 @@ function BookingBar({
 
 function Tooltip({ h }: { h: Hovered }) {
   const { t } = useLang();
+  const features = useFeatures();
   const b = h.b;
   const kind = b.kind ?? "guest";
+  const label = kind === "guest" && !features.guestNames ? t("Buchung", "Booking") : b.label;
   const width = 260;
   const placeBelow = h.top < 260;
   const left = Math.max(
@@ -259,7 +266,7 @@ function Tooltip({ h }: { h: Hovered }) {
       style={{ left, width, ...positionStyle }}
     >
       <div className="bg-white border border-line rounded-[18px] shadow-[0_8px_30px_rgba(0,0,0,0.14)] px-5 py-4">
-        <div className="text-[15px]">{b.label}</div>
+        <div className="text-[15px]">{label}</div>
         <div className="text-[13px] text-muted mt-0.5">
           {String(b.start).padStart(2, "0")}. – {String(b.end).padStart(2, "0")}. {t("Juli", "July")} 2026
         </div>

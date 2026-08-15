@@ -18,6 +18,9 @@ import { ChatInput } from "@/components/chat-input";
 import { FilterBar } from "@/components/filter-bar";
 import { useArbioChat, waterDamageApprovalSeed, type Msg, type Tr } from "@/components/arbio-chat";
 import { useLang } from "@/components/lang";
+import { useFeatures } from "@/components/variant";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 /* ---------- data builders ---------- */
 
@@ -362,6 +365,13 @@ const buildWeekSummarySeed = (t: Tr): Msg[] => [
 export default function Operativ() {
   const { openChat } = useArbioChat();
   const { t } = useLang();
+  const features = useFeatures();
+  const router = useRouter();
+
+  // V1 doesn't ship Operations — anyone landing here goes to their requests.
+  useEffect(() => {
+    if (!features.operations) router.replace("/anfragen");
+  }, [features.operations, router]);
   const [reviewsOpen, setReviewsOpen] = useState(false);
 
   const sentiments = buildSentiments(t);

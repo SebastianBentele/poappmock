@@ -14,12 +14,14 @@ import {
   X,
 } from "lucide-react";
 import { useLang } from "@/components/lang";
+import { useFeatures } from "@/components/variant";
 
 // Mobile shell: sticky top bar (logo + burger) below lg, with a slide-over
 // nav panel. The desktop sidebar is hidden below lg; this replaces it.
 export function MobileNav() {
   const pathname = usePathname();
   const { t } = useLang();
+  const features = useFeatures();
   const [open, setOpen] = useState(false);
 
   // Close the sheet on navigation and lock body scroll while open.
@@ -36,7 +38,11 @@ export function MobileNav() {
     { href: "/einheiten", label: t("Portfolio", "Portfolio"), icon: LayoutGrid },
     { href: "/portfolio", label: t("Umsatz", "Revenue"), icon: BarChart3 },
     { href: "/finanzen", label: t("Finanzen", "Finance"), icon: Wallet },
-    { href: "/operativ", label: t("Operations", "Operations"), icon: ClipboardList },
+    // V1 has no Operations page (maintenance data isn't reliable enough yet) —
+    // it carries "Anfragen" instead: the requests the owner raised in the portal.
+    features.operations
+      ? { href: "/operativ", label: t("Operations", "Operations"), icon: ClipboardList }
+      : { href: "/anfragen", label: t("Anfragen", "Requests"), icon: ClipboardList },
     { href: "/kalender", label: t("Kalender", "Calendar"), icon: CalendarDays },
   ];
 

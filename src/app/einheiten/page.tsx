@@ -20,6 +20,7 @@ import {
 import { ChatInput } from "@/components/chat-input";
 import { useArbioChat, type Msg, type Tr } from "@/components/arbio-chat";
 import { useLang } from "@/components/lang";
+import { useFeatures, type FeatureFlags } from "@/components/variant";
 
 type TicketStatus = "Offen" | "In Arbeit" | "Erledigt";
 
@@ -178,9 +179,9 @@ type Popup = { unit: Unit; x: number; y: number };
 
 // Chat seed for "More insights": same info as the popup, richer detail,
 // plus interactive follow-ups (bars, timeline, approval) via inline chips.
-function insightSeed(u: Unit, t: Tr): Msg[] {
-  const rec = u.recommendations[0];
-  const ticket = u.tickets[0];
+function insightSeed(u: Unit, t: Tr, features: FeatureFlags): Msg[] {
+  const rec = features.recommendations ? u.recommendations[0] : undefined;
+  const ticket = features.maintenanceTickets ? u.tickets[0] : undefined;
   const chips: { label: string; answer: Msg[] }[] = [
     {
       label: t("Umsatz-Verlauf anzeigen", "Show revenue trend"),
@@ -277,8 +278,10 @@ function insightSeed(u: Unit, t: Tr): Msg[] {
         { label: t("Ø Tagesrate", "Avg. daily rate"), value: u.adr },
         { label: t("Bewertung", "Rating"), value: u.rating },
       ],
-      recommendations: u.recommendations,
-      tickets: u.tickets.map((tk) => ({ ...tk, status: statusLabel(tk.status, t) })),
+      recommendations: features.recommendations ? u.recommendations : undefined,
+      tickets: features.maintenanceTickets
+        ? u.tickets.map((tk) => ({ ...tk, status: statusLabel(tk.status, t) }))
+        : undefined,
     },
     {
       kind: "bot",
@@ -307,6 +310,7 @@ function UnitPopup({
   onMore: (u: Unit) => void;
 }) {
   const { t } = useLang();
+  const features = useFeatures();
   const u = p.unit;
 
   // Docked panel: bottom sheet on mobile, right-side panel on lg+ —
@@ -407,7 +411,8 @@ function UnitPopup({
           ))}
         </div>
 
-        {/* Recommendations */}
+        {/* Recommendations — vision only: the concept still needs defining */}
+        {features.recommendations && (
         <div className="mt-4">
           <div className="flex items-center gap-1.5 text-[12px] tracking-[1.5px] uppercase text-muted">
             <Sparkles size={12} />
@@ -425,8 +430,10 @@ function UnitPopup({
             ))}
           </div>
         </div>
+        )}
 
-        {/* Tickets */}
+        {/* Maintenance tickets — vision only: Breezeway data isn't reliable yet */}
+        {features.maintenanceTickets && (
         <div className="mt-4">
           <div className="flex items-center gap-1.5 text-[12px] tracking-[1.5px] uppercase text-muted">
             <Wrench size={12} />
@@ -460,6 +467,28 @@ function UnitPopup({
             </div>
           )}
         </div>
+
+        )}
+
+        {/* Guest ratings — available in V1, replaces the Operations page's review block */}
+        {!features.maintenanceTickets && (
+          <div className="mt-4">
+            <div className="flex items-center gap-1.5 text-[12px] tracking-[1.5px] uppercase text-muted">
+              <Star size={12} />
+              {t("Gästebewertungen", "Guest reviews")}
+            </div>
+            <div className="grid grid-cols-2 gap-2.5 mt-2">
+              <div className="bg-panel rounded-[14px] px-4 py-3">
+                <div className="text-[12px] text-muted">Airbnb</div>
+                <div className="text-[18px] tracking-[-0.3px] mt-0.5">{u.rating}</div>
+              </div>
+              <div className="bg-panel rounded-[14px] px-4 py-3">
+                <div className="text-[12px] text-muted">Booking.com</div>
+                <div className="text-[18px] tracking-[-0.3px] mt-0.5">9,3</div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* More insights → chat */}
         <button
@@ -592,6 +621,7 @@ type View = "karte" | "uebersicht" | "liste";
 export default function Einheiten() {
   const { openChat } = useArbioChat();
   const { t } = useLang();
+  const features = useFeatures();
   const units = buildUnits(t);
   const [view, setView] = useState<View>("karte");
   const [popup, setPopup] = useState<Popup | null>(null);
@@ -1081,7 +1111,7 @@ export default function Einheiten() {
           onClose={() => setPopup(null)}
           onMore={(u) => {
             setPopup(null);
-            openChat(insightSeed(u, t));
+            openChat(insightSeed(u, t, features));
           }}
         />
       )}

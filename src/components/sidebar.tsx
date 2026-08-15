@@ -20,12 +20,14 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { useLang } from "@/components/lang";
+import { useFeatures } from "@/components/variant";
 import { useArbioChat, waterDamageApprovalSeed } from "@/components/arbio-chat";
 import { metricSeed } from "@/components/metric-insights";
 
 export function Sidebar() {
   const pathname = usePathname();
   const { t } = useLang();
+  const features = useFeatures();
   const { openChat } = useArbioChat();
   const [collapsed, setCollapsed] = useState(false);
   const [pastOpen, setPastOpen] = useState(false);
@@ -44,7 +46,11 @@ export function Sidebar() {
     { href: "/einheiten", label: t("Portfolio", "Portfolio"), icon: LayoutGrid },
     { href: "/portfolio", label: t("Umsatz", "Revenue"), icon: BarChart3 },
     { href: "/finanzen", label: t("Finanzen", "Finance"), icon: Wallet },
-    { href: "/operativ", label: t("Operations", "Operations"), icon: ClipboardList },
+    // V1 has no Operations page (maintenance data isn't reliable enough yet) —
+    // it carries "Anfragen" instead: the requests the owner raised in the portal.
+    features.operations
+      ? { href: "/operativ", label: t("Operations", "Operations"), icon: ClipboardList }
+      : { href: "/anfragen", label: t("Anfragen", "Requests"), icon: ClipboardList },
     { href: "/kalender", label: t("Kalender", "Calendar"), icon: CalendarDays },
   ];
 

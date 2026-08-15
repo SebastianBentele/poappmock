@@ -17,6 +17,7 @@ import { PnlTable } from "@/components/pnl-table";
 import { OwnerCosts } from "@/components/owner-costs";
 import { useArbioChat, costExplainSeed, type Msg, type Tr } from "@/components/arbio-chat";
 import { useLang } from "@/components/lang";
+import { useFeatures } from "@/components/variant";
 import { AskAi } from "@/components/ask-ai";
 
 const buildPayoutTrackers = (t: Tr): {
@@ -89,6 +90,7 @@ export default function Finanzen() {
   const [tab, setTab] = useState<Tab>("profit");
   const { openChat } = useArbioChat();
   const { t } = useLang();
+  const features = useFeatures();
 
   const tabs: { key: Tab; label: string }[] = [
     { key: "profit", label: t("Profitabilität", "Profitability") },
@@ -142,7 +144,15 @@ export default function Finanzen() {
               <AskAi metric="profit" />
               <div className="flex items-start justify-between">
                 <div>
-                  <span className="text-[15px] text-muted">{t("Operativer Gewinn · Juli 2026", "Operating profit · July 2026")}</span>
+                  <span className="flex items-center gap-2 flex-wrap">
+                    <span className="text-[15px] text-muted">{t("Operativer Gewinn · Juli 2026", "Operating profit · July 2026")}</span>
+                    {features.liveClosedSplit && (
+                      <span className="inline-flex items-center gap-1.5 border border-line rounded-full px-2.5 py-0.5 text-[12px] text-muted">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#3D7BE5] inline-block" />
+                        {t("Live-Schätzung", "Live estimate")}
+                      </span>
+                    )}
+                  </span>
                   <div className="flex items-end gap-3 mt-2">
                     <span className="text-[54px] leading-none tracking-[-1.5px]">€33,1k</span>
                     <span className="text-[16px] text-accent-text mb-1.5">▲ {t("7,6% vs. Vorjahr", "7.6% vs. last year")}</span>
@@ -262,27 +272,50 @@ export default function Finanzen() {
           <div className="mt-5">
             <PnlTable />
           </div>
+          {features.liveClosedSplit && (
+            <p className="text-[13px] text-muted mt-3 px-1">
+              {t(
+                "Buchungszahlen (Umsatz, OTA-Provision, geschätzter Gewinn) aktualisieren sich laufend. Kosten mit Monatsabschluss — Instandhaltung, Reinigungen außerhalb des Checkouts — erscheinen erst in der abgerechneten Monats-P&L.",
+                "Booking figures (revenue, OTA commission, estimated profit) update continuously. Costs with a monthly cutover — maintenance, non-checkout cleanings — only appear in the closed monthly P&L."
+              )}
+            </p>
+          )}
         </>
       ) : tab === "payouts" ? (
         <>
           {/* Accumulated payout + AI card */}
           <div className="grid grid-cols-1 xl:grid-cols-[1fr_1.15fr] gap-4">
             <div className="bg-panel rounded-[24px] px-8 py-7 flex flex-col">
-              <span className="text-[15px]">{t("Aufgelaufene Auszahlung · Juli 2026", "Accrued payout · July 2026")}</span>
-              <span className="text-[52px] leading-none tracking-[-1px] mt-3">€18.450</span>
+              <span className="text-[15px]">
+                {features.accruedPayout
+                  ? t("Aufgelaufene Auszahlung · Juli 2026", "Accrued payout · July 2026")
+                  : t("Letzte Auszahlung · Juni 2026", "Last payout · June 2026")}
+              </span>
+              <span className="text-[52px] leading-none tracking-[-1px] mt-3">
+                {features.accruedPayout ? "€18.450" : "€34.900"}
+              </span>
               <span className="flex items-center gap-2 text-[14px] text-muted mt-3">
                 <Calendar size={14} />
                 {t("Reguläre Auszahlung am 05.08.2026 · kostenlos", "Regular payout on Aug 5, 2026 · free")}
               </span>
-              <div className="mt-auto pt-6">
-                <button className="w-full flex items-center justify-center gap-2.5 bg-[#2a2a2a] text-white rounded-full px-6 py-4 text-[16px] hover:bg-black transition-colors">
-                  <Zap size={17} />
-                  {t("Sofort auszahlen · 2% Gebühr", "Pay out instantly · 2% fee")}
-                </button>
-                <p className="text-[13px] text-muted text-center mt-2.5">
-                  {t("Du erhältst €18.081,00 sofort auf dein Konto (Gebühr: €369,00)", "You receive €18,081.00 instantly to your account (fee: €369.00)")}
+              {features.instantPayout ? (
+                <div className="mt-auto pt-6">
+                  <button className="w-full flex items-center justify-center gap-2.5 bg-[#2a2a2a] text-white rounded-full px-6 py-4 text-[16px] hover:bg-black transition-colors">
+                    <Zap size={17} />
+                    {t("Sofort auszahlen · 2% Gebühr", "Pay out instantly · 2% fee")}
+                  </button>
+                  <p className="text-[13px] text-muted text-center mt-2.5">
+                    {t("Du erhältst €18.081,00 sofort auf dein Konto (Gebühr: €369,00)", "You receive €18,081.00 instantly to your account (fee: €369.00)")}
+                  </p>
+                </div>
+              ) : (
+                <p className="text-[13px] text-muted mt-auto pt-6">
+                  {t(
+                    "Auszahlungen erfolgen monatlich nach Abschluss der Abrechnung — die nächste am 05.08.2026.",
+                    "Payouts happen monthly once the statement is closed — the next one on Aug 5, 2026."
+                  )}
                 </p>
-              </div>
+              )}
             </div>
             <AiCard
               title={t("Deine Auszahlungen. Auf einen Blick.", "Your payouts. At a glance.")}

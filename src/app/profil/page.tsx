@@ -15,6 +15,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 import { useLang } from "@/components/lang";
+import { useFeatures } from "@/components/variant";
 import { type Tr } from "@/components/arbio-chat";
 
 type Field = { key: string; label: string; value: string; span?: boolean };
@@ -213,6 +214,7 @@ export default function Profil() {
   const { t } = useLang();
   const initialPersonal = buildPersonal(t);
   const initialBank = buildBank(t);
+  const features = useFeatures();
   const contractTerms = buildContractTerms(t);
   const documents = buildDocuments(t);
   const invoices = buildInvoices(t);
@@ -260,7 +262,8 @@ export default function Profil() {
           </div>
         </CollapsibleCard>
 
-        {/* Vertragskonditionen — collapsible */}
+        {/* Contract — vision only: contract data/documents aren't in Nexus yet */}
+        {features.contract && (
         <CollapsibleCard
           title={t("Vertragskonditionen", "Contract terms")}
           subtitle={t("Full-Service Management · 15% vom Nettoumsatz", "Full-Service Management · 15% of net revenue")}
@@ -295,6 +298,7 @@ export default function Profil() {
             </div>
           </div>
         </CollapsibleCard>
+        )}
 
         {/* Rechnungen — collapsible */}
         <CollapsibleCard

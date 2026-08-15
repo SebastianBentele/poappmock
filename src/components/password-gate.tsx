@@ -3,6 +3,7 @@
 import { useEffect, useState, ReactNode } from "react";
 import { Lock, ArrowRight, Eye, Rocket, Headphones } from "lucide-react";
 import { useLang } from "@/components/lang";
+import { VariantProvider, type Variant } from "@/components/variant";
 
 /**
  * Access list for the preview. Entries are SHA-256 hashes of
@@ -45,7 +46,7 @@ function VariantChooser({ onPick }: { onPick: (v: string) => void }) {
       icon: Rocket,
       title: "Owner Portal V1",
       text: "Stripped-down scope for the first development stage.",
-      available: false,
+      available: true,
     },
     {
       key: "kam",
@@ -239,5 +240,7 @@ export function PasswordGate({ children }: { children: ReactNode }) {
     );
   }
 
-  return <>{children}</>;
+  return (
+    <VariantProvider variant={(variant as Variant) ?? "vision"}>{children}</VariantProvider>
+  );
 }
