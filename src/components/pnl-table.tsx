@@ -158,7 +158,7 @@ export function PnlTable() {
                     </div>
                   </td>
                   <td colSpan={months.length} className="pt-4 pb-0">
-                    <div className="bg-[#fafafa] rounded-r-[10px] px-3 py-2 text-[12px]">&nbsp;</div>
+                    <div className="bg-[#fafafa] px-3 py-2 text-[12px]">&nbsp;</div>
                   </td>
                 </tr>
               ) : (
@@ -169,7 +169,7 @@ export function PnlTable() {
                     row.type === "line" ? "cursor-pointer hover:bg-panel transition-colors" : ""
                   }`}
                 >
-                  <td className={`py-3 pr-4 pl-2 rounded-l-[10px] sticky left-0 z-10 bg-white group-hover:bg-panel transition-colors ${row.type === "total" ? "border-t border-line" : ""}`}>
+                  <td className={`py-3 pr-4 pl-2 sticky left-0 z-10 bg-white group-hover:bg-panel transition-colors ${row.type === "total" ? "border-t border-line" : ""}`}>
                     <span className={`text-[15px] ${row.type === "total" ? "font-medium" : ""}`}>
                       {row.label}
                     </span>

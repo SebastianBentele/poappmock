@@ -345,8 +345,9 @@ export default function Kalender() {
       </div>
 
       {/* Calendar */}
-      <div className="bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)] overflow-x-auto">
-        <div className="min-w-[980px]">
+      <div className="bg-white border border-line rounded-[24px] py-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+        <div className="overflow-x-auto">
+        <div className="min-w-[980px] pr-5">
           {/* Day header */}
           <div className="grid" style={{ gridTemplateColumns: `180px repeat(${DAYS}, 1fr)` }}>
             <div className="sticky left-0 z-10 bg-white" />
@@ -384,7 +385,7 @@ export default function Kalender() {
               className="grid items-center border-t border-line py-2.5"
               style={{ gridTemplateColumns: `180px repeat(${DAYS}, 1fr)` }}
             >
-              <div className="text-[14px] pr-4 truncate sticky left-0 z-10 bg-white self-stretch flex items-center">{name}</div>
+              <div className="text-[14px] pl-5 pr-4 truncate sticky left-0 z-10 bg-white self-stretch flex items-center">{name}</div>
               <div
                 className="grid col-span-31 gap-y-1"
                 style={{
@@ -404,8 +405,9 @@ export default function Kalender() {
             </div>
           ))}
         </div>
+        </div>
 
-        <div className="flex gap-6 mt-5 pt-4 border-t border-line text-[13px] text-muted">
+        <div className="flex flex-wrap gap-x-6 gap-y-2 mt-5 pt-4 border-t border-line text-[13px] text-muted px-5">
           <span className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-full bg-[#dcebd4] inline-block" /> {t("Gastbuchung", "Guest booking")}
           </span>
