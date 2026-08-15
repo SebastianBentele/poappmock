@@ -32,36 +32,26 @@ const CHOOSER_EMAIL_HASH = "789e41784c57ad0bbae33933090237a5e18d7471e03a686a63e3
 // between login and the app. Vision = the current mockup; V1 and the KAM
 // view exist as cards but are not clickable yet.
 function VariantChooser({ onPick }: { onPick: (v: string) => void }) {
-  const { t } = useLang();
   const variants = [
     {
       key: "vision",
       icon: Eye,
       title: "Owner Portal Vision",
-      text: t(
-        "Das vollständige Zielbild — alle Funktionen erlebbar.",
-        "The complete target picture — every feature, clickable."
-      ),
+      text: "The complete target picture — every feature, clickable.",
       available: true,
     },
     {
       key: "v1",
       icon: Rocket,
       title: "Owner Portal V1",
-      text: t(
-        "Reduzierter Funktionsumfang für die erste Entwicklungsstufe.",
-        "Stripped-down scope for the first development stage."
-      ),
+      text: "Stripped-down scope for the first development stage.",
       available: false,
     },
     {
       key: "kam",
       icon: Headphones,
       title: "KAM View",
-      text: t(
-        "Die künftige Sicht deines Key Account Managers.",
-        "The future view for your Key Account Manager."
-      ),
+      text: "The future view for your Key Account Manager.",
       available: false,
     },
   ];
@@ -76,7 +66,7 @@ function VariantChooser({ onPick }: { onPick: (v: string) => void }) {
         draggable={false}
       />
       <p className="text-[15px] text-muted mt-3">
-        {t("Welche Ansicht möchtest du öffnen?", "Which view would you like to open?")}
+        Which view would you like to open?
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8 w-full max-w-[920px]">
@@ -101,12 +91,12 @@ function VariantChooser({ onPick }: { onPick: (v: string) => void }) {
                 onClick={() => onPick(key)}
                 className="w-full flex items-center justify-center gap-2 bg-[#2a2a2a] text-white rounded-full px-5 py-3 text-[15px] mt-6 hover:bg-black transition-colors"
               >
-                {t("Öffnen", "Open")}
+                Open
                 <ArrowRight size={15} />
               </button>
             ) : (
               <span className="border border-line text-muted rounded-full px-4 py-2 text-[13px] mt-6">
-                {t("Bald verfügbar", "Coming soon")}
+                Coming soon
               </span>
             )}
           </div>
