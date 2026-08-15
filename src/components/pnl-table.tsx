@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, MessageCircle } from "lucide-react";
 import { useArbioChat, costExplainSeed } from "@/components/arbio-chat";
 import { useLang, type Lang } from "@/components/lang";
@@ -106,7 +106,30 @@ export function PnlTable() {
   const months = buildMonths(lang);
   const rows = buildRows(t);
   // Mobile shows one month at a time — seven columns never fit a phone.
+  // The months are horizontal snap panels: swipe to change month.
   const [mIdx, setMIdx] = useState(months.length - 1);
+  const monthScroller = useRef<HTMLDivElement>(null);
+
+  // Start on the current (last) month.
+  useEffect(() => {
+    const el = monthScroller.current;
+    if (el) el.scrollLeft = el.clientWidth * (months.length - 1);
+  }, [months.length]);
+
+  const onMonthScroll = () => {
+    const el = monthScroller.current;
+    if (!el || el.clientWidth === 0) return;
+    const idx = Math.min(months.length - 1, Math.max(0, Math.round(el.scrollLeft / el.clientWidth)));
+    if (idx !== mIdx) setMIdx(idx);
+  };
+
+  const stepMonth = (dir: 1 | -1) => {
+    const el = monthScroller.current;
+    if (!el) return;
+    const next = Math.min(months.length - 1, Math.max(0, mIdx + dir));
+    el.scrollTo({ left: el.clientWidth * next, behavior: "smooth" });
+    setMIdx(next);
+  };
 
   return (
     <div className="bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
@@ -130,7 +153,7 @@ export function PnlTable() {
       <div className="md:hidden mt-4">
         <div className="flex items-center justify-between mb-1">
           <button
-            onClick={() => setMIdx((i) => Math.max(0, i - 1))}
+            onClick={() => stepMonth(-1)}
             disabled={mIdx === 0}
             className="w-9 h-9 rounded-full border border-line flex items-center justify-center text-muted disabled:opacity-30"
           >
@@ -145,50 +168,75 @@ export function PnlTable() {
             )}
           </span>
           <button
-            onClick={() => setMIdx((i) => Math.min(months.length - 1, i + 1))}
+            onClick={() => stepMonth(1)}
             disabled={mIdx === months.length - 1}
             className="w-9 h-9 rounded-full border border-line flex items-center justify-center text-muted disabled:opacity-30"
           >
             <ChevronRight size={15} />
           </button>
         </div>
-        {rows.map((row, ri) =>
-          row.type === "section" ? (
-            <div key={ri} className="bg-[#fafafa] rounded-[10px] px-3 py-2 text-[12px] tracking-[1.5px] uppercase text-muted mt-4">
-              {row.label}
+
+        {/* Swipeable months: one full-width snap panel per month */}
+        <div
+          ref={monthScroller}
+          onScroll={onMonthScroll}
+          className="flex overflow-x-auto snap-x snap-mandatory [&::-webkit-scrollbar]:hidden"
+          style={{ scrollbarWidth: "none" }}
+        >
+          {months.map((m, mi) => (
+            <div key={m} className="w-full shrink-0 snap-center">
+              {rows.map((row, ri) =>
+                row.type === "section" ? (
+                  <div key={ri} className="bg-[#fafafa] rounded-[10px] px-3 py-2 text-[12px] tracking-[1.5px] uppercase text-muted mt-4">
+                    {row.label}
+                  </div>
+                ) : (
+                  <button
+                    key={ri}
+                    onClick={row.type === "line" ? () => openChat(costExplainSeed(row.key ?? row.label, t)) : undefined}
+                    className={`w-full flex items-baseline justify-between gap-4 px-1 py-3 text-left ${
+                      row.type === "total" ? "border-t border-line" : ""
+                    }`}
+                  >
+                    <span className="min-w-0">
+                      <span className={`text-[15px] ${row.type === "total" ? "font-medium" : ""}`}>{row.label}</span>
+                      {row.sub && <span className="block text-[12px] text-muted mt-0.5">{row.sub}</span>}
+                    </span>
+                    <span
+                      className={`text-[15px] whitespace-nowrap ${
+                        row.values[mi] === null
+                          ? "text-line"
+                          : row.type === "total"
+                            ? row.signed
+                              ? row.values[mi]!.startsWith("\u2013")
+                                ? "text-negative"
+                                : "text-accent-text"
+                              : "text-foreground"
+                            : row.negative
+                              ? "text-negative"
+                              : ""
+                      }`}
+                    >
+                      {row.values[mi] ?? "\u2013"}
+                    </span>
+                  </button>
+                )
+              )}
             </div>
-          ) : (
-            <button
-              key={ri}
-              onClick={row.type === "line" ? () => openChat(costExplainSeed(row.key ?? row.label, t)) : undefined}
-              className={`w-full flex items-baseline justify-between gap-4 px-1 py-3 text-left ${
-                row.type === "total" ? "border-t border-line" : ""
+          ))}
+        </div>
+
+        {/* month dots */}
+        <div className="flex justify-center gap-1.5 mt-4">
+          {months.map((m, mi) => (
+            <span
+              key={m}
+              className={`h-1.5 rounded-full transition-all ${
+                mi === mIdx ? "w-5 bg-[#2a2a2a]" : "w-1.5 bg-line"
               }`}
-            >
-              <span className="min-w-0">
-                <span className={`text-[15px] ${row.type === "total" ? "font-medium" : ""}`}>{row.label}</span>
-                {row.sub && <span className="block text-[12px] text-muted mt-0.5">{row.sub}</span>}
-              </span>
-              <span
-                className={`text-[15px] whitespace-nowrap ${
-                  row.values[mIdx] === null
-                    ? "text-line"
-                    : row.type === "total"
-                      ? row.signed
-                        ? row.values[mIdx]!.startsWith("\u2013")
-                          ? "text-negative"
-                          : "text-accent-text"
-                        : "text-foreground"
-                      : row.negative
-                        ? "text-negative"
-                        : ""
-                }`}
-              >
-                {row.values[mIdx] ?? "\u2013"}
-              </span>
-            </button>
-          )
-        )}
+            />
+          ))}
+        </div>
       </div>
 
       <div className="hidden md:block overflow-x-auto mt-4">
