@@ -216,13 +216,32 @@ const dailyRevenue = Array.from({ length: 62 }, (_, i) => {
   };
 });
 
+// The 62 bars cover 01.06. – 01.08.2026 (June 30d + July 31d + Aug 1st).
+const dailyDate = (i: number) => {
+  if (i < 30) return { d: i + 1, m: 6 };
+  if (i < 61) return { d: i - 29, m: 7 };
+  return { d: i - 60, m: 8 };
+};
+const dailyLabel = (i: number) => {
+  const { d, m } = dailyDate(i);
+  return `${d}.${m}.`;
+};
+
 export function DailyRevenueChart() {
   const { t } = useLang();
   return (
     <div className="h-[230px]">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={dailyRevenue} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barGap={0}>
-          <XAxis dataKey="d" hide />
+          <XAxis
+            dataKey="d"
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "#717171", fontSize: 12 }}
+            ticks={[0, 14, 30, 44, 61]}
+            tickFormatter={(v: number) => dailyLabel(v)}
+            dy={6}
+          />
           <YAxis
             axisLine={false}
             tickLine={false}
@@ -236,7 +255,7 @@ export function DailyRevenueChart() {
             content={
               <ChartTooltip
                 fmt={eur}
-                labelFmt={() => ""}
+                labelFmt={(v: string | number) => dailyLabel(Number(v))}
                 names={{ dj: t("Dieses Jahr", "This year"), vj: t("Vorjahr", "Prior year") }}
               />
             }
