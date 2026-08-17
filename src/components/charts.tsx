@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import {
   ResponsiveContainer,
@@ -116,8 +116,27 @@ const rollingRevenue = [
   { m: "Mar", dj: null, fc: 1600, lj: 2100, vj: 1500 },
 ];
 
-export function RollingRevenueChart() {
-  const { lang, t } = useLang();
+/**
+ * Mobile charts that carry more data than fits on a phone get a horizontal
+ * scroller: the plot keeps a readable point spacing and the rest is reachable
+ * by dragging sideways, like the calendar and the P&L. Above the breakpoint
+ * nothing changes — the chart is responsive as before.
+ *
+ * The y-axis is hidden while scrolling is active because it lives inside the
+ * plot SVG and would scroll out of view with the data; gridlines and the
+ * tooltip carry the reference instead.
+ */
+function ScrollableChart({
+  height,
+  minWidth = 720,
+  startFraction = 0,
+  children,
+}: {
+  height: string;
+  minWidth?: number;
+  startFraction?: number;
+  children: (narrow: boolean) => ReactNode;
+}) {
   const scroller = useRef<HTMLDivElement>(null);
   const [narrow, setNarrow] = useState(false);
 
@@ -129,15 +148,12 @@ export function RollingRevenueChart() {
     return () => mq.removeEventListener("change", sync);
   }, []);
 
-  // Mobile shows a ~5-month window (three back incl. today, two ahead) out of
-  // the full 12 — the rest is reachable by scrolling sideways, like the
-  // calendar and the P&L. Opens framed on "today" instead of at the start.
   useEffect(() => {
     const el = scroller.current;
     if (!el) return;
     const overflow = el.scrollWidth - el.clientWidth;
-    el.scrollLeft = overflow > 0 ? Math.min(overflow, el.scrollWidth * (1.2 / 12)) : 0;
-  }, [narrow]);
+    el.scrollLeft = overflow > 0 ? Math.min(overflow, el.scrollWidth * startFraction) : 0;
+  }, [narrow, startFraction]);
 
   return (
     <div
@@ -145,7 +161,19 @@ export function RollingRevenueChart() {
       className="overflow-x-auto md:overflow-x-visible [&::-webkit-scrollbar]:hidden"
       style={{ scrollbarWidth: "none" }}
     >
-    <div className="h-[300px] md:h-[360px] min-w-[760px] md:min-w-0">
+      <div className={height} style={narrow ? { minWidth } : undefined}>
+        {children(narrow)}
+      </div>
+    </div>
+  );
+}
+
+export function RollingRevenueChart() {
+  const { lang, t } = useLang();
+  return (
+    // ~5-month window on mobile: three back including today, two ahead
+    <ScrollableChart height="h-[300px] md:h-[360px]" minWidth={760} startFraction={1.2 / 12}>
+      {(narrow) => (
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart data={rollingRevenue} margin={{ top: 24, right: 16, left: 0, bottom: 0 }}>
           <CartesianGrid vertical={false} stroke="#f0f0f0" />
@@ -188,11 +216,11 @@ export function RollingRevenueChart() {
           {/* No draw-in animation: hiding the axis at the mobile breakpoint
               re-measures the chart mid-animation and recharts leaves the line
               paths stuck at a partial stroke-dasharray. */}
-          <Area type="monotone" dataKey="dj" fill="url(#blueFade)" stroke="none" isAnimationActive={false} />
-          <Line type="monotone" dataKey="dj" stroke={BLUE} strokeWidth={2.5} dot={{ r: 3.5, fill: BLUE }} isAnimationActive={false} />
-          <Line type="monotone" dataKey="fc" stroke={BLUE} strokeWidth={2} strokeDasharray="6 6" dot={{ r: 3.5, fill: BLUE }} isAnimationActive={false} />
-          <Line type="monotone" dataKey="lj" stroke={GRAY} strokeWidth={1.5} dot={false} isAnimationActive={false} />
-          <Line type="monotone" dataKey="vj" stroke={GRAY} strokeWidth={1.5} strokeDasharray="5 5" dot={false} isAnimationActive={false} />
+          <Area isAnimationActive={false} type="monotone" dataKey="dj" fill="url(#blueFade)" stroke="none" />
+          <Line isAnimationActive={false} type="monotone" dataKey="dj" stroke={BLUE} strokeWidth={2.5} dot={{ r: 3.5, fill: BLUE }} />
+          <Line isAnimationActive={false} type="monotone" dataKey="fc" stroke={BLUE} strokeWidth={2} strokeDasharray="6 6" dot={{ r: 3.5, fill: BLUE }} />
+          <Line isAnimationActive={false} type="monotone" dataKey="lj" stroke={GRAY} strokeWidth={1.5} dot={false} />
+          <Line isAnimationActive={false} type="monotone" dataKey="vj" stroke={GRAY} strokeWidth={1.5} strokeDasharray="5 5" dot={false} />
           <defs>
             <linearGradient id="blueFade" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor={BLUE} stopOpacity={0.25} />
@@ -201,8 +229,8 @@ export function RollingRevenueChart() {
           </defs>
         </ComposedChart>
       </ResponsiveContainer>
-    </div>
-    </div>
+      )}
+    </ScrollableChart>
   );
 }
 
@@ -230,7 +258,8 @@ const dailyLabel = (i: number) => {
 export function DailyRevenueChart() {
   const { t } = useLang();
   return (
-    <div className="h-[230px]">
+    <ScrollableChart height="h-[230px]" minWidth={700}>
+      {(narrow) => (
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={dailyRevenue} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barGap={0}>
           <XAxis
@@ -243,6 +272,7 @@ export function DailyRevenueChart() {
             dy={6}
           />
           <YAxis
+            hide={narrow}
             axisLine={false}
             tickLine={false}
             tick={{ fill: "#717171", fontSize: 13 }}
@@ -260,11 +290,12 @@ export function DailyRevenueChart() {
               />
             }
           />
-          <Bar dataKey="dj" fill={BLUE} radius={[2, 2, 0, 0]} activeBar={{ fill: BLUE_DARK }} />
-          <Bar dataKey="vj" fill={BLUE_LIGHT} radius={[2, 2, 0, 0]} activeBar={{ fill: BLUE }} />
+          <Bar isAnimationActive={false} dataKey="dj" fill={BLUE} radius={[2, 2, 0, 0]} activeBar={{ fill: BLUE_DARK }} />
+          <Bar isAnimationActive={false} dataKey="vj" fill={BLUE_LIGHT} radius={[2, 2, 0, 0]} activeBar={{ fill: BLUE }} />
         </BarChart>
       </ResponsiveContainer>
-    </div>
+      )}
+    </ScrollableChart>
   );
 }
 
@@ -286,7 +317,9 @@ const payouts = [
 export function PayoutChart() {
   const { lang } = useLang();
   return (
-    <div className="h-[300px]">
+    // 12 months: on mobile the most recent are framed, older ones by dragging
+    <ScrollableChart height="h-[300px]" startFraction={1}>
+      {(narrow) => (
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={payouts} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
           <XAxis
@@ -298,6 +331,7 @@ export function PayoutChart() {
             dy={8}
           />
           <YAxis
+            hide={narrow}
             axisLine={false}
             tickLine={false}
             tick={{ fill: "#717171", fontSize: 13 }}
@@ -305,24 +339,26 @@ export function PayoutChart() {
             ticks={[0, 12000, 24000, 36000]}
           />
           <Tooltip cursor={false} content={<ChartTooltip fmt={eur} labelFmt={monthTick(lang)} />} />
-          <Bar dataKey="v" radius={[10, 10, 10, 10]} activeBar={{ fill: BLUE_DARK }}>
+          <Bar isAnimationActive={false} dataKey="v" radius={[10, 10, 10, 10]} activeBar={{ fill: BLUE_DARK }}>
             {payouts.map((p) => (
               <Cell key={p.m} fill={p.current ? BLUE : BLUE_LIGHT} />
             ))}
           </Bar>
         </BarChart>
       </ResponsiveContainer>
-    </div>
+      )}
+    </ScrollableChart>
   );
 }
 
-// Two months of daily data (1..30, 1..30), deterministic
+// 60 days, 01.06. – 30.07.2026, deterministic. The key is the running index —
+// a day-of-month number repeated after 30 points, which produced duplicate
+// axis ticks and an ambiguous tooltip label.
 const dailyKpis = Array.from({ length: 60 }, (_, i) => {
-  const day = (i % 30) + 1;
   const w1 = Math.sin(i / 3.2) * 0.5 + Math.sin(i / 8.5) * 0.3;
   const w2 = Math.sin((i + 9) / 4.1) * 0.55 + Math.sin(i / 11) * 0.35;
   return {
-    d: day,
+    d: i,
     occDj: Math.round(Math.min(88, Math.max(30, 55 + w1 * 22))),
     occVj: Math.round(Math.min(95, Math.max(22, 48 + w2 * 30))),
     rateDj: Math.round(Math.min(310, Math.max(185, 240 + w1 * 55))),
@@ -345,7 +381,8 @@ function DailyKpiChart({
 }) {
   const { t } = useLang();
   return (
-    <div className="h-[240px]">
+    <ScrollableChart height="h-[240px]" minWidth={700}>
+      {(narrow) => (
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart data={dailyKpis} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
           <CartesianGrid vertical={false} stroke="#f0f0f0" />
@@ -354,7 +391,7 @@ function DailyKpiChart({
             content={
               <ChartTooltip
                 fmt={formatter}
-                labelFmt={(d) => t(`Tag ${d}`, `Day ${d}`)}
+                labelFmt={(d: string | number) => dailyLabel(Number(d))}
                 names={{
                   [djKey]: t("Dieses Jahr", "This year"),
                   [vjKey]: t("Vorjahr", "Prior year"),
@@ -364,13 +401,17 @@ function DailyKpiChart({
           />
           <XAxis
             dataKey="d"
+            type="number"
+            domain={[0, 59]}
             axisLine={false}
             tickLine={false}
             tick={{ fill: "#717171", fontSize: 12 }}
-            ticks={[1, 7, 14, 21, 28]}
+            ticks={[0, 14, 30, 44, 59]}
+            tickFormatter={(v: number) => dailyLabel(v)}
             dy={8}
           />
           <YAxis
+            hide={narrow}
             axisLine={false}
             tickLine={false}
             tick={{ fill: "#717171", fontSize: 12 }}
@@ -378,9 +419,9 @@ function DailyKpiChart({
             domain={domain}
             tickFormatter={formatter}
           />
-          <Area type="monotone" dataKey={djKey} fill="url(#blueFadeDaily)" stroke="none" />
-          <Line type="monotone" dataKey={djKey} stroke={BLUE} strokeWidth={2} dot={false} />
-          <Line
+          <Area isAnimationActive={false} type="monotone" dataKey={djKey} fill="url(#blueFadeDaily)" stroke="none" />
+          <Line isAnimationActive={false} type="monotone" dataKey={djKey} stroke={BLUE} strokeWidth={2} dot={false} />
+          <Line isAnimationActive={false}
             type="monotone"
             dataKey={vjKey}
             stroke="#b5b5b5"
@@ -396,7 +437,8 @@ function DailyKpiChart({
           </defs>
         </ComposedChart>
       </ResponsiveContainer>
-    </div>
+      )}
+    </ScrollableChart>
   );
 }
 
@@ -435,7 +477,7 @@ export function ChannelDonut() {
     <div className="relative h-[220px] w-[220px] mx-auto">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
-          <Pie
+          <Pie isAnimationActive={false}
             data={channels}
             dataKey="value"
             innerRadius={82}
@@ -498,8 +540,8 @@ export function TicketsChart() {
               />
             }
           />
-          <Bar dataKey="gelöst" stackId="t" fill={BLUE_LIGHT} radius={[0, 0, 10, 10]} activeBar={{ fill: BLUE }} />
-          <Bar dataKey="offen" stackId="t" fill="#d3d3d3" radius={[10, 10, 0, 0]} activeBar={{ fill: GRAY_DARK }} />
+          <Bar isAnimationActive={false} dataKey="gelöst" stackId="t" fill={BLUE_LIGHT} radius={[0, 0, 10, 10]} activeBar={{ fill: BLUE }} />
+          <Bar isAnimationActive={false} dataKey="offen" stackId="t" fill="#d3d3d3" radius={[10, 10, 0, 0]} activeBar={{ fill: GRAY_DARK }} />
         </BarChart>
       </ResponsiveContainer>
     </div>
@@ -524,7 +566,9 @@ const profitOverTime = [
 export function ProfitChart() {
   const { lang } = useLang();
   return (
-    <div className="h-[280px]">
+    // 12 months: on mobile the most recent are framed, older ones by dragging
+    <ScrollableChart height="h-[280px]" startFraction={1}>
+      {(narrow) => (
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={profitOverTime} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
           <CartesianGrid vertical={false} stroke="#f0f0f0" />
@@ -537,6 +581,7 @@ export function ProfitChart() {
             dy={8}
           />
           <YAxis
+            hide={narrow}
             axisLine={false}
             tickLine={false}
             tick={{ fill: "#717171", fontSize: 13 }}
@@ -545,10 +590,11 @@ export function ProfitChart() {
             domain={[0, 4600]}
           />
           <Tooltip cursor={false} content={<ChartTooltip fmt={eur} labelFmt={monthTick(lang)} />} />
-          <Bar dataKey="v" fill={BLUE_LIGHT} radius={[10, 10, 10, 10]} activeBar={{ fill: BLUE }} />
+          <Bar isAnimationActive={false} dataKey="v" fill={BLUE_LIGHT} radius={[10, 10, 10, 10]} activeBar={{ fill: BLUE }} />
         </BarChart>
       </ResponsiveContainer>
-    </div>
+      )}
+    </ScrollableChart>
   );
 }
 
@@ -581,7 +627,7 @@ export function GrowthChart() {
             ticks={[0, 100000, 200000, 300000]}
           />
           <Tooltip cursor={false} content={<ChartTooltip fmt={eur} />} />
-          <Bar dataKey="v" radius={[10, 10, 10, 10]} activeBar={{ fill: BLUE_DARK }}>
+          <Bar isAnimationActive={false} dataKey="v" radius={[10, 10, 10, 10]} activeBar={{ fill: BLUE_DARK }}>
             {growthByYear.map((d) => (
               <Cell key={d.y} fill={d.pre ? "#d3d3d3" : d.ytd ? BLUE : BLUE_LIGHT} />
             ))}
@@ -623,7 +669,7 @@ export function LosChart() {
             ticks={[0, 20, 40]}
           />
           <Tooltip cursor={false} content={<ChartTooltip fmt={pct} />} />
-          <Bar dataKey="share" radius={[10, 10, 10, 10]} activeBar={{ fill: BLUE_DARK }}>
+          <Bar isAnimationActive={false} dataKey="share" radius={[10, 10, 10, 10]} activeBar={{ fill: BLUE_DARK }}>
             {losBuckets.map((d) => (
               <Cell key={d.b} fill={d.share >= 39 ? BLUE : BLUE_LIGHT} />
             ))}
