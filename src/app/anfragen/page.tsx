@@ -33,14 +33,14 @@ const buildRequests = (t: Tr): {
     category: t("Reparatur", "Repair"),
     created: "08.07.2026",
     status: "in-arbeit",
-    note: t("Jovana hat einen Techniker beauftragt — Termin vsl. bis Fr., 11.07.", "Jovana assigned a technician — appointment est. by Fri, Jul 11"),
+    note: t("Jovana hat die Anfrage übernommen und meldet sich mit dem nächsten Schritt.", "Jovana picked up the request and will come back with the next step."),
     seed: [
       { kind: "user", text: t("Wie ist der Stand bei Anfrage #1044?", "What's the status of request #1044?") },
       {
         kind: "bot",
         text: t(
-          "Anfrage #1044 (Spülmaschine, Studio Universität) liegt bei Jovana. Ein Techniker ist beauftragt, der Termin steht voraussichtlich bis Freitag, 11.07. Du bekommst eine Benachrichtigung, sobald er bestätigt ist.",
-          "Request #1044 (dishwasher, Studio Universität) is with Jovana. A technician is assigned, the appointment should be confirmed by Friday, Jul 11. You'll get a notification as soon as it's set."
+          "Anfrage #1044 (Spülmaschine, Studio Universität) liegt bei Jovana. Sie kümmert sich darum und meldet sich mit dem nächsten Schritt — du bekommst hier eine Benachrichtigung, sobald es Neues gibt.",
+          "Request #1044 (dishwasher, Studio Universität) is with Jovana. She's taking care of it and will come back with the next step — you'll get a notification here as soon as there's news."
         ),
       },
       {
@@ -48,10 +48,10 @@ const buildRequests = (t: Tr): {
         title: t("Anfrage #1044 · Spülmaschine", "Request #1044 · Dishwasher"),
         steps: [
           { label: t("Eingegangen", "Received"), meta: "08.07.", state: "done" },
-          { label: t("In Arbeit", "In progress"), meta: t("vsl. bis Fr., 11.07.", "est. by Fri, Jul 11"), state: "current" },
+          { label: t("In Arbeit", "In progress"), meta: t("bei Jovana", "with Jovana"), state: "current" },
           { label: t("Erledigt", "Done"), state: "pending" },
         ],
-        note: t("Wir melden uns, sobald der Termin steht.", "We'll get back to you as soon as the appointment is set."),
+        note: t("Wir melden uns, sobald es etwas Neues gibt.", "We'll get back to you as soon as there's news."),
       },
     ],
   },
@@ -68,8 +68,8 @@ const buildRequests = (t: Tr): {
       {
         kind: "bot",
         text: t(
-          "Erledigt: Das Shooting im Garten Apartment war am 04.07., die neuen Fotos sind seit 06.07. auf Airbnb und Booking.com live. Erste Wirkung: die Klickrate liegt seitdem rund 12 % höher.",
-          "Done: the shoot at Garten Apartment took place on Jul 4, the new photos have been live on Airbnb and Booking.com since Jul 6. Early effect: click-through is up roughly 12% since then."
+          "Erledigt: Das Shooting im Garten Apartment war am 04.07., die neuen Fotos sind seit 06.07. auf Airbnb und Booking.com live.",
+          "Done: the shoot at Garten Apartment took place on Jul 4, the new photos have been live on Airbnb and Booking.com since Jul 6."
         ),
       },
     ],

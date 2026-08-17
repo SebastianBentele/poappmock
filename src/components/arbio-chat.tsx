@@ -409,8 +409,8 @@ const buildNotifications = (t: Tr, features: FeatureFlags): Notification[] => [
       {
         kind: "bot" as const,
         text: t(
-          "Update zu deiner Anfrage #1044 (Spülmaschine, Studio Universität): Jovana hat einen Techniker beauftragt. Der Termin steht voraussichtlich bis Freitag, 11.07. — du bekommst eine Nachricht, sobald er bestätigt ist.",
-          "Update on your request #1044 (dishwasher, Studio Universität): Jovana assigned a technician. The appointment should be confirmed by Friday, Jul 11 — you'll get a message as soon as it's set."
+          "Update zu deiner Anfrage #1044 (Spülmaschine, Studio Universität): Jovana hat sie übernommen und kümmert sich. Sobald es etwas Neues gibt, meldet sie sich hier.",
+          "Update on your request #1044 (dishwasher, Studio Universität): Jovana has picked it up and is taking care of it. She'll get back to you here as soon as there's news."
         ),
       },
       {
@@ -418,7 +418,7 @@ const buildNotifications = (t: Tr, features: FeatureFlags): Notification[] => [
         title: t("Anfrage #1044 · Spülmaschine", "Request #1044 · Dishwasher"),
         steps: [
           { label: t("Eingegangen", "Received"), meta: "08.07.", state: "done" as const },
-          { label: t("In Arbeit", "In progress"), meta: t("vsl. bis Fr., 11.07.", "est. by Fri, Jul 11"), state: "current" as const },
+          { label: t("In Arbeit", "In progress"), meta: t("bei Jovana", "with Jovana"), state: "current" as const },
           { label: t("Erledigt", "Done"), state: "pending" as const },
         ],
       },
@@ -509,6 +509,12 @@ function TimelineSteps({ steps }: { steps: TimelineStep[] }) {
 // Actions under a status card: the card is an entry point, not a dead end.
 function StatusActions({ onUpdate, onClose }: { onUpdate: () => void; onClose: () => void }) {
   const { t } = useLang();
+  const features = useFeatures();
+  // V1 has no Operations page — the deep link goes to the owner's requests.
+  const href = features.operations ? "/operativ" : "/anfragen";
+  const label = features.operations
+    ? t("Details unter Operations", "Details under Operations")
+    : t("Alle Anfragen ansehen", "See all requests");
   return (
     <div className="flex items-center gap-3 mt-3 pt-3 border-t border-line">
       <button
@@ -518,11 +524,11 @@ function StatusActions({ onUpdate, onClose }: { onUpdate: () => void; onClose: (
         {t("Update anfragen", "Request update")}
       </button>
       <Link
-        href="/operativ"
+        href={href}
         onClick={onClose}
         className="text-[13px] text-muted underline underline-offset-4 hover:text-foreground"
       >
-        {t("Details unter Operations", "Details under Operations")}
+        {label}
       </Link>
     </div>
   );
