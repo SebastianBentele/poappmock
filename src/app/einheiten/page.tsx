@@ -869,7 +869,7 @@ export default function Einheiten() {
           <div
             ref={trackRef}
             onScroll={onTrackScroll}
-            className="flex items-center gap-6 mt-8 min-h-[440px] overflow-x-auto px-[calc(50%-170px)] cursor-grab active:cursor-grabbing select-none [&::-webkit-scrollbar]:hidden"
+            className="flex items-center gap-6 mt-8 min-h-[440px] overflow-x-auto snap-x snap-mandatory px-[calc(50%-170px)] cursor-grab active:cursor-grabbing select-none [&::-webkit-scrollbar]:hidden"
             style={{ scrollbarWidth: "none" }}
             onPointerDown={(e) => {
               cDrag.current = { startX: e.clientX, scroll: trackRef.current?.scrollLeft ?? 0 };
@@ -905,7 +905,7 @@ export default function Einheiten() {
                     if (isActive) openPopup(u, e);
                     else setActive(i);
                   }}
-                  className={`text-left bg-white border border-line rounded-[24px] overflow-hidden shrink-0 transition-all duration-300 ${
+                  className={`text-left bg-white border border-line rounded-[24px] overflow-hidden shrink-0 snap-center transition-all duration-300 ${
                     isActive
                       ? "w-[340px] shadow-[0_16px_50px_rgba(0,0,0,0.12)]"
                       : "w-[290px] opacity-80 scale-[0.94] shadow-[0_2px_10px_rgba(0,0,0,0.05)]"
