@@ -69,6 +69,7 @@ const buildPayoutTrackers = (t: Tr): {
 ];
 
 const buildCosts = (t: Tr) => [
+  { label: t("Arbio Management-Fee", "Arbio management fee"), key: "Arbio Management-Fee", pct: "14,0%", width: "78%" },
   { label: t("OTA-Provision", "OTA commission"), key: "OTA-Provision", pct: "13,0%", width: "72%" },
   { label: t("Reinigung", "Cleaning"), key: "Reinigung · Test", pct: "0,5%", width: "6%" },
 ];
@@ -111,7 +112,7 @@ export default function Finanzen() {
   }[] = [
     { label: t("Bruttoumsatz (GBV)", "Gross Booking Value"), value: "€41,5k", sub: t("Buchungsvolumen", "Booking volume") },
     { label: t("Nettoumsatz", "Net revenue"), value: "€38,7k", sub: t("nach USt. + Beh.steuer", "after VAT + accom. tax"), deduction: "− €2,8k" },
-    { label: t("Operativer Gewinn", "Operating profit"), value: "€33,1k", sub: t("80% operative Marge", "80% operating margin"), deduction: t("− €5,6k Kosten", "− €5.6k costs"), highlight: true },
+    { label: t("Operativer Gewinn", "Operating profit"), value: "€27,3k", sub: t("66% operative Marge", "66% operating margin"), deduction: t("− €11,4k Kosten & Fee", "− €11.4k costs & fee"), highlight: true },
   ];
 
   return (
@@ -154,12 +155,12 @@ export default function Finanzen() {
                     )}
                   </span>
                   <div className="flex items-end gap-3 mt-2">
-                    <span className="text-[54px] leading-none tracking-[-1.5px]">€33,1k</span>
+                    <span className="text-[54px] leading-none tracking-[-1.5px]">€27,3k</span>
                     <span className="text-[16px] text-accent-text mb-1.5">▲ {t("7,6% vs. Vorjahr", "7.6% vs. last year")}</span>
                   </div>
                   <div className="flex flex-wrap items-center gap-2 mt-4">
-                    <span className="rounded-full bg-panel px-3.5 py-1.5 text-[13px]">{t("86,0% Deckungsbeitrag", "86.0% contribution margin")}</span>
-                    <span className="rounded-full bg-panel px-3.5 py-1.5 text-[13px]">{t("80% operative Marge", "80% operating margin")}</span>
+                    <span className="rounded-full bg-panel px-3.5 py-1.5 text-[13px]">{t("71,0% Deckungsbeitrag", "71.0% contribution margin")}</span>
+                    <span className="rounded-full bg-panel px-3.5 py-1.5 text-[13px]">{t("66% operative Marge", "66% operating margin")}</span>
                   </div>
                 </div>
                 <span className="flex items-center gap-2 text-[13px] text-muted shrink-0">
@@ -176,14 +177,14 @@ export default function Finanzen() {
                 {
                   label: t("Ergebnis", "Result"),
                   text: t(
-                    "Deine operative Marge liegt bei starken 85 % — deine Immobilien wirtschaften hervorragend mit Arbio.",
+                    "Deine operative Marge liegt bei 66 % — nach Arbio-Management-Fee und allen Betriebskosten.",
                     "Your operating margin is a strong 85% — your properties are performing excellently with Arbio."
                   ),
                 },
                 {
                   label: t("Warum", "Why"),
                   text: t(
-                    "Die Gesamtkosten stiegen saisonal bedingt auf 5.628 € (davon 5.407 € OTA-Provision) — dein Umsatz wuchs schneller als die Kosten.",
+                    "Die Gesamtkosten liegen bei 11.439 € — 5.811 € Arbio-Management-Fee, 5.407 € OTA-Provision, 221 € Reinigung. Dein Umsatz wuchs schneller als die Kosten.",
                     "Total costs rose seasonally to €5,628 (of which €5,407 OTA commission) — your revenue grew faster than costs."
                   ),
                 },
@@ -262,7 +263,7 @@ export default function Finanzen() {
               <div className="border-t border-line pt-4 flex items-center justify-between">
                 <span className="text-[15px]">{t("Gesamt", "Total")}</span>
                 <span className="text-[15px]">
-                  <b>13,6%</b> <span className="text-muted">{t("vom GBV", "of GBV")}</span>
+                  <b>27,5%</b> <span className="text-muted">{t("vom GBV", "of GBV")}</span>
                 </span>
               </div>
             </div>

@@ -30,8 +30,8 @@ const INSIGHTS: Record<string, Insight> = {
   profit: {
     q: ["Wie profitabel bin ich gerade?", "How profitable am I right now?"],
     a: [
-      "Dein operativer Gewinn im Juli liegt bei rund 33.100 € — etwa 80 % operative Marge nach allen Kosten. Über die letzten Monate zeigt der Gewinn einen klaren Aufwärtstrend in die Sommersaison. Die Gesamtkosten stiegen saisonal auf 5.628 €, dein Umsatz wuchs aber schneller.",
-      "Your operating profit in July is around €33,100 — roughly an 80% operating margin after all costs. Over recent months profit shows a clear upward trend into the summer season. Total costs rose seasonally to €5,628, but your revenue grew faster.",
+      "Dein operativer Gewinn im Juli liegt bei rund 27.300 € — etwa 66 % operative Marge nach Arbio-Management-Fee und allen Betriebskosten. Über die letzten Monate zeigt der Gewinn einen klaren Aufwärtstrend in die Sommersaison. Die Gesamtkosten liegen bei 11.439 €, dein Umsatz wuchs aber schneller.",
+      "Your operating profit in July is around €27,300 — roughly a 66% operating margin after the Arbio management fee and all operating costs. Over recent months profit shows a clear upward trend into the summer season. Total costs are €11,439, but your revenue grew faster.",
     ],
   },
   los: {
@@ -67,8 +67,8 @@ const INSIGHTS: Record<string, Insight> = {
   profitability: {
     q: ["Fass meine Profitabilität zusammen.", "Summarize my profitability."],
     a: [
-      "Deine operative Marge liegt bei starken ~80 %. Aus 41.451 € Bruttoumsatz werden nach USt./Steuern 38.700 € Nettoumsatz und nach allen Kosten rund 33.100 € operativer Gewinn. Größter Kostenblock ist die OTA-Provision (13 % vom GBV); alle übrigen Kosten zusammen bleiben unter 1 %.",
-      "Your operating margin is a strong ~80%. €41,451 gross booking value becomes €38,700 net revenue after VAT/tax and around €33,100 operating profit after all costs. The largest cost block is OTA commission (13% of GBV); all other costs combined stay under 1%.",
+      "Deine operative Marge liegt bei ~66 %. Aus 41.451 € Bruttoumsatz werden nach USt./Steuern 38.700 € Nettoumsatz und nach allen Kosten rund 27.300 € operativer Gewinn. Größte Kostenblöcke sind die Arbio-Management-Fee (14 % vom GBV) und die OTA-Provision (13 %); alle übrigen Kosten zusammen bleiben unter 1 %.",
+      "Your operating margin is ~66%. From €41,451 gross booking value, €38,700 net revenue remains after VAT/taxes, and roughly €27,300 operating profit after all costs. The largest cost blocks are the Arbio management fee (14% of GBV) and OTA commission (13%); everything else combined stays under 1%.",
     ],
   },
 

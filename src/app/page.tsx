@@ -15,7 +15,7 @@ export default function Home() {
     { metric: "revenue", label: t("Monatsumsatz", "Monthly revenue"), value: "41.451 €" },
     { metric: "adr", label: t("Tagesrate", "Daily rate"), value: "241 €" },
     { metric: "occupancy", label: t("Auslastung", "Occupancy"), value: "55 %" },
-    { metric: "profit", label: t("Operativer Gewinn", "Operating profit"), value: "33.111 €" },
+    { metric: "profit", label: t("Operativer Gewinn", "Operating profit"), value: "27.300 €" },
   ];
 
   const chips = [

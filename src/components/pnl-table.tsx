@@ -51,10 +51,17 @@ const buildRows = (t: (de: string, en: string) => string): Row[] => [
     values: ["–€136", "–€220", "–€545", "–€2.658", "–€3.757", "–€3.974", "–€5.407"],
   },
   {
+    type: "line",
+    label: t("Arbio Management-Fee", "Arbio management fee"),
+    key: "Arbio Management-Fee",
+    negative: true,
+    values: ["–€201", "–€218", "–€531", "–€3.120", "–€3.587", "–€4.004", "–€5.811"],
+  },
+  {
     type: "total",
     label: t("Contribution Margin", "Contribution margin"),
-    sub: t("86,0% vom Nettoumsatz", "86.0% of net revenue"),
-    values: ["€1.206", "€1.230", "€2.993", "€18.140", "€20.157", "€22.720", "€33.332"],
+    sub: t("71,0% vom Nettoumsatz", "71.0% of net revenue"),
+    values: ["€1.005", "€1.012", "€2.462", "€15.020", "€16.570", "€18.716", "€27.521"],
   },
   { type: "section", label: t("Fixe Kosten", "Fixed costs") },
   {
@@ -67,7 +74,7 @@ const buildRows = (t: (de: string, en: string) => string): Row[] => [
   {
     type: "total",
     label: t("Operativer Gewinn", "Operating profit"),
-    values: ["€1.206", "€1.230", "€2.993", "€18.140", "€20.157", "€22.720", "€33.111"],
+    values: ["€1.005", "€1.012", "€2.462", "€15.020", "€16.570", "€18.716", "€27.300"],
   },
   { type: "section", label: t("Eigene Kosten · von dir gepflegt", "Own costs · maintained by you") },
   {
@@ -96,7 +103,7 @@ const buildRows = (t: (de: string, en: string) => string): Row[] => [
     label: t("Echter Netto-Gewinn", "True net profit"),
     sub: t("nach deinen Kosten", "after your costs"),
     signed: true,
-    values: ["–€1.429", "–€1.405", "€358", "€15.505", "€17.522", "€20.085", "€30.476"],
+    values: ["–€1.630", "–€1.623", "–€173", "€12.385", "€13.935", "€16.081", "€24.665"],
   },
 ];
 

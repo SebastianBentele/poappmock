@@ -222,6 +222,16 @@ export function costExplainSeed(label: string, t: Tr): Msg[] {
         ),
       },
     ],
+    "Arbio Management-Fee": [
+      { kind: "user", text: t("Erkläre mir die Position „Arbio Management-Fee“ (Juli: –€5.811)", "Explain the “Arbio management fee” line item (July: –€5,811)") },
+      {
+        kind: "bot",
+        text: t(
+          "Die Management-Fee ist Arbios Vergütung für den Full-Service-Betrieb: 15 % vom Nettoumsatz, im Juli –€5.811 auf €38.739 Nettoumsatz. Abgedeckt sind damit Revenue Management, Gast-Kommunikation rund um die Uhr, Kanal-Steuerung, Koordination von Reinigung und Instandhaltung sowie deine Betreuung durch Jovana. Die Fee fällt nur auf tatsächlich erzielten Umsatz an — kein Umsatz, keine Gebühr. Sie wird vor der Auszahlung einbehalten und in deinem Owner Statement ausgewiesen.",
+          "The management fee is Arbio's compensation for running the full service: 15% of net revenue, in July –€5,811 on €38,739 net revenue. It covers revenue management, round-the-clock guest communication, channel steering, coordination of cleaning and maintenance, and your support from Jovana. The fee only applies to revenue actually earned — no revenue, no fee. It's withheld before payout and itemized in your owner statement."
+        ),
+      },
+    ],
     "Reinigung · Test": [
       { kind: "user", text: t("Erkläre mir die Position „Reinigung · Test“ (Juli: –€221)", "Explain the “Cleaning · Test” line item (July: –€221)") },
       {
@@ -237,8 +247,8 @@ export function costExplainSeed(label: string, t: Tr): Msg[] {
       {
         kind: "bot",
         text: t(
-          "Der Bruttoumsatz (Gross Booking Value) ist die Summe aller Gästezahlungen für Aufenthalte im Juli — €41.451 aus 28 Buchungen und 172 belegten Nächten, über alle Kanäle (Booking.com, Airbnb, Direct). Er ist die Ausgangsbasis der P&L: Davon gehen Umsatzsteuer, OTA-Provision und Kosten ab, bis dein operativer Gewinn von €33.111 übrig bleibt. Wichtig: Der GBV ist nicht dein Auszahlungsbetrag — der entspricht dem Nettoumsatz abzüglich Kosten.",
-          "The Gross Booking Value is the sum of all guest payments for July stays — €41,451 from 28 bookings and 172 booked nights, across all channels (Booking.com, Airbnb, Direct). It's the starting point of the P&L: VAT, OTA commission and costs come off it until your operating profit of €33,111 remains. Important: GBV is not your payout amount — that equals net revenue minus costs."
+          "Der Bruttoumsatz (Gross Booking Value) ist die Summe aller Gästezahlungen für Aufenthalte im Juli — €41.451 aus 28 Buchungen und 172 belegten Nächten, über alle Kanäle (Booking.com, Airbnb, Direct). Er ist die Ausgangsbasis der P&L: Davon gehen Umsatzsteuer, OTA-Provision und Kosten ab, bis dein operativer Gewinn von €27.300 übrig bleibt. Wichtig: Der GBV ist nicht dein Auszahlungsbetrag — der entspricht dem Nettoumsatz abzüglich Kosten.",
+          "The Gross Booking Value is the sum of all guest payments for July stays — €41,451 from 28 bookings and 172 booked nights, across all channels (Booking.com, Airbnb, Direct). It's the starting point of the P&L: VAT, OTA commission and costs come off it until your operating profit of €27,300 remains. Important: GBV is not your payout amount — that equals net revenue minus costs."
         ),
       },
     ],
