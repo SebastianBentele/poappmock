@@ -112,18 +112,24 @@ export default function Portfolio() {
             <h3 className="text-[16px]">{t("Rollierender Umsatz", "Rolling revenue")}</h3>
             <p className="text-[13px] text-muted mt-0.5">Apr 2026 - Mar 2027</p>
           </div>
-          <div className="flex gap-8 text-right flex-wrap">
+          <div className="grid grid-cols-3 gap-3 w-full md:flex md:w-auto md:gap-8 md:text-right">
             <div>
-              <div className="text-[13px] tracking-[1px] uppercase text-muted">{t("Ist bis heute", "Actual to date")}</div>
-              <div className="text-[30px] tracking-[-0.5px] mt-0.5">€117.856</div>
+              <div className="text-[10px] md:text-[13px] tracking-[1px] uppercase text-muted whitespace-nowrap">
+                <span className="md:hidden">{t("Ist", "Actual")}</span>
+                <span className="hidden md:inline">{t("Ist bis heute", "Actual to date")}</span>
+              </div>
+              <div className="text-[19px] md:text-[30px] tracking-[-0.5px] mt-0.5">€117.856</div>
             </div>
             <div>
-              <div className="text-[13px] tracking-[1px] uppercase text-muted">{t("Verbleibender Forecast", "Remaining forecast")}</div>
-              <div className="text-[30px] tracking-[-0.5px] mt-0.5">€84.210</div>
+              <div className="text-[10px] md:text-[13px] tracking-[1px] uppercase text-muted whitespace-nowrap">
+                <span className="md:hidden">{t("Forecast", "Forecast")}</span>
+                <span className="hidden md:inline">{t("Verbleibender Forecast", "Remaining forecast")}</span>
+              </div>
+              <div className="text-[19px] md:text-[30px] tracking-[-0.5px] mt-0.5">€84.210</div>
             </div>
             <div>
-              <div className="text-[13px] tracking-[1px] uppercase text-muted">{t("Gesamt", "Total")}</div>
-              <div className="text-[30px] tracking-[-0.5px] mt-0.5">€202.066</div>
+              <div className="text-[10px] md:text-[13px] tracking-[1px] uppercase text-muted whitespace-nowrap">{t("Gesamt", "Total")}</div>
+              <div className="text-[19px] md:text-[30px] tracking-[-0.5px] mt-0.5">€202.066</div>
             </div>
           </div>
         </div>

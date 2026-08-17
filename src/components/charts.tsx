@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
+
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -116,8 +118,34 @@ const rollingRevenue = [
 
 export function RollingRevenueChart() {
   const { lang, t } = useLang();
+  const scroller = useRef<HTMLDivElement>(null);
+  const [narrow, setNarrow] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const sync = () => setNarrow(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
+  // Mobile shows a ~5-month window (three back incl. today, two ahead) out of
+  // the full 12 — the rest is reachable by scrolling sideways, like the
+  // calendar and the P&L. Opens framed on "today" instead of at the start.
+  useEffect(() => {
+    const el = scroller.current;
+    if (!el) return;
+    const overflow = el.scrollWidth - el.clientWidth;
+    el.scrollLeft = overflow > 0 ? Math.min(overflow, el.scrollWidth * (1.2 / 12)) : 0;
+  }, [narrow]);
+
   return (
-    <div className="h-[360px]">
+    <div
+      ref={scroller}
+      className="overflow-x-auto md:overflow-x-visible [&::-webkit-scrollbar]:hidden"
+      style={{ scrollbarWidth: "none" }}
+    >
+    <div className="h-[300px] md:h-[360px] min-w-[760px] md:min-w-0">
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart data={rollingRevenue} margin={{ top: 24, right: 16, left: 0, bottom: 0 }}>
           <CartesianGrid vertical={false} stroke="#f0f0f0" />
@@ -130,6 +158,7 @@ export function RollingRevenueChart() {
             dy={8}
           />
           <YAxis
+            hide={narrow}
             axisLine={false}
             tickLine={false}
             tick={{ fill: "#717171", fontSize: 13 }}
@@ -156,11 +185,14 @@ export function RollingRevenueChart() {
               />
             }
           />
-          <Area type="monotone" dataKey="dj" fill="url(#blueFade)" stroke="none" />
-          <Line type="monotone" dataKey="dj" stroke={BLUE} strokeWidth={2.5} dot={{ r: 3.5, fill: BLUE }} />
-          <Line type="monotone" dataKey="fc" stroke={BLUE} strokeWidth={2} strokeDasharray="6 6" dot={{ r: 3.5, fill: BLUE }} />
-          <Line type="monotone" dataKey="lj" stroke={GRAY} strokeWidth={1.5} dot={false} />
-          <Line type="monotone" dataKey="vj" stroke={GRAY} strokeWidth={1.5} strokeDasharray="5 5" dot={false} />
+          {/* No draw-in animation: hiding the axis at the mobile breakpoint
+              re-measures the chart mid-animation and recharts leaves the line
+              paths stuck at a partial stroke-dasharray. */}
+          <Area type="monotone" dataKey="dj" fill="url(#blueFade)" stroke="none" isAnimationActive={false} />
+          <Line type="monotone" dataKey="dj" stroke={BLUE} strokeWidth={2.5} dot={{ r: 3.5, fill: BLUE }} isAnimationActive={false} />
+          <Line type="monotone" dataKey="fc" stroke={BLUE} strokeWidth={2} strokeDasharray="6 6" dot={{ r: 3.5, fill: BLUE }} isAnimationActive={false} />
+          <Line type="monotone" dataKey="lj" stroke={GRAY} strokeWidth={1.5} dot={false} isAnimationActive={false} />
+          <Line type="monotone" dataKey="vj" stroke={GRAY} strokeWidth={1.5} strokeDasharray="5 5" dot={false} isAnimationActive={false} />
           <defs>
             <linearGradient id="blueFade" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor={BLUE} stopOpacity={0.25} />
@@ -169,6 +201,7 @@ export function RollingRevenueChart() {
           </defs>
         </ComposedChart>
       </ResponsiveContainer>
+    </div>
     </div>
   );
 }
