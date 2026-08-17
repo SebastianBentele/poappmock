@@ -158,7 +158,7 @@ export function OwnerCosts() {
   };
 
   return (
-    <div className="bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+    <div className="bg-white border border-line rounded-[24px] p-5 md:p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>

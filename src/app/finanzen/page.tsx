@@ -141,7 +141,7 @@ export default function Finanzen() {
         <>
           {/* Profit hero — the profit graph front and center */}
           <div className="grid grid-cols-1 xl:grid-cols-[1.5fr_1fr] gap-4">
-            <div className="group relative bg-white border border-line rounded-[24px] p-7 flex flex-col shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+            <div className="group relative bg-white border border-line rounded-[24px] p-5 md:p-7 flex flex-col shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
               <AskAi metric="profit" />
               <div className="flex items-start justify-between">
                 <div>
@@ -201,7 +201,7 @@ export default function Finanzen() {
           </div>
 
           {/* Margin funnel — from revenue to profit (P&L-native, not on the revenue page) */}
-          <div className="bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+          <div className="bg-white border border-line rounded-[24px] p-5 md:p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
             <div className="flex items-start justify-between">
               <h3 className="text-[16px]">{t("Vom Umsatz zum Gewinn", "From revenue to profit")}</h3>
               <span className="text-[13px] text-muted">{t("Juli 2026", "July 2026")}</span>
@@ -237,7 +237,7 @@ export default function Finanzen() {
           </div>
 
           {/* Cost structure */}
-          <div className="group relative bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+          <div className="group relative bg-white border border-line rounded-[24px] p-5 md:p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
             <AskAi metric="cost-structure" />
             <div className="flex items-start justify-between">
               <h3 className="text-[16px]">{t("Kostenstruktur", "Cost structure")}</h3>
@@ -348,7 +348,7 @@ export default function Finanzen() {
           </div>
 
           {/* Payout status tracker */}
-          <div className="bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+          <div className="bg-white border border-line rounded-[24px] p-5 md:p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
             <div className="flex items-start justify-between">
               <h3 className="text-[16px]">{t("Auszahlungs-Status", "Payout status")}</h3>
               <span className="flex items-center gap-1.5 text-[13px] text-muted">
@@ -415,7 +415,7 @@ export default function Finanzen() {
           </div>
 
           {/* Payout history chart */}
-          <div className="group relative bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+          <div className="group relative bg-white border border-line rounded-[24px] p-5 md:p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
             <AskAi metric="payouts" />
             <div className="flex items-start justify-between">
               <div>
@@ -437,7 +437,7 @@ export default function Finanzen() {
           </div>
 
           {/* Owner statements */}
-          <div className="bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+          <div className="bg-white border border-line rounded-[24px] p-5 md:p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
             <div className="flex items-start justify-between">
               <h3 className="text-[16px]">{t("Owner Statements", "Owner statements")}</h3>
               <span className="text-[13px] text-muted">{t("PDF-Download", "PDF download")}</span>

@@ -168,7 +168,7 @@ export default function Anfragen() {
       </div>
 
       {/* What belongs here / what doesn't — honest scope note */}
-      <div className="bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+      <div className="bg-white border border-line rounded-[24px] p-5 md:p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
         <div className="flex items-center gap-2 text-[13px] tracking-[1.5px] uppercase text-muted">
           <ClipboardList size={13} />
           {t("Was hierher gehört", "What belongs here")}

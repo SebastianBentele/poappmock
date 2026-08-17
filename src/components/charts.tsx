@@ -116,6 +116,10 @@ const rollingRevenue = [
   { m: "Mar", dj: null, fc: 1600, lj: 2100, vj: 1500 },
 ];
 
+// Width reserved for the pinned y-axis on mobile.
+const AXIS_GUTTER = 44;
+const AXIS_GUTTER_CLASS = "w-[44px]";
+
 /**
  * Mobile charts that carry more data than fits on a phone get a horizontal
  * scroller: the plot keeps a readable point spacing and the rest is reachable
@@ -156,13 +160,32 @@ function ScrollableChart({
   }, [narrow, startFraction]);
 
   return (
-    <div
-      ref={scroller}
-      className="overflow-x-auto md:overflow-x-visible [&::-webkit-scrollbar]:hidden"
-      style={{ scrollbarWidth: "none" }}
-    >
-      <div className={height} style={narrow ? { minWidth } : undefined}>
-        {children(narrow)}
+    <div className="relative">
+      {/* Fixed y-axis: the same chart rendered once more and clipped to its
+          axis gutter. Identical height, margins and domain mean the ticks line
+          up exactly with the scrolling plot; the white backdrop masks the data
+          sliding underneath. */}
+      {narrow && (
+        <div
+          className={`absolute inset-y-0 left-0 z-10 overflow-hidden bg-white pointer-events-none ${AXIS_GUTTER_CLASS}`}
+          aria-hidden
+        >
+          <div className={height} style={{ width: minWidth }}>
+            {children(false)}
+          </div>
+        </div>
+      )}
+      <div
+        ref={scroller}
+        className="overflow-x-auto md:overflow-x-visible [&::-webkit-scrollbar]:hidden"
+        style={{ scrollbarWidth: "none" }}
+      >
+        <div
+          className={height}
+          style={narrow ? { minWidth, paddingLeft: AXIS_GUTTER } : undefined}
+        >
+          {children(narrow)}
+        </div>
       </div>
     </div>
   );
@@ -185,7 +208,7 @@ export function RollingRevenueChart() {
             tickFormatter={monthTick(lang)}
             dy={8}
           />
-          <YAxis
+          <YAxis width={44}
             hide={narrow}
             axisLine={false}
             tickLine={false}
@@ -267,11 +290,11 @@ export function DailyRevenueChart() {
             axisLine={false}
             tickLine={false}
             tick={{ fill: "#717171", fontSize: 12 }}
-            ticks={[0, 14, 30, 44, 61]}
+            ticks={[14, 30, 44, 61]}
             tickFormatter={(v: number) => dailyLabel(v)}
             dy={6}
           />
-          <YAxis
+          <YAxis width={44}
             hide={narrow}
             axisLine={false}
             tickLine={false}
@@ -330,7 +353,7 @@ export function PayoutChart() {
             tickFormatter={monthTick(lang)}
             dy={8}
           />
-          <YAxis
+          <YAxis width={44}
             hide={narrow}
             axisLine={false}
             tickLine={false}
@@ -406,11 +429,11 @@ function DailyKpiChart({
             axisLine={false}
             tickLine={false}
             tick={{ fill: "#717171", fontSize: 12 }}
-            ticks={[0, 14, 30, 44, 59]}
+            ticks={[14, 30, 44, 59]}
             tickFormatter={(v: number) => dailyLabel(v)}
             dy={8}
           />
-          <YAxis
+          <YAxis width={44}
             hide={narrow}
             axisLine={false}
             tickLine={false}
@@ -524,7 +547,7 @@ export function TicketsChart() {
             tickFormatter={monthTick(lang)}
             dy={8}
           />
-          <YAxis
+          <YAxis width={44}
             axisLine={false}
             tickLine={false}
             tick={{ fill: "#717171", fontSize: 13 }}
@@ -580,7 +603,7 @@ export function ProfitChart() {
             tickFormatter={monthTick(lang)}
             dy={8}
           />
-          <YAxis
+          <YAxis width={44}
             hide={narrow}
             axisLine={false}
             tickLine={false}
@@ -619,7 +642,7 @@ export function GrowthChart() {
             tick={{ fill: "#717171", fontSize: 13 }}
             dy={8}
           />
-          <YAxis
+          <YAxis width={44}
             axisLine={false}
             tickLine={false}
             tick={{ fill: "#717171", fontSize: 13 }}
@@ -661,7 +684,7 @@ export function LosChart() {
             tick={{ fill: "#717171", fontSize: 13 }}
             dy={8}
           />
-          <YAxis
+          <YAxis width={44}
             axisLine={false}
             tickLine={false}
             tick={{ fill: "#717171", fontSize: 13 }}

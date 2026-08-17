@@ -139,7 +139,7 @@ export function PnlTable() {
   };
 
   return (
-    <div className="bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+    <div className="bg-white border border-line rounded-[24px] p-5 md:p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
       <div className="flex items-center justify-between">
         <h3 className="text-[16px] font-medium">{t("P&L Übersicht", "P&L overview")}</h3>
         <div className="hidden md:flex items-center gap-3">

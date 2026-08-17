@@ -154,7 +154,7 @@ export default function Portfolio() {
       </div>
 
       {/* Rolling revenue */}
-      <div className="group relative bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+      <div className="group relative bg-white border border-line rounded-[24px] p-5 md:p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
         <AskAi metric="rolling-revenue" />
         <div className="flex items-start justify-between flex-wrap gap-4">
           <div>
@@ -200,7 +200,7 @@ export default function Portfolio() {
       </div>
 
       {/* Growth with Arbio (YoY, accented) */}
-      <div className="group relative bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+      <div className="group relative bg-white border border-line rounded-[24px] p-5 md:p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
         <AskAi metric="growth" />
         <div className="grid grid-cols-1 xl:grid-cols-[1fr_1.3fr] gap-8">
           <div>
@@ -236,7 +236,7 @@ export default function Portfolio() {
       </div>
 
       {/* Length-of-stay optimization */}
-      <div className="group relative bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+      <div className="group relative bg-white border border-line rounded-[24px] p-5 md:p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
         <AskAi metric="los-optimization" />
         <div className="grid grid-cols-1 xl:grid-cols-[1.4fr_1fr] gap-8">
           <div>
@@ -279,7 +279,7 @@ export default function Portfolio() {
 
       {/* Daily revenue + side stats */}
       <div className="grid grid-cols-1 xl:grid-cols-[1.6fr_1fr] gap-4 mt-5">
-        <div className="group relative bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+        <div className="group relative bg-white border border-line rounded-[24px] p-5 md:p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
           <AskAi metric="daily-revenue" />
           <div className="flex items-start justify-between">
             <div>
@@ -301,7 +301,7 @@ export default function Portfolio() {
             <DailyRevenueChart />
           </div>
         </div>
-        <div className="bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)] flex flex-col justify-end gap-6">
+        <div className="bg-white border border-line rounded-[24px] p-5 md:p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)] flex flex-col justify-end gap-6">
           <div>
             <div className="text-[15px] text-muted">{t("Umsatz gleicher Zeitraum VJ", "Revenue same period LY")}</div>
             <div className="text-[32px] tracking-[-0.5px] mt-1">€38.534</div>
@@ -321,7 +321,7 @@ export default function Portfolio() {
         ].map(({ title, metric, chart }) => (
           <div
             key={title}
-            className="group relative bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
+            className="group relative bg-white border border-line rounded-[24px] p-5 md:p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
           >
             <AskAi metric={metric} />
             <div className="flex items-start justify-between">
@@ -336,7 +336,7 @@ export default function Portfolio() {
 
       {/* Channel mix + booking pace */}
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_1.5fr] gap-4 mt-5">
-        <div className="group relative bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+        <div className="group relative bg-white border border-line rounded-[24px] p-5 md:p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
           <AskAi metric="channel-mix" />
           <div className="flex items-start justify-between">
             <h3 className="text-[17px]">{t("Kanal-Mix", "Channel mix")}</h3>
@@ -380,7 +380,7 @@ export default function Portfolio() {
           </div>
         </div>
 
-        <div className="group relative bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+        <div className="group relative bg-white border border-line rounded-[24px] p-5 md:p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
           <AskAi metric="booking-pace" />
           <h3 className="text-[17px]">{t("Buchungstempo", "Booking pace")}</h3>
           <p className="text-[14px] text-muted mt-1">
@@ -432,7 +432,7 @@ export default function Portfolio() {
       </div>
 
       {/* Per-unit breakdown */}
-      <div className="group relative bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+      <div className="group relative bg-white border border-line rounded-[24px] p-5 md:p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
         <AskAi metric="unit-breakdown" />
         <div className="flex items-start justify-between">
           <h3 className="text-[17px]">{t("Aufschlüsselung nach Einheit", "Breakdown by unit")}</h3>

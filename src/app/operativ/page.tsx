@@ -447,7 +447,7 @@ export default function Operativ() {
       </div>
 
       {/* 2 — Ticket board */}
-      <div className="bg-white border border-line rounded-[24px] p-7 mt-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+      <div className="bg-white border border-line rounded-[24px] p-5 md:p-7 mt-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
         <div className="flex items-start justify-between flex-wrap gap-4">
           <h3 className="text-[16px]">{t("Tickets", "Tickets")}</h3>
           <span className="flex items-center gap-1.5 text-[13px] text-muted">
@@ -505,7 +505,7 @@ export default function Operativ() {
       </div>
 
       {/* 3 — Compact week summary */}
-      <div className="bg-white border border-line rounded-[24px] p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+      <div className="bg-white border border-line rounded-[24px] p-5 md:p-7 mt-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <h3 className="text-[16px]">{t("Diese Woche erledigt", "Completed this week")}</h3>
           <button
@@ -540,7 +540,7 @@ export default function Operativ() {
         {t("Bewertungen", "Reviews")}
       </div>
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_1.15fr] gap-4">
-        <div className="bg-white border border-line rounded-[24px] p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+        <div className="bg-white border border-line rounded-[24px] p-5 md:p-7 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
           <div className="flex items-start justify-between">
             <h3 className="text-[16px]">{t("Bewertungs-Insights", "Review insights")}</h3>
             <span className="text-[13px] text-muted">{t("% positiv erwähnt", "% mentioned positively")}</span>
@@ -602,7 +602,7 @@ export default function Operativ() {
       </div>
 
       {/* Latest reviews — full width */}
-      <div className="bg-white border border-line rounded-[24px] p-7 mt-4 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+      <div className="bg-white border border-line rounded-[24px] p-5 md:p-7 mt-4 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
         <div className="flex items-center justify-between">
           <h3 className="text-[16px]">{t("Neueste Bewertungen", "Latest reviews")}</h3>
           <button
