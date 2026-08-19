@@ -43,6 +43,48 @@
         }
       },
       "updatedAt": "2026-08-14T15:18:39.445821+00:00"
+    },
+    "/kalender": {
+      "targetKind": "existing-ui",
+      "projectId": "bab5c95d-5f5e-4863-8fc6-5b9193839637",
+      "baselineDraftId": "fcc2c0da-900b-4155-865d-3aa900ee20d9",
+      "activeDraftId": "838b3966-7ee4-45e7-8b03-b3f8bd7991cd",
+      "designSystemPath": ".superdesign/design-system.md",
+      "contextFiles": [
+        ".superdesign/design-system.md",
+        "src/app/globals.css",
+        "src/app/layout.tsx",
+        "src/components/sidebar.tsx",
+        "src/components/top-bar.tsx",
+        "src/components/filter-bar.tsx",
+        "src/components/chat-input.tsx",
+        "src/app/kalender/page.tsx:1:37",
+        "src/app/kalender/page.tsx:119:574"
+      ],
+      "fingerprints": {
+        ".superdesign/design-system.md": "9bf6442ae0de814b42ff4f7c699989463fe1894838c0f3ff863c083d5aa9f6b8",
+        "src/app/globals.css": "fc94c854eac385385d5b214c5e9140bcd5363a485cf02f09c58f480d1685d8ec",
+        "src/app/layout.tsx": "9b054506ca6ac30f7937dbc97935c7fbf820be0dbf1b3ea35f3373b3b2fdff60",
+        "src/components/sidebar.tsx": "f6ae3da93e8273db7b41c8dc5cf3bc17d424099fa7d1842502ec6499f6c89a89",
+        "src/components/top-bar.tsx": "7a719a58bcf788e2814b7940394d3742dae15621d710a7c1a538170510045b7f",
+        "src/components/filter-bar.tsx": "c2353f10c88832dab7a0a298a99b4e5e1f4780c91b2998fbc0382c5d582f5e93",
+        "src/components/chat-input.tsx": "ff0e13535eb8fc855431d438a2256a61823f8c9e2cf2469022ad41700b24a0ff",
+        "src/app/kalender/page.tsx": "3bde2d99edf9b3219d77890a0a4670e657c0cc6f956f8e2b8c436f93a23af600"
+      },
+      "drafts": {
+        "fcc2c0da-900b-4155-865d-3aa900ee20d9": {
+          "title": "Kalender \u2014 current",
+          "visualDirection": "current-state baseline (branch meeting-feedback-aug18: Umsatz tooltip, min-stay free ranges, single-line rows)",
+          "currentVersion": 1
+        },
+        "838b3966-7ee4-45e7-8b03-b3f8bd7991cd": {
+          "title": "Calendar Timeline Refinement",
+          "visualDirection": "Arbio-calm minimal: gaps between bars, flat near-invisible free tracks with min-stay label, weekend tint, today-line",
+          "parentDraftId": "fcc2c0da-900b-4155-865d-3aa900ee20d9",
+          "currentVersion": 1
+        }
+      },
+      "updatedAt": "2026-08-19T00:00:00+00:00"
     }
   }
 }

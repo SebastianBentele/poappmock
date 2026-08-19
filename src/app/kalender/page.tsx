@@ -134,12 +134,12 @@ function FreeRangeBar({ start, end, minStay, t }: { start: number; end: number; 
   const span = end - start + 1;
   return (
     <div
-      className="h-9 flex items-center"
-      style={{ gridColumn: `${start} / ${end + 1}` }}
+      className="h-9 flex items-center px-[1.5px]"
+      style={{ gridColumn: `${start} / ${end + 1}`, gridRow: 1 }}
     >
-      <div className="w-full h-full rounded-full bg-[#ebebeb] flex items-center px-3 gap-1.5">
-        {span >= 2 && (
-          <span className="text-[10px] text-[#aaa] font-medium whitespace-nowrap truncate">
+      <div className="w-full h-full rounded-full bg-[#f7f7f7] flex items-center justify-center">
+        {span >= 3 && (
+          <span className="text-[11px] text-muted whitespace-nowrap">
             {minStay} {t("Nächte min.", "nights min.")}
           </span>
         )}
@@ -267,7 +267,7 @@ function BookingBar({
       : undefined;
 
   return (
-    <div className="h-9 flex items-center" style={{ gridColumn: `${b.start} / ${b.end + 1}` }}>
+    <div className="h-9 flex items-center px-[1.5px]" style={{ gridColumn: `${b.start} / ${b.end + 1}`, gridRow: 1 }}>
       <div
         onMouseEnter={(e) => {
           const r = e.currentTarget.getBoundingClientRect();
@@ -400,13 +400,27 @@ export default function Kalender() {
       {/* Calendar */}
       <div className="bg-white border border-line rounded-[24px] py-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
         <div className="overflow-x-auto">
-        <div className="min-w-[980px] pr-5">
+        <div className="min-w-[980px] pr-5 relative">
+          {/* Weekend tint — painted behind header + rows (rows are relative and render above) */}
+          {Array.from({ length: DAYS }, (_, i) => i + 1)
+            .filter((day) => (day + 1) % 7 >= 5)
+            .map((day) => (
+              <div
+                key={`wk-${day}`}
+                className="absolute inset-y-0 bg-[#fafafa] pointer-events-none"
+                style={{
+                  left: `calc(180px + (100% - 200px) * ${(day - 1) / DAYS})`,
+                  width: `calc((100% - 200px) / ${DAYS})`,
+                }}
+              />
+            ))}
+
           {/* Day header */}
-          <div className="grid" style={{ gridTemplateColumns: `180px repeat(${DAYS}, 1fr)` }}>
+          <div className="grid relative" style={{ gridTemplateColumns: `180px repeat(${DAYS}, 1fr)` }}>
             <div className="sticky left-0 z-10 bg-white" />
             {Array.from({ length: DAYS }, (_, i) => {
               const day = i + 1;
-              const weekday = (day + 2) % 7; // 0=Mo ... 5=Sa 6=So
+              const weekday = (day + 1) % 7; // Jul 1, 2026 = Mittwoch; 0=Mo ... 5=Sa 6=So
               const weekend = weekday >= 5;
               const today = day === 8; // demo "today": Jul 8, 2026
               return (
@@ -437,12 +451,12 @@ export default function Kalender() {
             return (
             <div
               key={name}
-              className="grid items-center border-t border-line py-2.5"
+              className="grid items-center border-t border-line py-3.5 relative"
               style={{ gridTemplateColumns: `180px repeat(${DAYS}, 1fr)` }}
             >
               <div className="text-[14px] pl-5 pr-4 truncate sticky left-0 z-10 bg-white self-stretch flex items-center">{name}</div>
               <div
-                className="grid col-span-31 gap-y-1"
+                className="grid col-span-31"
                 style={{
                   gridColumn: `2 / ${DAYS + 2}`,
                   gridTemplateColumns: `repeat(${DAYS}, 1fr)`,
@@ -469,6 +483,12 @@ export default function Kalender() {
             </div>
             );
           })}
+
+          {/* Today line — thin vertical marker under the day-8 header dot, through all rows */}
+          <div
+            className="absolute inset-y-0 w-px bg-[#2a2a2a] opacity-10 pointer-events-none"
+            style={{ left: `calc(180px + (100% - 200px) * ${7.5 / DAYS})` }}
+          />
         </div>
         </div>
 
