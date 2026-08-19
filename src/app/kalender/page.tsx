@@ -282,9 +282,10 @@ function Tooltip({ h }: { h: Hovered }) {
         <div className="text-[13px] text-muted mt-0.5">
           {String(b.start).padStart(2, "0")}. – {String(b.end).padStart(2, "0")}. {t("Juli", "July")} 2026
         </div>
-        {kind === "guest" && (
-          <div className="mt-3 text-[13px] text-muted">
-            {t("Umsatz und Gewinn findest du im Finanzen-Tab.", "Revenue and profit are shown in the Finances tab.")}
+        {kind === "guest" && b.price && (
+          <div className="flex justify-between text-[14px] mt-3">
+            <span className="text-muted">GBV</span>
+            <span>{b.price}</span>
           </div>
         )}
         {kind === "owner" && (
