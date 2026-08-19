@@ -117,24 +117,33 @@ const abflussSeed = (t: Tr): Msg[] => [
   },
 ];
 
-/** Returns every free (unbooked) day number for a unit. */
-function getFreeDays(bookings: Booking[], days: number): number[] {
-  const booked = new Set<number>();
-  for (const b of bookings) {
-    for (let d = b.start; d <= b.end; d++) booked.add(d);
+/** Returns contiguous free ranges (not individual days) for cleaner rendering. */
+function getFreeRanges(bookings: Booking[], days: number): { start: number; end: number }[] {
+  const ranges: { start: number; end: number }[] = [];
+  let cursor = 1;
+  const sorted = [...bookings].sort((a, b) => a.start - b.start);
+  for (const b of sorted) {
+    if (b.start > cursor) ranges.push({ start: cursor, end: b.start - 1 });
+    cursor = Math.max(cursor, b.end + 1);
   }
-  return Array.from({ length: days }, (_, i) => i + 1).filter((d) => !booked.has(d));
+  if (cursor <= days) ranges.push({ start: cursor, end: days });
+  return ranges;
 }
 
-function FreeDayCell({ day, minStay, lang }: { day: number; minStay: number; lang: string }) {
+function FreeRangeBar({ start, end, minStay, t }: { start: number; end: number; minStay: number; t: Tr }) {
+  const span = end - start + 1;
   return (
     <div
-      className="h-9 flex items-end justify-center pb-1"
-      style={{ gridColumn: `${day} / ${day + 1}` }}
+      className="h-9 flex items-center"
+      style={{ gridColumn: `${start} / ${end + 1}` }}
     >
-      <span className="text-[9px] leading-none text-muted/60 whitespace-nowrap">
-        {minStay}{lang === "de" ? "N" : "N"} min.
-      </span>
+      <div className="w-full h-full rounded-full bg-[#ebebeb] flex items-center px-3 gap-1.5">
+        {span >= 2 && (
+          <span className="text-[10px] text-[#aaa] font-medium whitespace-nowrap truncate">
+            {minStay} {t("Nächte min.", "nights min.")}
+          </span>
+        )}
+      </div>
     </div>
   );
 }
@@ -424,7 +433,7 @@ export default function Kalender() {
 
           {/* Unit rows */}
           {units.map(({ name, minStay, bookings }) => {
-            const freeDays = getFreeDays(bookings, DAYS);
+            const freeRanges = getFreeRanges(bookings, DAYS);
             return (
             <div
               key={name}
@@ -447,8 +456,14 @@ export default function Kalender() {
                     onClick={(bk) => bk.seed && openChat(bk.seed)}
                   />
                 ))}
-                {freeDays.map((day) => (
-                  <FreeDayCell key={`free-${name}-${day}`} day={day} minStay={minStay} lang={t("de", "en")} />
+                {freeRanges.map((r) => (
+                  <FreeRangeBar
+                    key={`free-${name}-${r.start}`}
+                    start={r.start}
+                    end={r.end}
+                    minStay={minStay}
+                    t={t}
+                  />
                 ))}
               </div>
             </div>
