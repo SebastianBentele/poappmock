@@ -14,6 +14,7 @@ import { VariantProvider, type Variant } from "@/components/variant";
  *   node scripts/make-access.mjs <email> <password>
  */
 const ACCESS_HASHES = new Set([
+  "c7f01902bc17cf47a847c27ef65a77ec5f74d228a0a6f951055c1b5dbd503401", // sebastian@arbio.com local dev
   "e7a258fa7339d6e96858521b0ec5a5438bb45bb4f170f2c85c4b38e5112906f9", // internal (legacy password)
   "93aabfaafc8a15fa803c17bbbebd642661ca2e02ffebf9d3854d97a985d547f4", // internal
   "4926ac5e0912832143ca10bb3e082ae7bb87f1233c03c51f8d81caf85b9f832e", // invited owner 1

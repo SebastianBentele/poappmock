@@ -284,7 +284,7 @@ function Tooltip({ h }: { h: Hovered }) {
         </div>
         {kind === "guest" && b.price && (
           <div className="flex justify-between text-[14px] mt-3">
-            <span className="text-muted">GBV</span>
+            <span className="text-muted">{t("Umsatz", "Revenue")}</span>
             <span>{b.price}</span>
           </div>
         )}

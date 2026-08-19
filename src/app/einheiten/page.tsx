@@ -749,9 +749,10 @@ export default function Einheiten() {
             <MapIcon size={15} />
             {t("Karte", "Map")}
           </button>
+          {/* Übersicht only available on mobile — hidden on md+ */}
           <button
             onClick={() => setView("uebersicht")}
-            className={`flex items-center gap-2 rounded-full px-5 py-2 text-[15px] ${
+            className={`md:hidden flex items-center gap-2 rounded-full px-5 py-2 text-[15px] ${
               view === "uebersicht"
                 ? "bg-[#2a2a2a] text-white"
                 : "text-muted hover:text-foreground"
@@ -885,57 +886,8 @@ export default function Einheiten() {
             {t("Übersicht deiner Apartments", "Overview of your apartments")}
           </h2>
 
-          {/* ── Desktop grid (md+) ── */}
-          <div className="hidden md:grid grid-cols-2 xl:grid-cols-3 gap-5">
-            {filteredUnits.map((u) => (
-              <button
-                key={u.key}
-                onClick={(e) => openPopup(u, e)}
-                className="text-left bg-white border border-line rounded-[24px] overflow-hidden shadow-[0_2px_10px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)] transition-shadow duration-200"
-              >
-                <div className="relative h-[200px] overflow-hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={u.image}
-                    alt={u.name}
-                    className="w-full h-full object-cover"
-                    draggable={false}
-                  />
-                  <span
-                    className={`absolute top-3 right-3 rounded-full px-3 py-1 text-[12px] ${
-                      u.status === "live"
-                        ? "bg-white/90 text-accent-text"
-                        : "bg-white/90 text-negative"
-                    }`}
-                  >
-                    {u.status === "live" ? t("Live", "Live") : t("Blockiert", "Blocked")}
-                  </span>
-                </div>
-                <div className="p-5">
-                  <span className="border border-line text-muted rounded-full px-2.5 py-0.5 text-[11px] tracking-[1.5px] uppercase">
-                    {u.city}
-                  </span>
-                  <div className="text-[19px] mt-2.5">{u.name}</div>
-                  <div className="grid grid-cols-2 gap-2 mt-3">
-                    {[
-                      { label: t("Umsatz Juli", "Revenue July"), value: u.revenue },
-                      { label: "ADR", value: u.adr },
-                      { label: t("Auslastung", "Occupancy"), value: u.occ },
-                      { label: t("Bewertung", "Rating"), value: u.rating },
-                    ].map(({ label, value }) => (
-                      <div key={label} className="bg-panel rounded-[12px] px-3.5 py-2.5">
-                        <div className="text-[11px] text-muted">{label}</div>
-                        <div className="text-[15px] tracking-[-0.3px] mt-0.5">{value}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
-
-          {/* ── Mobile carousel (below md) ── */}
-          <div className="md:hidden">
+          {/* ── Mobile carousel only ── */}
+          <div>
             <div className="flex items-center justify-end mb-4 gap-2">
               <button
                 onClick={() => setActive((a) => Math.max(0, a - 1))}
