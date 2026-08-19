@@ -117,9 +117,32 @@ const abflussSeed = (t: Tr): Msg[] => [
   },
 ];
 
-const buildUnits = (t: Tr): { name: string; bookings: Booking[] }[] => [
+/** Returns every free (unbooked) day number for a unit. */
+function getFreeDays(bookings: Booking[], days: number): number[] {
+  const booked = new Set<number>();
+  for (const b of bookings) {
+    for (let d = b.start; d <= b.end; d++) booked.add(d);
+  }
+  return Array.from({ length: days }, (_, i) => i + 1).filter((d) => !booked.has(d));
+}
+
+function FreeDayCell({ day, minStay, lang }: { day: number; minStay: number; lang: string }) {
+  return (
+    <div
+      className="h-9 flex items-end justify-center pb-1"
+      style={{ gridColumn: `${day} / ${day + 1}` }}
+    >
+      <span className="text-[9px] leading-none text-muted/60 whitespace-nowrap">
+        {minStay}{lang === "de" ? "N" : "N"} min.
+      </span>
+    </div>
+  );
+}
+
+const buildUnits = (t: Tr): { name: string; minStay: number; bookings: Booking[] }[] => [
   {
     name: "Altstadt Apartment",
+    minStay: 2,
     bookings: [
       { start: 1, end: 5, label: "Anna Weber", price: "€820", profit: "€590" },
       { start: 6, end: 12, label: "M. Rossi", price: "€1.240", profit: "€900" },
@@ -138,6 +161,7 @@ const buildUnits = (t: Tr): { name: string; bookings: Booking[] }[] => [
   },
   {
     name: "Studio Universität",
+    minStay: 2,
     bookings: [
       { start: 1, end: 3, label: "L. Nguyen", price: "€410", profit: "€300" },
       {
@@ -156,6 +180,7 @@ const buildUnits = (t: Tr): { name: string; bookings: Booking[] }[] => [
   },
   {
     name: "Garten Apartment",
+    minStay: 3,
     bookings: [
       { start: 3, end: 6, label: "P. Novak", price: "€510", profit: "€370" },
       { start: 8, end: 16, label: t("Familie Krüger", "Krüger family"), price: "€1.320", profit: "€960" },
@@ -165,6 +190,7 @@ const buildUnits = (t: Tr): { name: string; bookings: Booking[] }[] => [
   },
   {
     name: "Altbau Suite Eppendorf",
+    minStay: 2,
     bookings: [
       { start: 1, end: 4, label: "H. Lindqvist", price: "€780", profit: "€560" },
       { start: 6, end: 13, label: t("Familie Conti", "Conti family"), price: "€1.560", profit: "€1.150" },
@@ -174,6 +200,7 @@ const buildUnits = (t: Tr): { name: string; bookings: Booking[] }[] => [
   },
   {
     name: "Kiez Apartment Prenzlauer Berg",
+    minStay: 2,
     bookings: [
       { start: 2, end: 8, label: "E. Fischer", price: "€1.180", profit: "€860" },
       { start: 10, end: 11, label: "M. Larsson", price: "€360", profit: "€260" },
@@ -396,7 +423,9 @@ export default function Kalender() {
           </div>
 
           {/* Unit rows */}
-          {units.map(({ name, bookings }) => (
+          {units.map(({ name, minStay, bookings }) => {
+            const freeDays = getFreeDays(bookings, DAYS);
+            return (
             <div
               key={name}
               className="grid items-center border-t border-line py-2.5"
@@ -418,9 +447,13 @@ export default function Kalender() {
                     onClick={(bk) => bk.seed && openChat(bk.seed)}
                   />
                 ))}
+                {freeDays.map((day) => (
+                  <FreeDayCell key={`free-${name}-${day}`} day={day} minStay={minStay} lang={t("de", "en")} />
+                ))}
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
         </div>
 
