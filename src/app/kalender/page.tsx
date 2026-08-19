@@ -10,6 +10,7 @@ import {
   Wrench,
   MessageCircle,
 } from "lucide-react";
+// Wrench is kept for the booking-bar maintenance rendering
 import { ChatInput } from "@/components/chat-input";
 import { FilterBar } from "@/components/filter-bar";
 import { useArbioChat, type Msg, type Tr } from "@/components/arbio-chat";
@@ -282,15 +283,8 @@ function Tooltip({ h }: { h: Hovered }) {
           {String(b.start).padStart(2, "0")}. – {String(b.end).padStart(2, "0")}. {t("Juli", "July")} 2026
         </div>
         {kind === "guest" && (
-          <div className="flex flex-col gap-1.5 mt-3">
-            <div className="flex justify-between text-[14px]">
-              <span className="text-muted">{t("Buchungswert", "Booking value")}</span>
-              <span>{b.price}</span>
-            </div>
-            <div className="flex justify-between text-[14px]">
-              <span className="text-muted">{t("Geschätzter Profit", "Estimated profit")}</span>
-              <span className="text-accent-text">{b.profit}</span>
-            </div>
+          <div className="mt-3 text-[13px] text-muted">
+            {t("Umsatz und Gewinn findest du im Finanzen-Tab.", "Revenue and profit are shown in the Finances tab.")}
           </div>
         )}
         {kind === "owner" && (
@@ -338,20 +332,16 @@ function Tooltip({ h }: { h: Hovered }) {
   );
 }
 
-type Mode = "aufenthalt" | "wartung";
-
 export default function Kalender() {
   const { openChat } = useArbioChat();
   const { t } = useLang();
   const units = buildUnits(t);
   const [modalOpen, setModalOpen] = useState(false);
-  const [mode, setMode] = useState<Mode>("aufenthalt");
   const [done, setDone] = useState(false);
   const [hovered, setHovered] = useState<Hovered | null>(null);
 
   const open = () => {
     setDone(false);
-    setMode("aufenthalt");
     setModalOpen(true);
   };
 
@@ -456,23 +446,11 @@ export default function Kalender() {
             {done ? (
               <div className="flex flex-col items-center text-center py-6">
                 <CheckCircle2 size={40} className="text-accent-text" />
-                <div className="text-[19px] mt-4">
-                  {mode === "aufenthalt" ? t("Aufenthalt eingetragen", "Stay added") : t("Wartung eingetragen", "Maintenance added")}
-                </div>
+                <div className="text-[19px] mt-4">{t("Aufenthalt eingetragen", "Stay added")}</div>
                 <p className="text-[14px] text-muted mt-2 leading-snug">
-                  {mode === "aufenthalt" ? (
-                    <>
-                      Garten Apartment · 07. – 10. {t("August", "August")} 2026
-                      <br />
-                      {t("Der Zeitraum ist ab sofort für Gästebuchungen blockiert.", "The period is now blocked for guest bookings.")}
-                    </>
-                  ) : (
-                    <>
-                      Altstadt Apartment · 12. {t("August", "August")} 2026 · {t("Rauchfangkehrer", "Chimney sweep")}
-                      <br />
-                      {t("Der Zeitraum ist für Gäste blockiert und unser Team ist informiert.", "The period is blocked for guests and our team has been notified.")}
-                    </>
-                  )}
+                  Garten Apartment · 07. – 10. {t("August", "August")} 2026
+                  <br />
+                  {t("Der Zeitraum ist ab sofort für Gästebuchungen blockiert.", "The period is now blocked for guest bookings.")}
                 </p>
                 <button
                   onClick={() => setModalOpen(false)}
@@ -484,7 +462,12 @@ export default function Kalender() {
             ) : (
               <>
                 <div className="flex items-start justify-between">
-                  <div className="text-[19px]">{t("Kalender-Eintrag", "Calendar entry")}</div>
+                  <div>
+                    <div className="text-[19px]">{t("Eigenen Aufenthalt eintragen", "Add your own stay")}</div>
+                    <p className="text-[13px] text-muted mt-1">
+                      {t("Kostenlos · blockiert den Zeitraum für Gäste.", "Free · blocks the period for guests.")}
+                    </p>
+                  </div>
                   <button
                     onClick={() => setModalOpen(false)}
                     className="w-9 h-9 rounded-full bg-panel flex items-center justify-center text-muted"
@@ -493,71 +476,28 @@ export default function Kalender() {
                   </button>
                 </div>
 
-                {/* Mode toggle */}
-                <div className="flex items-center gap-1 border border-line rounded-full p-1 mt-4">
-                  <button
-                    onClick={() => setMode("aufenthalt")}
-                    className={`flex-1 flex items-center justify-center gap-2 rounded-full py-2 text-[14px] ${
-                      mode === "aufenthalt" ? "bg-[#2a2a2a] text-white" : "text-muted"
-                    }`}
-                  >
-                    <Home size={14} />
-                    {t("Eigener Aufenthalt", "Own stay")}
-                  </button>
-                  <button
-                    onClick={() => setMode("wartung")}
-                    className={`flex-1 flex items-center justify-center gap-2 rounded-full py-2 text-[14px] ${
-                      mode === "wartung" ? "bg-[#2a2a2a] text-white" : "text-muted"
-                    }`}
-                  >
-                    <Wrench size={14} />
-                    {t("Wartung / Termin", "Maintenance / appointment")}
-                  </button>
-                </div>
-
-                <p className="text-[13px] text-muted mt-3">
-                  {mode === "aufenthalt"
-                    ? t("Kostenlos · blockiert den Zeitraum für Gäste.", "Free · blocks the period for guests.")
-                    : t("Blockiert den Zeitraum für Gäste und informiert das Arbio-Team — keine Fake-Buchung, deine Auslastungszahlen bleiben sauber.", "Blocks the period for guests and notifies the Arbio team — no fake booking, your occupancy figures stay clean.")}
-                </p>
-
                 <div className="flex flex-col gap-3 mt-5">
                   <button className="flex items-center justify-between border border-line rounded-[18px] px-5 py-3.5 text-[15px]">
-                    {mode === "aufenthalt" ? "Garten Apartment" : "Altstadt Apartment"}
+                    <span className="flex items-center gap-2"><Home size={15} className="text-muted" /> Garten Apartment</span>
                     <ChevronDown size={16} className="text-muted" />
                   </button>
 
-                  {mode === "wartung" && (
-                    <button className="flex items-center justify-between border border-line rounded-[18px] px-5 py-3.5 text-[15px]">
-                      <span className="text-muted">{t("Art der Wartung", "Type of maintenance")}</span>
-                      {t("Rauchfangkehrer", "Chimney sweep")}
-                      <ChevronDown size={16} className="text-muted" />
-                    </button>
-                  )}
-
                   <div className="grid grid-cols-2 gap-3">
                     <div className="border border-line rounded-[18px] px-5 py-3.5">
-                      <div className="text-[12px] text-muted">
-                        {mode === "aufenthalt" ? t("Anreise", "Check-in") : t("Von", "From")}
-                      </div>
-                      <div className="text-[15px] mt-0.5">
-                        {mode === "aufenthalt" ? "07.08.2026" : "12.08.2026"}
-                      </div>
+                      <div className="text-[12px] text-muted">{t("Anreise", "Check-in")}</div>
+                      <div className="text-[15px] mt-0.5">07.08.2026</div>
                     </div>
                     <div className="border border-line rounded-[18px] px-5 py-3.5">
-                      <div className="text-[12px] text-muted">
-                        {mode === "aufenthalt" ? t("Abreise", "Check-out") : t("Bis", "To")}
-                      </div>
-                      <div className="text-[15px] mt-0.5">
-                        {mode === "aufenthalt" ? "10.08.2026" : "12.08.2026"}
-                      </div>
+                      <div className="text-[12px] text-muted">{t("Abreise", "Check-out")}</div>
+                      <div className="text-[15px] mt-0.5">10.08.2026</div>
                     </div>
                   </div>
 
                   <p className="text-[13px] text-muted leading-snug">
-                    {mode === "aufenthalt"
-                      ? t("Entgangener Buchungswert im Zeitraum: ca. €480. Reinigung nach Abreise wird automatisch eingeplant.", "Lost booking value for the period: approx. €480. Cleaning after check-out is scheduled automatically.")
-                      : t("Am gewählten Tag ist keine Buchung betroffen. Fällt eine Wartung in einen gebuchten Zeitraum, meldet sich das Team zur Abstimmung.", "No booking is affected on the selected day. If maintenance falls within a booked period, the team will reach out to coordinate.")}
+                    {t(
+                      "Entgangener Buchungswert im Zeitraum: ca. €480. Reinigung nach Abreise wird automatisch eingeplant.",
+                      "Lost booking value for the period: approx. €480. Cleaning after check-out is scheduled automatically."
+                    )}
                   </p>
                 </div>
 
@@ -565,7 +505,7 @@ export default function Kalender() {
                   onClick={() => setDone(true)}
                   className="w-full mt-5 bg-[#2a2a2a] text-white rounded-full px-6 py-3.5 text-[15px] hover:bg-black transition-colors"
                 >
-                  {mode === "aufenthalt" ? t("Aufenthalt buchen", "Book stay") : t("Wartung eintragen", "Add maintenance")}
+                  {t("Aufenthalt buchen", "Book stay")}
                 </button>
               </>
             )}

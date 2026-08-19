@@ -626,6 +626,10 @@ export default function Einheiten() {
   const [view, setView] = useState<View>("karte");
   const [popup, setPopup] = useState<Popup | null>(null);
   const [active, setActive] = useState(1);
+  const [cityFilter, setCityFilter] = useState<string | null>(null);
+
+  const cities = [...new Set(units.map((u) => u.city))];
+  const filteredUnits = cityFilter ? units.filter((u) => u.city === cityFilter) : units;
   const [pan, setPan] = useState({ x: -220, y: -160 });
   const [zoom, setZoom] = useState(1);
   const drag = useRef<{ startX: number; startY: number; panX: number; panY: number } | null>(null);
@@ -705,7 +709,35 @@ export default function Einheiten() {
 
   return (
     <div className="relative min-h-screen px-4 md:px-8 py-6 pb-32">
-      <div className="flex items-center justify-end flex-wrap gap-3">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        {/* City filter — shown when more than one city exists */}
+        {cities.length > 1 && (
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-[13px] text-muted">{t("Stadt", "City")}:</span>
+            <div className="flex items-center border border-line rounded-full p-1 bg-white">
+              <button
+                onClick={() => setCityFilter(null)}
+                className={`rounded-full px-4 py-1.5 text-[13px] transition-colors ${
+                  cityFilter === null ? "bg-[#2a2a2a] text-white" : "text-muted hover:text-foreground"
+                }`}
+              >
+                {t("Alle", "All")}
+              </button>
+              {cities.map((city) => (
+                <button
+                  key={city}
+                  onClick={() => setCityFilter(city === cityFilter ? null : city)}
+                  className={`rounded-full px-4 py-1.5 text-[13px] transition-colors ${
+                    cityFilter === city ? "bg-[#2a2a2a] text-white" : "text-muted hover:text-foreground"
+                  }`}
+                >
+                  {city}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        <div className="flex-1" />
         {/* View toggle */}
         <div className="flex items-center border border-line rounded-full p-1 bg-white">
           <button
@@ -794,7 +826,7 @@ export default function Einheiten() {
               <CityMapSvg />
 
               {/* Unit markers */}
-              {units.map((u) => (
+              {filteredUnits.map((u) => (
                 <button
                   key={u.key}
                   onClick={(e) => openPopup(u, e)}
@@ -846,11 +878,65 @@ export default function Einheiten() {
         </div>
         </>
       ) : view === "uebersicht" ? (
-        /* ---------------- Carousel view ---------------- */
+        /* ---------------- Overview view ---------------- */
+        /* Desktop: responsive grid. Mobile: horizontally-scrolling carousel. */
         <div className="mt-8">
-          <div className="flex items-center justify-between">
-            <h2 className="text-[18px] tracking-[3px] uppercase">{t("Übersicht deiner Apartments", "Overview of your apartments")}</h2>
-            <div className="flex gap-2">
+          <h2 className="text-[18px] tracking-[3px] uppercase mb-6">
+            {t("Übersicht deiner Apartments", "Overview of your apartments")}
+          </h2>
+
+          {/* ── Desktop grid (md+) ── */}
+          <div className="hidden md:grid grid-cols-2 xl:grid-cols-3 gap-5">
+            {filteredUnits.map((u) => (
+              <button
+                key={u.key}
+                onClick={(e) => openPopup(u, e)}
+                className="text-left bg-white border border-line rounded-[24px] overflow-hidden shadow-[0_2px_10px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)] transition-shadow duration-200"
+              >
+                <div className="relative h-[200px] overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={u.image}
+                    alt={u.name}
+                    className="w-full h-full object-cover"
+                    draggable={false}
+                  />
+                  <span
+                    className={`absolute top-3 right-3 rounded-full px-3 py-1 text-[12px] ${
+                      u.status === "live"
+                        ? "bg-white/90 text-accent-text"
+                        : "bg-white/90 text-negative"
+                    }`}
+                  >
+                    {u.status === "live" ? t("Live", "Live") : t("Blockiert", "Blocked")}
+                  </span>
+                </div>
+                <div className="p-5">
+                  <span className="border border-line text-muted rounded-full px-2.5 py-0.5 text-[11px] tracking-[1.5px] uppercase">
+                    {u.city}
+                  </span>
+                  <div className="text-[19px] mt-2.5">{u.name}</div>
+                  <div className="grid grid-cols-2 gap-2 mt-3">
+                    {[
+                      { label: t("Umsatz Juli", "Revenue July"), value: u.revenue },
+                      { label: "ADR", value: u.adr },
+                      { label: t("Auslastung", "Occupancy"), value: u.occ },
+                      { label: t("Bewertung", "Rating"), value: u.rating },
+                    ].map(({ label, value }) => (
+                      <div key={label} className="bg-panel rounded-[12px] px-3.5 py-2.5">
+                        <div className="text-[11px] text-muted">{label}</div>
+                        <div className="text-[15px] tracking-[-0.3px] mt-0.5">{value}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+
+          {/* ── Mobile carousel (below md) ── */}
+          <div className="md:hidden">
+            <div className="flex items-center justify-end mb-4 gap-2">
               <button
                 onClick={() => setActive((a) => Math.max(0, a - 1))}
                 className="w-10 h-10 rounded-full border border-line bg-white flex items-center justify-center text-muted hover:bg-panel"
@@ -858,134 +944,108 @@ export default function Einheiten() {
                 <ChevronLeft size={16} />
               </button>
               <button
-                onClick={() => setActive((a) => Math.min(units.length - 1, a + 1))}
+                onClick={() => setActive((a) => Math.min(filteredUnits.length - 1, a + 1))}
                 className="w-10 h-10 rounded-full border border-line bg-white flex items-center justify-center text-muted hover:bg-panel"
               >
                 <ChevronRight size={16} />
               </button>
             </div>
-          </div>
-
-          <div
-            ref={trackRef}
-            onScroll={onTrackScroll}
-            className="flex items-center gap-6 mt-8 min-h-[440px] overflow-x-auto snap-x snap-mandatory px-[calc(50%-170px)] cursor-grab active:cursor-grabbing select-none [&::-webkit-scrollbar]:hidden"
-            style={{ scrollbarWidth: "none" }}
-            onPointerDown={(e) => {
-              cDrag.current = { startX: e.clientX, scroll: trackRef.current?.scrollLeft ?? 0 };
-              moved.current = false;
-            }}
-            onPointerMove={(e) => {
-              if (!cDrag.current || !trackRef.current) return;
-              const dx = e.clientX - cDrag.current.startX;
-              if (Math.abs(dx) > 6) moved.current = true;
-              trackRef.current.scrollLeft = cDrag.current.scroll - dx;
-            }}
-            onPointerUp={() => {
-              const wasDrag = moved.current;
-              cDrag.current = null;
-              if (wasDrag) snapCarousel();
-              setTimeout(() => (moved.current = false), 0);
-            }}
-            onPointerLeave={() => {
-              const wasDrag = moved.current;
-              cDrag.current = null;
-              if (wasDrag) snapCarousel();
-              setTimeout(() => (moved.current = false), 0);
-            }}
-          >
-            {units.map((u, i) => {
-              const isActive = i === active;
-              return (
-                <button
-                  key={u.key}
-                  data-card={i}
-                  onClick={(e) => {
-                    if (moved.current) return;
-                    if (isActive) openPopup(u, e);
-                    else setActive(i);
-                  }}
-                  className={`text-left bg-white border border-line rounded-[24px] overflow-hidden shrink-0 snap-center transition-all duration-300 ${
-                    isActive
-                      ? "w-[340px] shadow-[0_16px_50px_rgba(0,0,0,0.12)]"
-                      : "w-[290px] opacity-80 scale-[0.94] shadow-[0_2px_10px_rgba(0,0,0,0.05)]"
-                  }`}
-                >
-                  <div className="relative h-[220px] overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={u.image}
-                      alt={u.name}
-                      className="w-full h-full object-cover"
-                      draggable={false}
-                    />
-                    {u.status === "blocked" && features.blockDetail && (
-                      <span className="absolute top-3 right-3 bg-white/90 text-negative rounded-full px-3 py-1 text-[12px]">
-                        {t("Blockiert", "Blocked")}
-                      </span>
-                    )}
-                  </div>
-                  <div className="p-5">
-                    <span className="border border-line text-muted rounded-full px-2.5 py-0.5 text-[11px] tracking-[1.5px] uppercase">
-                      {u.city}
-                    </span>
-                    <div className={`mt-2.5 ${isActive ? "text-[21px]" : "text-[18px]"}`}>
-                      {u.name}
-                    </div>
-                    {isActive ? (
-                      <>
-                        <div className="grid grid-cols-2 gap-2.5 mt-3">
-                          {[
-                            { label: t("Umsatz Juli", "Revenue July"), value: u.revenue },
-                            { label: "ADR", value: u.adr },
-                            { label: t("Auslastung", "Occupancy"), value: u.occ },
-                            { label: t("Bewertung", "Rating"), value: u.rating },
-                          ].map(({ label, value }) => (
-                            <div key={label} className="bg-panel rounded-[12px] px-3.5 py-2.5">
-                              <div className="text-[11px] text-muted">{label}</div>
-                              <div className="text-[16px] tracking-[-0.3px] mt-0.5">{value}</div>
-                            </div>
-                          ))}
-                        </div>
-                        <span className="mt-4 w-full flex items-center justify-center gap-2 bg-[#2a2a2a] text-white rounded-full px-5 py-2.5 text-[14px]">
-                          <MessageCircle size={14} />
-                          {t("Mehr Einblicke", "More insights")}
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        <div className="mt-3 flex flex-col gap-1">
-                          <div className="text-[15px]">
-                            {u.revenue} <span className="text-muted">{t("Umsatz Juli", "revenue July")}</span>
-                          </div>
-                          <div className="text-[15px]">
-                            {u.adr} <span className="text-muted">ADR</span>
-                          </div>
-                          <div className="text-[15px]">
-                            {u.occ} <span className="text-muted">{t("Auslastung", "occupancy")}</span>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-1.5 text-[13px] text-muted mt-3">
-                          <Star size={13} className="text-accent-text" />
-                          {u.rating} · {t("Details anzeigen", "Show details")}
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Progress line */}
-          <div className="max-w-[640px] mx-auto mt-6 h-[3px] bg-line rounded-full overflow-hidden">
             <div
-              className="h-full bg-[#2a2a2a] rounded-full transition-all duration-300"
-              style={{
-                width: `${100 / units.length}%`,
-                marginLeft: `${(active * 100) / units.length}%`,
+              ref={trackRef}
+              onScroll={onTrackScroll}
+              className="flex items-center gap-6 min-h-[440px] overflow-x-auto snap-x snap-mandatory px-[calc(50%-170px)] cursor-grab active:cursor-grabbing select-none [&::-webkit-scrollbar]:hidden"
+              style={{ scrollbarWidth: "none" }}
+              onPointerDown={(e) => {
+                cDrag.current = { startX: e.clientX, scroll: trackRef.current?.scrollLeft ?? 0 };
+                moved.current = false;
               }}
-            />
+              onPointerMove={(e) => {
+                if (!cDrag.current || !trackRef.current) return;
+                const dx = e.clientX - cDrag.current.startX;
+                if (Math.abs(dx) > 6) moved.current = true;
+                trackRef.current.scrollLeft = cDrag.current.scroll - dx;
+              }}
+              onPointerUp={() => {
+                const wasDrag = moved.current;
+                cDrag.current = null;
+                if (wasDrag) snapCarousel();
+                setTimeout(() => (moved.current = false), 0);
+              }}
+              onPointerLeave={() => {
+                const wasDrag = moved.current;
+                cDrag.current = null;
+                if (wasDrag) snapCarousel();
+                setTimeout(() => (moved.current = false), 0);
+              }}
+            >
+              {filteredUnits.map((u, i) => {
+                const isActive = i === active;
+                return (
+                  <button
+                    key={u.key}
+                    data-card={i}
+                    onClick={(e) => {
+                      if (moved.current) return;
+                      // One click: open popup directly — no second tap needed
+                      setActive(i);
+                      openPopup(u, e);
+                    }}
+                    className={`text-left bg-white border border-line rounded-[24px] overflow-hidden shrink-0 snap-center transition-all duration-300 ${
+                      isActive
+                        ? "w-[340px] shadow-[0_16px_50px_rgba(0,0,0,0.12)]"
+                        : "w-[290px] opacity-80 scale-[0.94] shadow-[0_2px_10px_rgba(0,0,0,0.05)]"
+                    }`}
+                  >
+                    <div className="relative h-[220px] overflow-hidden">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={u.image}
+                        alt={u.name}
+                        className="w-full h-full object-cover"
+                        draggable={false}
+                      />
+                      {u.status === "blocked" && features.blockDetail && (
+                        <span className="absolute top-3 right-3 bg-white/90 text-negative rounded-full px-3 py-1 text-[12px]">
+                          {t("Blockiert", "Blocked")}
+                        </span>
+                      )}
+                    </div>
+                    <div className="p-5">
+                      <span className="border border-line text-muted rounded-full px-2.5 py-0.5 text-[11px] tracking-[1.5px] uppercase">
+                        {u.city}
+                      </span>
+                      <div className={`mt-2.5 ${isActive ? "text-[21px]" : "text-[18px]"}`}>
+                        {u.name}
+                      </div>
+                      <div className="grid grid-cols-2 gap-2.5 mt-3">
+                        {[
+                          { label: t("Umsatz Juli", "Revenue July"), value: u.revenue },
+                          { label: "ADR", value: u.adr },
+                          { label: t("Auslastung", "Occupancy"), value: u.occ },
+                          { label: t("Bewertung", "Rating"), value: u.rating },
+                        ].map(({ label, value }) => (
+                          <div key={label} className="bg-panel rounded-[12px] px-3.5 py-2.5">
+                            <div className="text-[11px] text-muted">{label}</div>
+                            <div className="text-[16px] tracking-[-0.3px] mt-0.5">{value}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Progress line */}
+            <div className="max-w-[640px] mx-auto mt-6 h-[3px] bg-line rounded-full overflow-hidden">
+              <div
+                className="h-full bg-[#2a2a2a] rounded-full transition-all duration-300"
+                style={{
+                  width: `${100 / filteredUnits.length}%`,
+                  marginLeft: `${(active * 100) / filteredUnits.length}%`,
+                }}
+              />
+            </div>
           </div>
         </div>
       ) : (
@@ -1023,7 +1083,7 @@ export default function Einheiten() {
               <span className="text-right">{t("Bewertung", "Rating")}</span>
               <span />
             </div>
-            {units.map((u, i) => (
+            {filteredUnits.map((u, i) => (
               <button
                 key={u.key}
                 onClick={(e) => openPopup(u, e)}
